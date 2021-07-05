@@ -487,6 +487,8 @@ SoundSystem_Init::
 
 	ret
 
+SECTION "Music_InstrumentEnd",ROMX
+
 ; dummy instrument to init/clear instrument pointers
 Music_InstrumentEnd:
 	DB	MUSIC_INSTCMD_X_END
