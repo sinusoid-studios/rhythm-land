@@ -6,5 +6,6 @@ actually does press a button determines how well they do.
 
 ## Table Format
 Each entry in the table consists of 2 bytes:
-1. Number of frames this hit comes after the previous, -1 signalling the end of the table
+1. Number of frames this hit comes after the previous, -1 signalling the
+end of the table
 2. Keys that the player must press for this hit
