@@ -43,6 +43,11 @@ Initialize::
     ; Initialize SoundSystem
     call    SoundSystem_Init
     
+    ; Set bank prior to enabling interrupts
+    ld      a, BANK(xGameTest)
+    ld      [rROMB0], a
+    ldh     [hCurrentBank], a
+    
     ; Set up interrupts
     
     ; Update sound at every LY 0
@@ -62,10 +67,10 @@ Initialize::
     ; Turn on the LCD
     ld      a, LCDCF_ON
     ldh     [rLCDC], a
-
-Lockup:
-    halt
-    jr      Lockup
+    
+    ; Jump immediately to the test game
+    ; TODO: Make a game select screen
+    jp      xGameTest
 
 SECTION "Stack", WRAM0
 
@@ -83,4 +88,9 @@ hPressedKeys::
     DS 1
 ; Keys that were just pressed this frame
 hNewKeys::
+    DS 1
+
+; Current bank number of the $4000-$7FFF range, for interrupt handlers
+; to restore
+hCurrentBank::
     DS 1

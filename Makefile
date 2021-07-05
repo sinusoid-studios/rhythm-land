@@ -8,7 +8,7 @@ MFRCODE := SNSD
 TITLE := RHYTHM LAND
 LICENSEE := HB
 OLDLIC := 0x33
-MBC := ROM
+MBC := MBC5
 SRAMSIZE := 0
 
 INCDIRS = code include
@@ -18,7 +18,7 @@ ASFLAGS  = -h $(addprefix -i ,$(INCDIRS)) -p $(PADVALUE) $(addprefix -W,$(WARNIN
 LDFLAGS  = -p $(PADVALUE)
 FIXFLAGS = -v -p $(PADVALUE) -i "$(MFRCODE)" -k "$(LICENSEE)" -l $(OLDLIC) -m $(MBC) -n $(VERSION) -r $(SRAMSIZE) -t "$(TITLE)" -j -c
 
-SRCS := $(wildcard code/*.asm) $(wildcard data/*.asm) $(wildcard data/**/*.asm)
+SRCS := $(wildcard code/*.asm) $(wildcard code/**/*.asm) $(wildcard data/*.asm) $(wildcard data/**/*.asm)
 
 game: bin/rhythm-land.gbc
 .PHONY: game

@@ -50,6 +50,8 @@ VBlankHandler:
     ld      a, P1F_GET_NONE
     ldh     [rP1], a
     
+    ; Bank was never changed, no need to restore
+    
     pop     bc
     pop     af
     ret         ; Interrupts already enabled
@@ -79,6 +81,10 @@ STATHandler:
     push    hl
     
     call    SoundSystem_Process
+    
+    ; Restore bank
+    ldh     a, [hCurrentBank]
+    ld      [rROMB0], a
     
     pop     hl
     pop     de
