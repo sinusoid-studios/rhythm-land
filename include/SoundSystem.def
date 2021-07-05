@@ -1,0 +1,104 @@
+
+; This is the definitions file for SoundSystem. By including/excluding
+; certain values described below, you can include/exclude features and
+; control the behavior. These are build-time settings, so you can turn
+; code on and off depending on your specifications.
+
+;-------------------------------
+SOUNDSYSTEM_GBC_COMPATIBLE	EQU	1
+;
+; By default, SoundSystem assumes it is part of a DMG-only ROM. If the
+; value at $143 in your ROM is set to DMG/GBC ($80) or GBC ($C0), you
+; should set SOUNDSYSTEM_GBC_COMPATIBLE to 1.
+;
+; Notes:
+; - If SOUNDSYSTEM_GBC_COMPATIBLE is 0, SoundSystem will not allow you
+; to specify a WRAM bank other than 0. See SOUNDSYSTEM_WRAM_BANK below
+; for more information.
+; - If SOUNDSYSTEM_GBC_COMPATIBLE is 0 or not defined, the value for
+; SOUNDSYSTEM_WRAM_BANK will be ignored.
+; - Neither CPU, code size, nor RAM usage is affected by this setting.
+
+;-------------------------------
+;SOUNDSYSTEM_LARGE_ROM	EQU	1
+;
+; By default, SoundSystem assumes it is part of a 'small' ROM. That is,
+; 4MBytes (256 banks) or smaller. If the value at $148 is set to
+; CART_ROM_8192K ($08), you should set SOUNDSYSTEM_LARGE_ROM to 1 to
+; allow you to place your code and/or audio data into banks >=256.
+;
+; Notes:
+; - If SOUNDSYSTEM_LARGE_ROM is 0, SoundSystem will not allow you
+; to specify a CODE bank other than 0. See SOUNDSYSTEM_CODE_BANK below
+; for more information.
+; - If SOUNDSYSTEM_LARGE_ROM is 0 or not defined, the value for
+; SOUNDSYSTEM_CODE_BANK must be <256.
+; - CPU, code size, and RAM usage is slightly more if this is enabled.
+
+;-------------------------------
+;SOUNDSYSTEM_CODE_BANK	EQU	1
+
+; By default, SoundSystem will place its code and data in ROM bank 0.
+; If you want to place it in a different bank, set SOUNDSYSTEM_CODE_BANK
+; to the bank id.
+;
+; Notes:
+; - The value you specify in SOUNDSYSTEM_CODE_BANK must be legal when all
+; other definitions you have specified in this file are taken into
+; consideration.
+; - It is up to you to change ROM banks before and after making any
+; SoundSystem call. SoundSystem will not do this for you.
+; - If SOUNDSYSTEM_CODE_BANK is not defined, the code will reside in bank 0.
+; - Neither CPU, code size, nor RAM usage is affected by this setting.
+
+;-------------------------------
+;SOUNDSYSTEM_WRAM_BANK	EQU	1
+
+; By default, SoundSystem will place its WRAM variables in WRAM bank 0.
+; If you want to place it in a different bank, set SOUNDSYSTEM_WRAM_BANK
+; to the bank id.
+;
+; Notes:
+; - The value you specify in SOUNDSYSTEM_WRAM_BANK must be legal when all
+; other definitions you have specified in this file are taken into
+; consideration.
+; - You do not need to change WRAM banks before making any SoundSystem call,
+; however, it is up to you to change WRAM banks after making any SoundSystem
+; call. SoundSystem will not do this for you.
+; - If SOUNDSYSTEM_WRAM_BANK is not defined, the variables will reside in
+; bank 0.
+; - CPU and code size is slightly less if SOUNDSYSTEM_WRAM_BANK is 0.
+
+;-------------------------------
+;SOUNDSYSTEM_ENABLE_SFX	EQU	0
+
+; By default, SoundSystem assumes it is part of a game (instead of a demo or
+; some other music-only project.) Therefore, sound effects are enabled by
+; default. If you only need to play music, setting SOUNDSYSTEM_ENABLE_SFX to
+; 0 will remove that code and not try to process any sound effects.
+;
+; Notes:
+; - If SOUNDSYSTEM_ENABLE_SFX set to 0, all SFX_ features (see
+; SoundSystem.inc) will not be available.
+; - If SOUNDSYSTEM_ENABLE_SFX is not defined, sound effects will get processed.
+; - CPU and code size is slightly less when this is disabled.
+
+;-------------------------------
+;SOUNDSYSTEM_ENABLE_VUM	EQU	1
+
+; SoundSystem can provide data that can drive a VU-meter type display. This is
+; disabled by default, but access to that data is provided by setting
+; SOUNDSYSTEM_ENABLE_VUM to 1.
+;
+; If enabled, the data (value $0-$F) is in 4 1-byte variables, one per channel:
+;     'wVUMeter1' = channel 1
+;     'wVUMeter2' = channel 2
+;     'wVUMeter3' = channel 3
+;     'wVUMeter4' = channel 4
+;
+; They are contiguous in memory so you can access them as an array if needed.
+;
+; Notes:
+; - If SOUNDSYSTEM_ENABLE_VUM set to 0 or not defined, the 'wVUMeterN' variables
+; will not be available.
+; - CPU, code size, and RAM usage is slightly more if this is enabled.

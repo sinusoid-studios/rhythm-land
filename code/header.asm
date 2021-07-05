@@ -34,13 +34,24 @@ Initialize::
     
     ; Reset variables
     ; a = 0
+    ldh     [hVBlankFlag], a
     ldh     [hNewKeys], a
     dec     a       ; a = $FF = all pressed
     ; Make all keys pressed so hNewKeys is correct
     ldh     [hPressedKeys], a
     
+    ; Initialize SoundSystem
+    call    SoundSystem_Init
+    
     ; Set up interrupts
-    ld      a, IEF_VBLANK
+    
+    ; Update sound at every LY 0
+    xor     a, a
+    ldh     [rLYC], a
+    ld      a, STATF_LYC
+    ldh     [rSTAT], a
+    
+    ld      a, IEF_VBLANK | IEF_STAT
     ldh     [rIE], a
     ; Clear any pending interrupts
     xor     a, a
@@ -53,7 +64,6 @@ Initialize::
     ldh     [rLCDC], a
 
 Lockup:
-    ; Wait for VBlank
     halt
     jr      Lockup
 
