@@ -12,8 +12,9 @@ xGameTest::
     call    Music_Play
     
     ; Set up game data
-    ld      b, BANK(xGameTestCueTable)
+    lb      bc, BANK(xGameTestHitTable), BANK(xGameTestCueTable)
     ld      de, xGameTestCueTable
+    ld      hl, xGameTestHitTable
     call    EngineInit
 
 .loop
@@ -27,11 +28,17 @@ xGameTest::
     
     call    EngineUpdate
     
+    ldh     a, [hLastHit]
+    and     a, a
+    jr      nz, .loop
+    
+    ld      b, SFX_BEEP
+    call    SFX_Play
     jr      .loop
 
 SECTION "Test Cue", ROMX
 
 xCueTest::
     ; Play a placeholder sound effect
-    ld      b, SFX_TEST
+    ld      b, SFX_TEST_CUE
     jp      SFX_Play
