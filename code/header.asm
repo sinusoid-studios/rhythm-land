@@ -40,16 +40,15 @@ Initialize::
     ; Make all keys pressed so hNewKeys is correct
     ldh     [hPressedKeys], a
     
+    ; Set current bank number
+    ld      a, 1
+    ldh     [hCurrentBank], a
+    
     ; Initialize SoundSystem
     call    SoundSystem_Init
     ld      bc, BANK(SFX_Table)
     ld      de, SFX_Table
     call    SFX_Prepare
-    
-    ; Set bank prior to enabling interrupts
-    ld      a, BANK(xGameTest)
-    ld      [rROMB0], a
-    ldh     [hCurrentBank], a
     
     ; Set up interrupts
     
@@ -68,12 +67,11 @@ Initialize::
     ei
     
     ; Turn on the LCD
-    ld      a, LCDCF_ON
+    ld      a, LCDCF_ON | LCDCF_BG8800 | LCDCF_BG9800 | LCDCF_BGON
     ldh     [rLCDC], a
     
-    ; Jump immediately to the test game
-    ; TODO: Make a game select screen
-    jp      xGameTest
+    ; Jump to the game select screen
+    jp      GameSelect
 
 SECTION "Stack", WRAM0
 
