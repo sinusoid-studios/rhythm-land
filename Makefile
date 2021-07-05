@@ -19,9 +19,13 @@ LDFLAGS  = -p $(PADVALUE)
 FIXFLAGS = -v -p $(PADVALUE) -i "$(MFRCODE)" -k "$(LICENSEE)" -l $(OLDLIC) -m $(MBC) -n $(VERSION) -r $(SRAMSIZE) -t "$(TITLE)" -j -c
 
 SRCS := $(wildcard code/*.asm) $(wildcard code/**/*.asm) $(wildcard data/*.asm) $(wildcard data/**/*.asm)
+ST_SRCS := code/SoundSystem.asm $(wildcard data/music/*.asm) data/sfx.asm soundtest/soundtest.asm
 
 game: bin/rhythm-land.gbc
 .PHONY: game
+
+soundtest: bin/soundtest.gb
+.PHONY: soundtest
 
 clean:
 	rm -rf bin
@@ -34,6 +38,12 @@ rebuild:
 	$(MAKE) clean
 	$(MAKE) game
 .PHONY: rebuild
+
+# Build the soundtest ROM
+bin/soundtest.gb: $(patsubst %.asm,obj/%.o,$(ST_SRCS))
+	@mkdir -p $(@D)
+	rgblink $(LDFLAGS) -o $@ $^
+	rgbfix -v $@
 
 # Build the game, along with map and symbol files
 bin/%.gbc bin/%.sym bin/%.map: $(GFX) $(patsubst %.asm,obj/%.o,$(SRCS))
@@ -62,5 +72,5 @@ res/%.tilemap: gfx/%.png res/%.2bpp res/%.pal.json
 
 # Don't include dependencies if cleaning
 ifneq ($(MAKECMDGOALS),clean)
--include $(patsubst %.asm,dep/%.mk,$(SRCS))
+-include $(patsubst %.asm,dep/%.mk,$(SRCS) $(ST_SRCS))
 endif
