@@ -1,6 +1,6 @@
-; An entry to a game's cue table, in ticks using a defined pattern speed
+; An entry to a game's cue table, in ticks using a defined music speed
 MACRO cue
-    fcue \1 * PATTERN_SPEED, \2
+    fcue \1 * MUSIC_SPEED, \2
 ENDM
 
 ; An entry to a game's cue table, in frames

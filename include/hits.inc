@@ -1,6 +1,6 @@
-; An entry to a game's hit table, in ticks using a defined pattern speed
+; An entry to a game's hit table, in ticks using a defined music speed
 MACRO hit
-    fhit \1 * PATTERN_SPEED
+    fhit \1 * MUSIC_SPEED
 ENDM
 
 ; An entry to a game's hit table, in frames
