@@ -61,6 +61,7 @@ EngineInit::
     ; Set hit table pointer
     ld      a, b
     ldh     [hHitTableBank], a
+    ldh     [hCurrentBank], a
     ld      [rROMB0], a
     ld      a, l
     ldh     [hHitTablePointer.low], a
@@ -78,6 +79,7 @@ EngineInit::
     ld      [hl], d
     
     ; Set first cue
+    ldh     [hCurrentBank], a
     ld      [rROMB0], a     ; a = [hCueTableBank]
     ld      l, e
     ld      h, d
@@ -111,6 +113,7 @@ EngineUpdate::
     
     ; Countdown hit 0, call the cue subroutine
     ; Get the current position in the cue table
+    ldh     [hCurrentBank], a
     ld      [rROMB0], a     ; a = [hCueTableBank]
     ld      hl, hCueTablePointer
     ld      a, [hli]
@@ -134,6 +137,7 @@ FireCue:
     
     ; Call the subroutine
     ld      a, [hli]
+    ldh     [hCurrentBank], a
     ld      [rROMB0], a
     ld      a, [hli]
     ld      h, [hl]
@@ -142,6 +146,7 @@ FireCue:
     
     ; Move to next cue
     ldh     a, [hCueTableBank]
+    ldh     [hCurrentBank], a
     ld      [rROMB0], a
     ld      hl, hCueTablePointer
     ld      a, [hli]
@@ -180,6 +185,7 @@ SetNextCue:
     
     ; Fire this cue
     ldh     a, [hCueTableBank]
+    ldh     [hCurrentBank], a
     ld      [rROMB0], a
     jr      FireCue
 
@@ -193,6 +199,7 @@ SetNextCue:
 SetNextHit:
     ; Get the current position in the hit table
     ldh     a, [hHitTableBank]
+    ldh     [hCurrentBank], a
     ld      [rROMB0], a
     ld      hl, hHitTablePointer
     ld      a, [hli]

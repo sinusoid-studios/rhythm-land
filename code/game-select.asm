@@ -91,8 +91,8 @@ GameSelect::
     
     ; Jump to game
     ld      a, [hli]
-    ld      [rROMB0], a
     ldh     [hCurrentBank], a
+    ld      [rROMB0], a
     ld      a, [hli]
     ld      h, [hl]
     ld      l, a
