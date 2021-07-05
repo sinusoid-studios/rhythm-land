@@ -116,7 +116,11 @@ EngineUpdate::
     ld      a, [hli]
     ld      h, [hl]
     ld      l, a
-    
+    ; Fall-through
+
+; Call the next cue's subroutine
+; @param    hl  Pointer to current position in cue table (hCueTablePointer)
+FireCue:
     ; Get a pointer to the cue's subroutine
     ld      a, [hl]     ; a = Cue ID
     add     a, a        ; a * 2 (Pointer)
@@ -154,6 +158,7 @@ SetNextCue:
     jr      z, .cuesEnd
     
     dec     a       ; Undo inc
+    jr      z, .zeroCue
     ; Set countdown
     ld      [hCueCountdown], a
     ; Save new pointer
@@ -162,6 +167,19 @@ SetNextCue:
     ld      a, h
     ldh     [hCueTablePointer.high], a
     ret
+
+.zeroCue
+    ; Fire this cue immediately
+    ; Save new pointer
+    ld      a, l
+    ldh     [hCueTablePointer.low], a
+    ld      a, h
+    ldh     [hCueTablePointer.high], a
+    
+    ; Fire this cue
+    ldh     a, [hCueTableBank]
+    ld      [rROMB0], a
+    jr      FireCue
 
 .cuesEnd
     ; No more cues
