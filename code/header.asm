@@ -42,6 +42,9 @@ Initialize::
     
     ; Initialize SoundSystem
     call    SoundSystem_Init
+    ld      bc, BANK(SFX_Table)
+    ld      de, SFX_Table
+    call    SFX_Prepare
     
     ; Set bank prior to enabling interrupts
     ld      a, BANK(xGameTest)

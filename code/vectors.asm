@@ -1,5 +1,10 @@
 INCLUDE "defines.inc"
 
+SECTION "RST $00", ROM0[$0000]
+
+JP_HL::
+    jp      hl
+
 SECTION "VBlank Flag", HRAM
 
 ; Non-zero after a VBlank interrupt has occurred
