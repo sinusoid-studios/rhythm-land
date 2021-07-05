@@ -98,9 +98,11 @@ EngineUpdate::
 SetNextCue:
     ; Set countdown to next cue delay
     ld      a, [hli]
-    cp      a, CUES_END
+    ASSERT CUES_END == -1
+    inc     a       ; a = -1
     jr      z, .cuesEnd
     
+    dec     a       ; Undo inc
     ld      [hCueCountdown], a
     ; Save new pointer
     ld      a, l
@@ -112,6 +114,6 @@ SetNextCue:
 .cuesEnd
     ; No more cues
     ; Set cue table bank to 0 to signal no cue updates
-    xor     a, a
+    ; a = 0
     ldh     [hCueTableBank], a
     ret

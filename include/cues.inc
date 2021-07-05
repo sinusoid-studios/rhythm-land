@@ -5,7 +5,7 @@ ENDM
 
 ; An entry to a game's cue table, in frames
 MACRO fcue
-    ASSERT LOW(\1) != LOW(-1), "-1 is reserved for the end of the cue table"
+    ASSERT LOW(\1) != LOW(CUES_END), STRFMT("%d is reserved for the end of the cue table", CUES_END)
     DB \1, \2
 ENDM
 
