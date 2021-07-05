@@ -6,21 +6,21 @@ DEF MUSIC_SPEED EQU MUSIC_FILE_SELECT_SPEED
 SECTION "Test Game Hit Table", ROMX
 
 xGameTestHitTable::
-    hit 8
-    hit 8
-    hit 8
-    hit 8
-    hit 8
-    hit 8
-    hit 8
-    hit 8
-    hit 8
-    hit 8
-    hit 8
-    hit 8
-    hit 8
-    hit 8
-    hit 8
-    hit 8
-    hit 8
+    hit 8, PADF_A
+    hit 8, PADF_A
+    hit 8, PADF_A
+    hit 8, PADF_A
+    hit 8, PADF_A
+    hit 8, PADF_A
+    hit 8, PADF_A
+    hit 8, PADF_A
+    hit 8, PADF_A
+    hit 8, PADF_A
+    hit 8, PADF_A
+    hit 8, PADF_A
+    hit 8, PADF_A
+    hit 8, PADF_A
+    hit 8, PADF_A
+    hit 8, PADF_A
+    hit 8, PADF_A
     hits_end

@@ -24,6 +24,12 @@ hHitTablePointer:
     DS 1
 .high
     DS 1
+; Keys that the player must press for the next hit
+hNextHitKeys:
+    DS 1
+; Keys that the player must press for the last hit
+hLastHitKeys:
+    DS 1
 ; Number of frame until next hit
 hNextHit::
     DS 1
@@ -184,6 +190,11 @@ SetNextHit:
     ldh     [hNextHit], a
     xor     a, a
     ldh     [hLastHit], a
+    ; Set hit keys
+    ldh     a, [hNextHitKeys]
+    ldh     [hLastHitKeys], a
+    ld      a, [hli]
+    ldh     [hNextHitKeys], a
     
     ; Save new pointer
     ld      a, l
