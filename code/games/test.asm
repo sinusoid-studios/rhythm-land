@@ -28,6 +28,34 @@ xGameTest::
     
     call    EngineUpdate
     
+    ld      hl, _SCRN0
+    ld      de, SCRN_VX_B - (2 * 2 + 1)
+    
+    ldh     a, [hLastHit]
+    call    DrawHex
+    inc     l
+    ldh     a, [hNextHit]
+    call    DrawHex
+    
+    add     hl, de
+    
+    ldh     a, [hLastHitKeys]
+    call    DrawHex
+    inc     l
+    ldh     a, [hNextHitKeys]
+    call    DrawHex
+    
+    add     hl, de
+    
+    ldh     a, [hHitPerfectCount]
+    call    DrawHex
+    inc     l
+    ldh     a, [hHitOkCount]
+    call    DrawHex
+    inc     l
+    ldh     a, [hHitBadCount]
+    call    DrawHex
+    
     ldh     a, [hLastHit]
     and     a, a
     jr      nz, .loop
@@ -35,6 +63,25 @@ xGameTest::
     ld      b, SFX_BEEP
     call    SFX_Play
     jr      .loop
+
+; @param    a   Value to draw
+; @param    hl  Pointer to destination on map
+DrawHex:
+    ld      b, a
+.waitVRAM
+    ldh     a, [rSTAT]
+    and     a, STATF_BUSY
+    jr      nz, .waitVRAM
+    
+    ld      a, b        ; 1 cycle
+    swap    a           ; 2 cycles
+    and     a, $0F      ; 2 cycles
+    ld      [hli], a    ; 2 cycles
+    ld      a, b        ; 1 cycle
+    and     a, $0F      ; 2 cycles
+    ld      [hli], a    ; 2 cycles
+    ; Total 12 cycles
+    ret
 
 SECTION "Test Cue", ROMX
 

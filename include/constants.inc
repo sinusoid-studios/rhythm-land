@@ -1,4 +1,4 @@
-INCLUDE "constants/main.inc"
+INCLUDE "constants/game.inc"
 INCLUDE "constants/music.inc"
 INCLUDE "constants/sfx.inc"
 INCLUDE "constants/cues.inc"

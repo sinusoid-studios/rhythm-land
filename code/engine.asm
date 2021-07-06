@@ -25,16 +25,26 @@ hHitTablePointer:
 .high
     DS 1
 ; Keys that the player must press for the next hit
-hNextHitKeys:
+hNextHitKeys::
     DS 1
 ; Keys that the player must press for the last hit
-hLastHitKeys:
+hLastHitKeys::
     DS 1
 ; Number of frame until next hit
 hNextHit::
     DS 1
 ; Number of frames since last hit
 hLastHit::
+    DS 1
+
+; Number of Bad hits the player made (not on-time)
+hHitBadCount::
+    DS 1
+; Number of OK hits the player made (somewhat on-time)
+hHitOkCount::
+    DS 1
+; Number of Perfect hits the player made (right on-time)
+hHitPerfectCount::
     DS 1
 
 SECTION "Engine", ROM0
@@ -78,15 +88,70 @@ EngineInit::
     inc     l
     ld      [hl], d
     
+    ; Reset hit rating counts
+    ld      l, LOW(hHitBadCount)
+    xor     a, a
+    ld      [hli], a
+    ASSERT hHitOkCount == hHitBadCount + 1
+    ld      [hli], a
+    ASSERT hHitPerfectCount == hHitOkCount + 1
+    ld      [hli], a
+    
     ; Set first cue
+    ld      a, c
     ldh     [hCurrentBank], a
-    ld      [rROMB0], a     ; a = [hCueTableBank]
+    ld      [rROMB0], a
     ld      l, e
     ld      h, d
     jr      SetNextCue
 
 ; Advance a frame in the cue table
 EngineUpdate::
+    ldh     a, [hNewKeys]
+    and     a, a
+    jr      z, .noHit
+    
+    ; Player pressed keys: Give rating based on how on-time it was
+    ld      b, a    ; Save for checking correctness
+    ld      hl, hLastHit
+    ld      e, LOW(hLastHitKeys)
+    ld      d, h
+    ld      a, [hl]
+    ; Check if the next hit is closer (player is early)
+    ASSERT hNextHit == hLastHit - 1
+    dec     l
+    cp      a, [hl]
+    jr      c, .notEarly
+    ld      a, [hl]
+.notEarly
+    ; Check if the player hit the right keys
+    ld      c, a    ; Save
+    ld      a, [de]
+    cp      a, b    ; b = [hNewKeys]
+    ld      a, c    ; Restore
+    ld      l, LOW(hHitBadCount)
+    ; If the player hit the wrong keys, give them an automatic Bad
+    jr      nz, .gotRating
+    
+    ; Bad
+    cp      a, HIT_OK_WINDOW / 2
+    jr      nc, .gotRating
+    
+    ; OK
+    ASSERT hHitOkCount == hHitBadCount + 1
+    inc     l
+    cp      a, HIT_PERFECT_WINDOW / 2
+    jr      nc, .gotRating
+    
+    ; Perfect
+    ASSERT hHitPerfectCount == hHitOkCount + 1
+    inc     l
+
+.gotRating
+    ; Increment number of this rating of hit
+    inc     [hl]
+
+.noHit
     ; Update hit timing
     ; Last hit moves farther away
     ld      hl, hLastHit
@@ -130,10 +195,8 @@ FireCue:
     add     a, [hl]     ; a * 3 (+Bank)
     add     a, LOW(CueRoutineTable)
     ld      l, a
-    ASSERT HIGH(CueRoutineTable.end - 1) != HIGH(CueRoutineTable)
-    adc     a, HIGH(CueRoutineTable)
-    sub     a, l
-    ld      h, a
+    ASSERT HIGH(CueRoutineTable.end - 1) == HIGH(CueRoutineTable)
+    ld      h, HIGH(CueRoutineTable)
     
     ; Call the subroutine
     ld      a, [hli]
