@@ -85,10 +85,15 @@ STATHandler:
     push    de
     push    hl
     
+    ; Save current bank to restore when finished
+    ldh     a, [hCurrentBank]
+    push    af
+    
     call    SoundSystem_Process
     
     ; Restore bank
-    ldh     a, [hCurrentBank]
+    pop     af
+    ldh     [hCurrentBank], a
     ld      [rROMB0], a
     
     pop     hl

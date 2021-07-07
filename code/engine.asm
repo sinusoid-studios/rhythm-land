@@ -56,6 +56,10 @@ SECTION "Engine", ROM0
 ; @param    de  Pointer to cue table
 ; @param    hl  Pointer to hit table
 EngineInit::
+    ; Save current bank to restore when finished
+    ldh     a, [hCurrentBank]
+    push    af
+    
     push    bc
     push    de
     push    hl
@@ -153,6 +157,11 @@ EngineUpdate::
 
 .noHit
     ; Update hit timing
+    
+    ; Save current bank to restore when finished
+    ldh     a, [hCurrentBank]
+    push    af
+    
     ; Last hit moves farther away
     ld      hl, hLastHit
     inc     [hl]
@@ -170,16 +179,19 @@ EngineUpdate::
 .updateCues
     ldh     a, [hCueTableBank]
     and     a, a    ; Bank number 0 = no cue updates (finished)
-    ret     z
+    jr      z, BankedReturn
     
     ld      hl, hCueCountdown
     dec     [hl]
-    ret     nz      ; Still waiting; nothing to do
+    jr      nz, BankedReturn    ; Still waiting; nothing to do
     
     ; Countdown hit 0, call the cue subroutine
+    ld      b, a        ; a = [hCueTableBank]
+    
     ; Get the current position in the cue table
+    ld      a, b
     ldh     [hCurrentBank], a
-    ld      [rROMB0], a     ; a = [hCueTableBank]
+    ld      [rROMB0], a
     ld      hl, hCueTablePointer
     ld      a, [hli]
     ld      h, [hl]
@@ -236,7 +248,7 @@ SetNextCue:
     ldh     [hCueTablePointer.low], a
     ld      a, h
     ldh     [hCueTablePointer.high], a
-    ret
+    jr      BankedReturn
 
 .zeroCue
     ; Fire this cue immediately
@@ -257,6 +269,13 @@ SetNextCue:
     ; Set cue table bank to 0 to signal no cue updates
     ; a = 0
     ldh     [hCueTableBank], a
+    ; Fall-through
+
+BankedReturn:
+    ; Restore caller's bank
+    pop     af
+    ldh     [hCurrentBank], a
+    ld      [rROMB0], a
     ret
 
 SetNextHit:

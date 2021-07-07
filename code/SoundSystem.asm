@@ -524,6 +524,7 @@ SoundSystem_Process::
 
 	; change the rom bank
 	ld	a,[wSoundFXBank]
+	ldh	[hCurrentBank],a
 	ld	[rROMB0],a
 	IF (SOUNDSYSTEM_LARGE_ROM != 0)
 	ld	a,[wSoundFXBank+1]
@@ -724,6 +725,7 @@ SoundSystem_Process::
 
 	; change the rom bank
 	ld	a,[wMusicSFXInstBank1]
+	ldh	[hCurrentBank],a
 	ld	[rROMB0],a
 	IF (SOUNDSYSTEM_LARGE_ROM != 0)
 	ld	a,[wMusicSFXInstBank1+1]
@@ -751,6 +753,7 @@ SSFP_Inst1UpdateDone:
 
 	; change the rom bank
 	ld	a,[wMusicSFXInstBank2]
+	ldh	[hCurrentBank],a
 	ld	[rROMB0],a
 	IF (SOUNDSYSTEM_LARGE_ROM != 0)
 	ld	a,[wMusicSFXInstBank2+1]
@@ -778,6 +781,7 @@ SSFP_Inst2UpdateDone:
 
 	; change the rom bank
 	ld	a,[wMusicSFXInstBank3]
+	ldh	[hCurrentBank],a
 	ld	[rROMB0],a
 	IF (SOUNDSYSTEM_LARGE_ROM != 0)
 	ld	a,[wMusicSFXInstBank3+1]
@@ -805,6 +809,7 @@ SSFP_Inst3UpdateDone:
 
 	; change the rom bank
 	ld	a,[wMusicSFXInstBank4]
+	ldh	[hCurrentBank],a
 	ld	[rROMB0],a
 	IF (SOUNDSYSTEM_LARGE_ROM != 0)
 	ld	a,[wMusicSFXInstBank4+1]
@@ -914,6 +919,7 @@ SSFP_MusicFX_Done3:	; some handlers return here
 
 	; change the rom bank
 	ld	a,[wMusicCommandBank]
+	ldh	[hCurrentBank],a
 	ld	[rROMB0],a
 	IF (SOUNDSYSTEM_LARGE_ROM != 0)
 	ld	a,[wMusicCommandBank+1]
@@ -990,6 +996,10 @@ SECTION	"SoundSystem_Music_Play",ROMX,BANK[SOUNDSYSTEM_CODE_BANK]
 ENDC
 
 Music_Play::
+	; save current bank to restore when finished
+	ldh	a,[hCurrentBank]
+	push	af
+
 	push	bc
 	call	Music_Pause
 	pop	bc
@@ -1002,6 +1012,7 @@ Music_Play::
 	; change to the rom bank containting the order list
 	ld	a,c
 	ld	[wMusicOrderBank],a
+	ldh	[hCurrentBank],a
 	ld	[rROMB0],a
 	IF (SOUNDSYSTEM_LARGE_ROM != 0)
 	ld	a,b
@@ -1050,6 +1061,10 @@ Music_Play::
 	ld	a,MUSIC_STATE_PLAYING
 	ld	[wMusicPlayState],a
 
+	; restore caller's bank
+	pop	af
+	ldh	[hCurrentBank],a
+	ld	[rROMB0],a
 	ret
 
 
@@ -2087,6 +2102,7 @@ SSFP_MUSIC_CMD_PLAYINST:
 
 	; change the rom bank
 	ld	a,[wMusicInstrumentBank]
+	ldh	[hCurrentBank],a
 	ld	[rROMB0],a
 	IF (SOUNDSYSTEM_LARGE_ROM != 0)
 	ld	a,[wMusicInstrumentBank+1]
@@ -2116,7 +2132,7 @@ SSFP_MUSIC_CMD_PLAYINST:
 	ld	a,[hl]
 	ld	[bc],a
 
-	jr	.channeldone
+	jp	.channeldone
 
 .playchannel2:
 	bit	SFXLOCKB_CHANNEL2,c
@@ -2124,6 +2140,7 @@ SSFP_MUSIC_CMD_PLAYINST:
 
 	; change the rom bank
 	ld	a,[wMusicInstrumentBank]
+	ldh	[hCurrentBank],a
 	ld	[rROMB0],a
 	IF (SOUNDSYSTEM_LARGE_ROM != 0)
 	ld	a,[wMusicInstrumentBank+1]
@@ -2161,6 +2178,7 @@ SSFP_MUSIC_CMD_PLAYINST:
 
 	; change the rom bank
 	ld	a,[wMusicInstrumentBank]
+	ldh	[hCurrentBank],a
 	ld	[rROMB0],a
 	IF (SOUNDSYSTEM_LARGE_ROM != 0)
 	ld	a,[wMusicInstrumentBank+1]
@@ -2198,6 +2216,7 @@ SSFP_MUSIC_CMD_PLAYINST:
 
 	; change the rom bank
 	ld	a,[wMusicInstrumentBank]
+	ldh	[hCurrentBank],a
 	ld	[rROMB0],a
 	IF (SOUNDSYSTEM_LARGE_ROM != 0)
 	ld	a,[wMusicInstrumentBank+1]
@@ -2230,6 +2249,7 @@ SSFP_MUSIC_CMD_PLAYINST:
 .channeldone:
 	; change the rom bank
 	ld	a,[wMusicCommandBank]
+	ldh	[hCurrentBank],a
 	ld	[rROMB0],a
 	IF (SOUNDSYSTEM_LARGE_ROM != 0)
 	ld	a,[wMusicCommandBank+1]
@@ -2334,6 +2354,7 @@ ENDC
 SSFP_MUSIC_CMD_ENDOFPATTERN:
 	; change the rom bank
 	ld	a,[wMusicOrderBank]
+	ldh	[hCurrentBank],a
 	ld	[rROMB0],a
 	IF (SOUNDSYSTEM_LARGE_ROM != 0)
 	ld	a,[wMusicOrderBank+1]
@@ -2358,6 +2379,7 @@ SSFP_MUSIC_CMD_ENDOFPATTERN:
 	; change and update the rom bank
 	ld	a,[hl+]
 	ld	[wMusicCommandBank],a
+	ldh	[hCurrentBank],a
 	ld	[rROMB0],a
 	IF (SOUNDSYSTEM_LARGE_ROM != 0)
 	ld	a,[hl]
