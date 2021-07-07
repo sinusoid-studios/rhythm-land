@@ -28,6 +28,26 @@ xGameTest::
     
     call    EngineUpdate
     
+    ld      hl, _SCRN0 + (SCRN_X_B - 2)
+    ld      a, [wMusicSyncData]
+    call    DrawHex
+    
+    ld      a, [wMusicSyncData]
+    and     a, a
+    jr      z, .noData
+    
+    ld      hl, _SCRN0 + (1 * SCRN_VX_B) + (SCRN_X_B - 2)
+    ld      a, [wMusicSyncData]
+    call    DrawHex
+    
+    ldh     a, [rBGP]
+    cpl
+    ldh     [rBGP], a
+    
+    xor     a, a
+    ld      [wMusicSyncData], a
+    
+.noData
     ld      hl, _SCRN0
     ld      de, SCRN_VX_B - (2 * 2 + 1)
     
