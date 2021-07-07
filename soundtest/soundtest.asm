@@ -98,6 +98,9 @@ WaitVRAMAvailable:	MACRO
 
 SECTION	"Start",ROM0[$150]
 Start:
+	ld	a,BANK(InitializeGB)
+	ldh	[hCurrentBank],a
+
 	call	InitializeGB
 	call	InitializeVariables
 
@@ -733,3 +736,6 @@ wSongID:	DS	1
 wSFXID:		DS	1
 wButtonData:	DS	NUM_BUTTONS	; array to hold button activity
 wPadData:	DS	1	; raw button status bits
+
+SECTION	"Current Bank",HRAM
+hCurrentBank::	DS	1
