@@ -77,7 +77,7 @@ GameSelect::
     jr      nz, .sub16
     
     ld      a, b
-    and     a, PADB_A | PADB_START
+    and     a, PADF_A | PADF_START
     jr      z, .loop
 
     ; Start the selected game
