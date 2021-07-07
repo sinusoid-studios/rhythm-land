@@ -120,6 +120,8 @@ GameSelect::
     call    UpdateGameID
     jr      .loop
 
+SECTION "Game Select Game ID Update", ROM0
+
 ; @param    hl  Pointer to game ID
 ; @param    de  Pointer to destination on map
 UpdateGameID:

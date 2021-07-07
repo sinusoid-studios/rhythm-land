@@ -47,7 +47,7 @@ hHitOkCount::
 hHitPerfectCount::
     DS 1
 
-SECTION "Engine", ROM0
+SECTION "Engine Initialization", ROM0
 
 ; Prepare the engine for a game
 ; NOTE: Call Music_Play before this!!!
@@ -107,7 +107,9 @@ EngineInit::
     ld      [rROMB0], a
     ld      l, e
     ld      h, d
-    jr      SetNextCue
+    jp      SetNextCue
+
+SECTION "Engine Update", ROM0
 
 ; Advance a frame in the cue table
 EngineUpdate::
@@ -277,6 +279,8 @@ BankedReturn:
     ldh     [hCurrentBank], a
     ld      [rROMB0], a
     ret
+
+SECTION "Engine Next Hit Preparation", ROM0
 
 SetNextHit:
     ; Get the current position in the hit table
