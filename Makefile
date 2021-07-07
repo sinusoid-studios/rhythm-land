@@ -6,6 +6,7 @@ PADVALUE := 0xFF
 VERSION := 0
 MFRCODE := SNSD
 TITLE := RHYTHM LAND
+soundtest: TITLE := SOUNDTEST
 LICENSEE := HB
 OLDLIC := 0x33
 MBC := MBC5
@@ -43,7 +44,7 @@ rebuild:
 bin/soundtest.gb: $(patsubst %.asm,obj/%.o,$(ST_SRCS))
 	@mkdir -p $(@D)
 	rgblink $(LDFLAGS) -o $@ $^
-	rgbfix -v $@
+	rgbfix $(FIXFLAGS) $@
 
 # Build the game, along with map and symbol files
 bin/%.gbc bin/%.sym bin/%.map: $(GFX) $(patsubst %.asm,obj/%.o,$(SRCS))

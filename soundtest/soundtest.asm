@@ -70,20 +70,7 @@ ROMHeader::
 	nop
 	jp	Start
 
-	NINTENDO_LOGO
-	DB	"SOUNDSYSTEM"	; title
-	DB	"DEMO"	; product code
-	DB	CART_COMPATIBLE_DMG
-	DW	$00	; license code
-	DB	CART_INDICATOR_GB
-	DB	CART_ROM_MBC5
-	DB	CART_ROM_32KB
-	DB	CART_SRAM_NONE
-	DB	CART_DEST_NON_JAPANESE
-	DB	$33	; licensee code
-	DB	$00	; mask ROM version
-	DB	$00	; complement check
-	DW	$00	; cartridge checksum
+	DS	$0150 - @, 0
 
 
 ;==============================================================
