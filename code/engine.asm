@@ -60,18 +60,6 @@ EngineInit::
     ldh     a, [hCurrentBank]
     push    af
     
-    push    bc
-    push    de
-    push    hl
-    ; Sync to the music
-    ; Call 1: PLAYINST command
-    call    SoundSystem_Process
-    ; Call 2: Instrument actually updated
-    call    SoundSystem_Process
-    pop     hl
-    pop     de
-    pop     bc
-    
     ; Set hit table pointer
     ld      a, b
     ldh     [hHitTableBank], a
