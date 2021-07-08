@@ -112,6 +112,8 @@ EngineUpdate::
     cp      a, [hl]
     jr      c, .notEarly
     ld      a, [hl]
+    ASSERT hNextHitKeys == hLastHitKeys - 1
+    dec     e
 .notEarly
     ; Check if the player pressed the hit keys
     ld      c, a    ; Save
