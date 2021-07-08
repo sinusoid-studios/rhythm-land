@@ -116,13 +116,14 @@ EngineUpdate::
     dec     e
 .notEarly
     ; Check if the player pressed the hit keys
-    ld      c, a    ; Save
+    ld      c, a    ; Save on-timeness
     ld      a, [de]
     and     a, b    ; b = [hNewKeys]
     ; The player hit other keys; ignore
     jr      z, .noHit
     
-    ld      a, c    ; Restore
+    ld      b, a    ; Save pressed hit keys for rating count
+    ld      a, c    ; Restore on-timeness
     ; Miss
     cp      a, HIT_OK_WINDOW / 2
     jr      nc, .noHit
@@ -137,10 +138,10 @@ EngineUpdate::
     inc     l
 
 .gotRating
-    ; Increment number of this rating of hit for each pressed key
+    ; Increment number of this rating of hit for each pressed hit key
     inc     [hl]
 .next
-    srl     b       ; b = [hNewKeys]
+    srl     b       ; b = pressed hit keys
     jr      z, .noHit
     jr      nc, .next
     jr      .gotRating
