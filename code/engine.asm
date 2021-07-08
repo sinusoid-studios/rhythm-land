@@ -142,8 +142,13 @@ EngineUpdate::
     inc     l
 
 .gotRating
-    ; Increment number of this rating of hit
+    ; Increment number of this rating of hit for each pressed key
     inc     [hl]
+.next
+    srl     b       ; b = [hNewKeys]
+    jr      z, .noHit
+    jr      nc, .next
+    jr      .gotRating
 
 .noHit
     ; Update hit timing
