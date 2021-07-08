@@ -118,15 +118,15 @@ EngineUpdate::
     jr      c, .notEarly
     ld      a, [hl]
 .notEarly
-    ; Check if the player hit the right keys
+    ; Check if the player pressed the hit keys
     ld      c, a    ; Save
     ld      a, [de]
-    cp      a, b    ; b = [hNewKeys]
-    ld      a, c    ; Restore
-    ld      l, LOW(hHitBadCount)
-    ; If the player hit the wrong keys, give them an automatic Bad
-    jr      nz, .gotRating
+    and     a, b    ; b = [hNewKeys]
+    ; The player hit other keys; ignore
+    jr      z, .noHit
     
+    ld      l, LOW(hHitBadCount)
+    ld      a, c    ; Restore
     ; Bad
     cp      a, HIT_OK_WINDOW / 2
     jr      nc, .gotRating
