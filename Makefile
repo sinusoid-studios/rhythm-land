@@ -17,7 +17,8 @@ WARNINGS := all extra
 
 ASFLAGS  = -h $(addprefix -i ,$(INCDIRS)) -p $(PADVALUE) $(addprefix -W,$(WARNINGS))
 LDFLAGS  = -p $(PADVALUE)
-FIXFLAGS = -v -p $(PADVALUE) -i "$(MFRCODE)" -k "$(LICENSEE)" -l $(OLDLIC) -m $(MBC) -n $(VERSION) -r $(SRAMSIZE) -t "$(TITLE)" -j -c
+FIXFLAGS = -v -p $(PADVALUE) -i "$(MFRCODE)" -k "$(LICENSEE)" -l $(OLDLIC) -m $(MBC) -n $(VERSION) -r $(SRAMSIZE) -t "$(TITLE)" -j
+game: FIXFLAGS += -c
 
 SRCS := $(wildcard code/*.asm) $(wildcard code/**/*.asm) $(wildcard data/*.asm) $(wildcard data/**/*.asm)
 ST_SRCS := code/SoundSystem.asm $(wildcard data/music/*.asm) data/sfx.asm soundtest/soundtest.asm
