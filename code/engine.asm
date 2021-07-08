@@ -37,6 +37,9 @@ hNextHit::
 hLastHit::
     DS 1
 
+; Number of Bad hits the player made (not on-time)
+hHitBadCount::
+    DS 1
 ; Number of OK hits the player made (somewhat on-time)
 hHitOkCount::
     DS 1
@@ -87,8 +90,10 @@ EngineInit::
     ld      [hl], d
     
     ; Reset hit rating counts
-    ld      l, LOW(hHitOkCount)
+    ld      l, LOW(hHitBadCount)
     xor     a, a
+    ld      [hli], a
+    ASSERT hHitOkCount == hHitBadCount + 1
     ld      [hli], a
     ASSERT hHitPerfectCount == hHitOkCount + 1
     ld      [hli], a
@@ -137,12 +142,9 @@ EngineUpdate::
     inc     a       ; This hit is the next hit
     
 .notEarly
-    ; Check if this hit was already rated (disallow making it again)
-    ld      l, LOW(hLastRatedHitNumber)
-    cp      a, [hl]
-    jr      z, .noHit
-    
-    ld      l, a    ; Save hit number
+    ; Save hit number
+    ld      l, a
+    ldh     [hScratch], a
     
     ; Check if the player pressed the hit keys
     ld      a, [de]
@@ -151,15 +153,25 @@ EngineUpdate::
     jr      z, .noHit
     
     ld      b, a    ; Save pressed hit keys for rating count
+    
+    ; Check if this hit was already rated (disallow making it again)
+    ldh     a, [hLastRatedHitNumber]
+    cp      a, l    ; l = this hit's number
+    ; Hit was made again, count it as Bad (negatively affect overall
+    ; rating)
+    ld      l, LOW(hHitBadCount)
+    jr      z, .countLoop
+    
     ld      a, c    ; Restore on-timeness
-    ; Miss
+    ; Bad
     cp      a, HIT_OK_WINDOW / 2
-    jr      nc, .noHit
+    jr      nc, .countLoop
     
     ; OK
     cp      a, HIT_PERFECT_WINDOW / 2
-    ld      a, l    ; Restore hit number
-    ld      hl, hHitOkCount
+    ldh     a, [hScratch]   ; Restore hit number
+    ASSERT hHitOkCount == hHitBadCount + 1
+    inc     l       ; Doesn't affect carry
     jr      nc, .gotRating
     
     ; Perfect
@@ -167,6 +179,7 @@ EngineUpdate::
     inc     l
 
 .gotRating
+    ; Bad hits don't go here; give the player a chance to do better
     ldh     [hLastRatedHitNumber], a
 .countLoop
     ; Increment number of this rating of hit for each pressed hit key

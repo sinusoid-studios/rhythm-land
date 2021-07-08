@@ -95,3 +95,7 @@ hNewKeys::
 ; to restore
 hCurrentBank::
     DS 1
+
+; Temporary variable for whatever
+hScratch::
+    DS 1
