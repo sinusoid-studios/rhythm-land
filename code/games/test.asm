@@ -76,7 +76,10 @@ xGameTest::
     ldh     a, [hHitBadCount]
     call    DrawHex
     
-    ldh     a, [hLastHit]
+    ldh     a, [hLastHit.low]
+    and     a, a
+    jr      nz, .loop
+    ldh     a, [hLastHit.high]
     and     a, a
     jr      nz, .loop
     

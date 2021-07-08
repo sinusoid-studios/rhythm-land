@@ -13,6 +13,9 @@ hCueTablePointer:
     DS 1
 ; Number of frames until next cue
 hCueCountdown:
+.low
+    DS 1
+.high
     DS 1
 
 ; Bank number of current game's hit table
@@ -32,9 +35,15 @@ hLastHitKeys::
     DS 1
 ; Number of frames until the next hit
 hNextHit::
+.low::
+    DS 1
+.high::
     DS 1
 ; Number of frames since the last hit
 hLastHit::
+.low::
+    DS 1
+.high::
     DS 1
 
 ; Number of Bad hits the player made (not on-time)
@@ -122,14 +131,29 @@ EngineUpdate::
     
     ; Player pressed keys: Give rating based on how on-time it was
     ld      b, a    ; Save for checking correctness
-    ld      hl, hLastHit
+    ld      hl, hLastHit.high
     ld      e, LOW(hLastHitKeys)
     ld      d, h
     
+    ; If the high byte of counter is non-zero, just count it as 2 Bads
+    ld      b, %11  ; 2 bits set -> increment by 2
+    ld      a, [hli]
+    and     a, a
+    ASSERT hHitBadCount == hLastHit.high + 1
+    jr      z, .notReallyBad
+    ld      l, LOW(hNextHit.high)
+    ld      a, [hl]
+    ld      l, LOW(hHitBadCount)
+    ; High byte is always 1 higher than it really is (for using `nz` with `dec`)
+    dec     a
+    jr      nz, .countLoop
+    
+.notReallyBad
+    ; The player is actually competent -> check how much so
+    ld      l, LOW(hLastHit.low)
     ld      a, [hl]
     ; Check if the next hit is closer (player is early)
-    ASSERT hNextHit == hLastHit - 1
-    dec     l
+    ld      l, LOW(hNextHit.low)
     cp      a, [hl]
     ld      c, a    ; Save on-timeness
     ldh     a, [hNextHitNumber]
@@ -200,15 +224,21 @@ EngineUpdate::
     ; Last hit moves farther away
     ld      hl, hLastHit
     inc     [hl]
+    jr      nz, :+
+    inc     l
+    inc     [hl]
+:
     
     ldh     a, [hHitTableBank]
     and     a, a    ; Bank number 0 = no more hits (finished)
     jr      z, .updateCues
     
-    ASSERT hNextHit == hLastHit - 1
-    dec     l
     ; Next hit comes closer
-    dec     [hl]    ; hl = hNextHit
+    ld      l, LOW(hNextHit)
+    dec     [hl]
+    jr      nz, .updateCues
+    inc     l
+    dec     [hl]
     call    z, SetNextHit
 
 .updateCues
@@ -219,12 +249,13 @@ EngineUpdate::
     ld      hl, hCueCountdown
     dec     [hl]
     jr      nz, BankedReturn    ; Still waiting; nothing to do
+    inc     l
+    dec     [hl]
+    jr      nz, BankedReturn
     
     ; Countdown hit 0, call the cue subroutine
-    ld      b, a        ; a = [hCueTableBank]
-    
     ; Get the current position in the cue table
-    ld      a, b
+    ; a = [hCueTableBank]
     ldh     [hCurrentBank], a
     ld      [rROMB0], a
     ld      hl, hCueTablePointer
@@ -275,9 +306,12 @@ SetNextCue:
     jr      z, .cuesEnd
     
     dec     a       ; Undo inc
-    jr      z, .zeroCue
     ; Set countdown
-    ld      [hCueCountdown], a
+    ldh     [hCueCountdown.low], a
+    ld      a, [hli]
+    jr      z, .zeroCue
+.notZeroCue
+    ldh     [hCueCountdown.high], a
     ; Save new pointer
     ld      a, l
     ldh     [hCueTablePointer.low], a
@@ -286,6 +320,10 @@ SetNextCue:
     jr      BankedReturn
 
 .zeroCue
+    ; Both low and high bytes are 0
+    and     a, a
+    jr      nz, .notZeroCue
+    
     ; Fire this cue immediately
     ; Save new pointer
     ld      a, l
@@ -337,9 +375,9 @@ SetNextHit:
     
     dec     a       ; Undo inc
     ; Set hit timing
-    ldh     [hNextHit], a
-    xor     a, a
-    ldh     [hLastHit], a
+    ldh     [hNextHit.low], a
+    ld      a, [hli]
+    ldh     [hNextHit.high], a
     ; Set hit keys
     ldh     a, [hNextHitKeys]
     ldh     [hLastHitKeys], a
@@ -351,6 +389,10 @@ SetNextHit:
     ldh     [hHitTablePointer.low], a
     ld      a, h
     ldh     [hHitTablePointer.high], a
+.finished
+    xor     a, a
+    ldh     [hLastHit.low], a
+    ldh     [hLastHit.high], a
     ret
 
 .hitsEnd
@@ -358,4 +400,4 @@ SetNextHit:
     ; Set hit table bank to 0 to signal no hit updates
     ; a = 0
     ldh     [hHitTableBank], a
-    ret
+    jr      .finished
