@@ -1,2 +1,3 @@
 ; Music speed for cues and hits
 DEF MUSIC_FILE_SELECT_SPEED EQU 7
+DEF MUSIC_SKATER_DUDE_SPEED EQU 8
