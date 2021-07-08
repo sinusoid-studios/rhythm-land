@@ -3,10 +3,13 @@
 ; Music Patterns
 
 SECTION "File Select Theme Pattern 0", ROMX
+
 PATTERN_FileSelect0:
     DB $0A
     DB $07, $01, $02, $08, $06, $01, $0E, $01, $07, $08, $06, $01, $02, $13, $0B, $02, $00, $00, $06, $07
+
 SECTION "File Select Theme Pattern 1", ROMX
+
 PATTERN_FileSelect1:
     DB $0A
     DB $07, $0C, $06, $01, $01, $23, $05, $02, $0F, $0C, $01, $0E, $08, $01, $26, $05, $02, $0F, $0B, $02, $01, $0B, $06, $01, $0C, $01, $23, $05, $0B, $02, $01, $0B
@@ -23,13 +26,16 @@ PATTERN_FileSelect1:
     DB $06, $01, $01, $26, $05, $02, $0F, $0B, $02, $01, $0B, $01, $0B, $08, $0C, $06, $01, $01, $23, $05, $02, $13, $0C, $01, $22, $05, $0C, $06, $01, $01, $21, $05
     DB $02, $0F, $0C, $01, $0A, $08, $01, $1F, $05, $0C, $06, $01, $02, $01, $02, $0F, $0C, $01, $1A, $05, $0C, $01, $09, $08, $06, $01, $02, $0F, $0C, $02, $0F, $0C
     DB $01, $07, $08, $06, $01, $01, $1F, $05, $02, $13, $0B, $02, $00, $02, $01, $00, $06, $07
+
 SECTION "File Select Theme End Pattern", ROMX
+
 PATTERN_FileSelectLAST:
     DB $08, $F8, $FF, $07
 
 ; Music Pattern Order Table
 
 SECTION "File Select Theme Pattern Table", ROMX
+
 Music_FileSelect::
     DW PATTERN_FileSelect0, BANK(PATTERN_FileSelect0)
     DW PATTERN_FileSelect1, BANK(PATTERN_FileSelect1)
