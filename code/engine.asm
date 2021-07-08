@@ -37,9 +37,6 @@ hNextHit::
 hLastHit::
     DS 1
 
-; Number of Bad hits the player made (not on-time)
-hHitBadCount::
-    DS 1
 ; Number of OK hits the player made (somewhat on-time)
 hHitOkCount::
     DS 1
@@ -81,10 +78,8 @@ EngineInit::
     ld      [hl], d
     
     ; Reset hit rating counts
-    ld      l, LOW(hHitBadCount)
+    ld      l, LOW(hHitOkCount)
     xor     a, a
-    ld      [hli], a
-    ASSERT hHitOkCount == hHitBadCount + 1
     ld      [hli], a
     ASSERT hHitPerfectCount == hHitOkCount + 1
     ld      [hli], a
@@ -125,15 +120,13 @@ EngineUpdate::
     ; The player hit other keys; ignore
     jr      z, .noHit
     
-    ld      l, LOW(hHitBadCount)
     ld      a, c    ; Restore
-    ; Bad
+    ; Miss
     cp      a, HIT_OK_WINDOW / 2
-    jr      nc, .gotRating
+    jr      nc, .noHit
     
     ; OK
-    ASSERT hHitOkCount == hHitBadCount + 1
-    inc     l
+    ld      l, LOW(hHitOkCount)
     cp      a, HIT_PERFECT_WINDOW / 2
     jr      nc, .gotRating
     

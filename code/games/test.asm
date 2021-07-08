@@ -72,9 +72,6 @@ xGameTest::
     inc     l
     ldh     a, [hHitOkCount]
     call    DrawHex
-    inc     l
-    ldh     a, [hHitBadCount]
-    call    DrawHex
     
     ldh     a, [hLastHit]
     and     a, a
