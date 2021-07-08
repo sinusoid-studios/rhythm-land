@@ -570,7 +570,10 @@ BtnUpPressed:
 	ld	hl,wSFXID
 	ld	a,[hl]
 	inc	a
-	and	NUM_SFX-1
+	cp	NUM_SFX
+	jr	nz,.store
+	xor	a
+.store
 	ld	[hl],a
 	ret
 
@@ -578,7 +581,10 @@ BtnDownPressed:
 	ld	hl,wSFXID
 	ld	a,[hl]
 	dec	a
-	and	NUM_SFX-1
+	cp	-1
+	jr	nz,.store
+	ld	a,NUM_SFX-1
+.store
 	ld	[hl],a
 	ret
 
