@@ -30,18 +30,27 @@ hNextHitKeys::
 ; Keys that the player must press for the last hit
 hLastHitKeys::
     DS 1
-; Number of frame until next hit
+; Number of frames until the next hit
 hNextHit::
     DS 1
-; Number of frames since last hit
+; Number of frames since the last hit
 hLastHit::
     DS 1
 
 ; Number of OK hits the player made (somewhat on-time)
 hHitOkCount::
     DS 1
-; Number of Perfect hits the player made (right on-time)
+; Number of Perfect hits the player made (right on time)
 hHitPerfectCount::
+    DS 1
+
+; Index of the next hit, used for disallowing making a hit multiple
+; times
+hNextHitNumber:
+    DS 1
+; Index of the last hit the player made that wasn't missed, used for
+; disallowing making a hit multiple times
+hLastRatedHitNumber:
     DS 1
 
 SECTION "Engine Initialization", ROM0
@@ -83,6 +92,12 @@ EngineInit::
     ld      [hli], a
     ASSERT hHitPerfectCount == hHitOkCount + 1
     ld      [hli], a
+    ; Reset hit numbers
+    ASSERT hNextHitNumber == hHitPerfectCount + 1
+    ld      [hli], a
+    ASSERT hLastRatedHitNumber == hNextHitNumber + 1
+    dec     a       ; Haven't rated any hits
+    ld      [hli], a
     
     ; Set first cue
     ld      a, c
@@ -105,18 +120,31 @@ EngineUpdate::
     ld      hl, hLastHit
     ld      e, LOW(hLastHitKeys)
     ld      d, h
+    
     ld      a, [hl]
     ; Check if the next hit is closer (player is early)
     ASSERT hNextHit == hLastHit - 1
     dec     l
     cp      a, [hl]
-    jr      c, .notEarly
-    ld      a, [hl]
-    ASSERT hNextHitKeys == hLastHitKeys - 1
-    dec     e
-.notEarly
-    ; Check if the player pressed the hit keys
     ld      c, a    ; Save on-timeness
+    ldh     a, [hNextHitNumber]
+    dec     a       ; This hit is the previous hit (doesn't affect carry)
+    jr      c, .notEarly
+    
+    ld      c, [hl] ; Get on-timeness of next hit
+    ASSERT hNextHitKeys == hLastHitKeys - 1
+    dec     e       ; Use next hit keys instead of last hit keys
+    inc     a       ; This hit is the next hit
+    
+.notEarly
+    ; Check if this hit was already rated (disallow making it again)
+    ld      l, LOW(hLastRatedHitNumber)
+    cp      a, [hl]
+    jr      z, .noHit
+    
+    ld      l, a    ; Save hit number
+    
+    ; Check if the player pressed the hit keys
     ld      a, [de]
     and     a, b    ; b = [hNewKeys]
     ; The player hit other keys; ignore
@@ -129,8 +157,9 @@ EngineUpdate::
     jr      nc, .noHit
     
     ; OK
-    ld      l, LOW(hHitOkCount)
     cp      a, HIT_PERFECT_WINDOW / 2
+    ld      a, l    ; Restore hit number
+    ld      hl, hHitOkCount
     jr      nc, .gotRating
     
     ; Perfect
@@ -138,13 +167,15 @@ EngineUpdate::
     inc     l
 
 .gotRating
+    ldh     [hLastRatedHitNumber], a
+.countLoop
     ; Increment number of this rating of hit for each pressed hit key
     inc     [hl]
 .next
     srl     b       ; b = pressed hit keys
     jr      z, .noHit
     jr      nc, .next
-    jr      .gotRating
+    jr      .countLoop
 
 .noHit
     ; Update hit timing
@@ -272,6 +303,10 @@ BankedReturn:
 SECTION "Engine Next Hit Preparation", ROM0
 
 SetNextHit:
+    ; Move to next hit
+    ld      hl, hNextHitNumber
+    inc     [hl]
+    
     ; Get the current position in the hit table
     ldh     a, [hHitTableBank]
     ldh     [hCurrentBank], a
