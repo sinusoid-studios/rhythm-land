@@ -6,7 +6,7 @@ PADVALUE := 0xFF
 VERSION := 0
 MFRCODE := SNSD
 TITLE := RHYTHM LAND
-soundtest: TITLE := SOUNDTEST
+bin/soundtest.gb: TITLE := SOUNDTEST
 LICENSEE := HB
 OLDLIC := 0x33
 MBC := MBC5
@@ -18,7 +18,7 @@ WARNINGS := all extra
 ASFLAGS  = -h $(addprefix -i ,$(INCDIRS)) -p $(PADVALUE) $(addprefix -W,$(WARNINGS))
 LDFLAGS  = -p $(PADVALUE)
 FIXFLAGS = -v -p $(PADVALUE) -i "$(MFRCODE)" -k "$(LICENSEE)" -l $(OLDLIC) -m $(MBC) -n $(VERSION) -r $(SRAMSIZE) -t "$(TITLE)" -j
-game: FIXFLAGS += -c
+bin/rhythm-land.gbc: FIXFLAGS += -c
 
 SRCS := $(wildcard code/*.asm) $(wildcard code/**/*.asm) $(wildcard data/*.asm) $(wildcard data/**/*.asm)
 ST_SRCS := code/SoundSystem.asm $(wildcard data/music/*.asm) data/sfx.asm soundtest/soundtest.asm
