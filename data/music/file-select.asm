@@ -45,7 +45,7 @@ Music_FileSelect::
 
 SECTION "File Select Theme Instruments", ROMX
 
-INSTFileSelect_CHNLOFF: DB $05, $00, $01, $80, $02 
+INSTFileSelect_CHNLOFF: DB $05, $00, $01, $80, $02
 INSTFileSelect1_CHNL1:
     DB $07, $0A, $40
     DB $05, $80, $01, $80
