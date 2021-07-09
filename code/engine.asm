@@ -171,8 +171,10 @@ EngineUpdate::
     ldh     [hScratch], a
     
     ; Check if the player pressed the hit keys
+    ldh     a, [hNewKeys]
+    ld      b, a
     ld      a, [de]
-    and     a, b    ; b = [hNewKeys]
+    and     a, b
     ; The player hit other keys; ignore
     jr      z, .noHit
     
