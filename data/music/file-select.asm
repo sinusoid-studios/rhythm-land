@@ -67,8 +67,6 @@ INSTFileSelect4_CHNL3:
 
 ; Instrument Table
 
-SECTION "File Select Theme Instrument Table", ROMX
-
 Inst_FileSelect::
     DW INSTFileSelect_CHNLOFF
     DW INSTFileSelect1_CHNL1

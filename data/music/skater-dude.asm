@@ -241,8 +241,6 @@ INSTSkaterDude8_CHNL3:
 
 ; Instrument Table
 
-SECTION "Skater Dude Theme Instrument Table", ROMX
-
 Inst_SkaterDude::
     DW INSTSkaterDude_CHNLOFF
     DW INSTSkaterDude1_CHNL2
