@@ -99,3 +99,10 @@ hCurrentBank::
 ; Temporary variable for whatever
 hScratch::
     DS 1
+
+SECTION UNION "Game Variables", HRAM
+
+; Variables for whatever a game desires to use them for
+; Not used anywhere outside of rhythm games
+hGameVar1::
+    DS 1

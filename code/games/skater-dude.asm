@@ -1,8 +1,17 @@
 INCLUDE "defines.inc"
 
+SECTION UNION "Game Variables", HRAM
+
+; Delay after the game is finished to allow for a late last hit
+hEndDelay:
+    DS 1
+
 SECTION "Skater Dude Game", ROMX
 
 xGameSkaterDude::
+    ld      a, 60 * 2
+    ldh     [hEndDelay], a
+    
     ; Load tiles
     ld      de, xGameSkaterDudeTiles
     ld      hl, $9000
@@ -34,6 +43,16 @@ xGameSkaterDude::
     
     call    EngineUpdate
     
+    ldh     a, [hHitTableBank]
+    and     a, a
+    jr      nz, :+
+    
+    ld      hl, hEndDelay
+    dec     [hl]
+    ; Finished, go to the rating screen
+    jp      z, RatingScreen
+    
+:
     ldh     a, [hNewKeys]
     bit     PADB_A, a
     jr      z, .loop

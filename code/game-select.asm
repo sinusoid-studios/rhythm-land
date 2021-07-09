@@ -1,6 +1,6 @@
 INCLUDE "defines.inc"
 
-SECTION "Game Variables", HRAM
+SECTION "Current Game", HRAM
 
 hCurrentGame::
     DS 1

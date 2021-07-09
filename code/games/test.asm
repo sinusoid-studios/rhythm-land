@@ -1,8 +1,17 @@
 INCLUDE "defines.inc"
 
+SECTION UNION "Game Variables", HRAM
+
+; Delay after the game is finished to allow for a late last hit
+hEndDelay:
+    DS 1
+
 SECTION "Test Game", ROMX
 
 xGameTest::
+    ld      a, 60
+    ldh     [hEndDelay], a
+    
     ; Start music
     ld      bc, BANK(Inst_FileSelect)
     ld      de, Inst_FileSelect
@@ -28,6 +37,16 @@ xGameTest::
     
     call    EngineUpdate
     
+    ldh     a, [hHitTableBank]
+    and     a, a
+    jr      nz, .drawValues
+    
+    ld      hl, hEndDelay
+    dec     [hl]
+    ; Finished, go to the rating screen
+    jp      z, RatingScreen
+    
+.drawValues
     ld      hl, _SCRN0 + (SCRN_X_B - 2)
     ld      a, [wMusicSyncData]
     call    LCDDrawHex
