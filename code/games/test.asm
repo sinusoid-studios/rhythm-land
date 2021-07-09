@@ -30,7 +30,7 @@ xGameTest::
     
     ld      hl, _SCRN0 + (SCRN_X_B - 2)
     ld      a, [wMusicSyncData]
-    call    DrawHex
+    call    LCDDrawHex
     
     ld      a, [wMusicSyncData]
     and     a, a
@@ -38,7 +38,7 @@ xGameTest::
     
     ld      hl, _SCRN0 + (1 * SCRN_VX_B) + (SCRN_X_B - 2)
     ld      a, [wMusicSyncData]
-    call    DrawHex
+    call    LCDDrawHex
     
     ldh     a, [rBGP]
     cpl
@@ -52,29 +52,29 @@ xGameTest::
     ld      de, SCRN_VX_B - (2 * 2 + 1)
     
     ldh     a, [hLastHit]
-    call    DrawHex
+    call    LCDDrawHex
     inc     l
     ldh     a, [hNextHit]
-    call    DrawHex
+    call    LCDDrawHex
     
     add     hl, de
     
     ldh     a, [hLastHitKeys]
-    call    DrawHex
+    call    LCDDrawHex
     inc     l
     ldh     a, [hNextHitKeys]
-    call    DrawHex
+    call    LCDDrawHex
     
     add     hl, de
     
     ldh     a, [hHitPerfectCount]
-    call    DrawHex
+    call    LCDDrawHex
     inc     l
     ldh     a, [hHitOkCount]
-    call    DrawHex
+    call    LCDDrawHex
     inc     l
     ldh     a, [hHitBadCount]
-    call    DrawHex
+    call    LCDDrawHex
     
     ldh     a, [hLastHit.low]
     and     a, a
@@ -86,25 +86,6 @@ xGameTest::
     ld      b, SFX_BEEP
     call    SFX_Play
     jr      .loop
-
-; @param    a   Value to draw
-; @param    hl  Pointer to destination on map
-DrawHex:
-    ld      b, a
-.waitVRAM
-    ldh     a, [rSTAT]
-    and     a, STATF_BUSY
-    jr      nz, .waitVRAM
-    
-    ld      a, b        ; 1 cycle
-    swap    a           ; 2 cycles
-    and     a, $0F      ; 2 cycles
-    ld      [hli], a    ; 2 cycles
-    ld      a, b        ; 1 cycle
-    and     a, $0F      ; 2 cycles
-    ld      [hli], a    ; 2 cycles
-    ; Total 12 cycles
-    ret
 
 SECTION "Test Cue", ROMX
 

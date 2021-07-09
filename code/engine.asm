@@ -19,7 +19,9 @@ hCueCountdown:
     DS 1
 
 ; Bank number of current game's hit table
-hHitTableBank:
+; Also used for telling whether or not there are any more hits left in
+; the game. No more hits = 0
+hHitTableBank::
     DS 1
 ; Pointer to current position in current game's hit table
 hHitTablePointer:
@@ -58,7 +60,7 @@ hHitPerfectCount::
 
 ; Index of the next hit, used for disallowing making a hit multiple
 ; times
-hNextHitNumber:
+hNextHitNumber::
     DS 1
 ; Index of the last hit the player made that wasn't missed, used for
 ; disallowing making a hit multiple times

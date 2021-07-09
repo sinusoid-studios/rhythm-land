@@ -24,3 +24,24 @@ LCDMemcopy::
     dec     b
     jr      nz, .loop
     ret
+
+SECTION "Draw Hex", ROM0
+
+; @param    a   Value to draw
+; @param    hl  Pointer to destination on map
+LCDDrawHex::
+    ld      b, a
+.waitVRAM
+    ldh     a, [rSTAT]
+    and     a, STATF_BUSY
+    jr      nz, .waitVRAM
+    
+    ld      a, b        ; 1 cycle
+    swap    a           ; 2 cycles
+    and     a, $0F      ; 2 cycles
+    ld      [hli], a    ; 2 cycles
+    ld      a, b        ; 1 cycle
+    and     a, $0F      ; 2 cycles
+    ld      [hli], a    ; 2 cycles
+    ; Total 12 cycles
+    ret

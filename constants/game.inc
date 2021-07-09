@@ -9,3 +9,11 @@ DEF HIT_PERFECT_WINDOW EQU 7 * 2
 
 ; Number of frames the window for an OK hit lasts (centred)
 DEF HIT_OK_WINDOW EQU 12 * 2
+
+; Rating contants
+
+; Percentage score 0-59 -> Bad
+; Percentage score 60-79 -> OK
+DEF RATING_OK_MIN EQU 6
+; Percentage score 80-100 -> Excellent
+DEF RATING_EXCELLENT_MIN EQU 8
