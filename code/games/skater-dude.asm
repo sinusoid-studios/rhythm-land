@@ -34,13 +34,11 @@ xGameSkaterDude::
     
     call    EngineUpdate
     
-    ldh     a, [hLastHit.low]
-    and     a, a
-    jr      nz, .loop
-    ldh     a, [hLastHit.high]
-    and     a, a
-    jr      nz, .loop
+    ldh     a, [hNewKeys]
+    bit     PADB_A, a
+    jr      z, .loop
     
+    ; Player pressed A, play jump sound effect
     ld      b, SFX_SKATER_DUDE_JUMP
     call    SFX_Play
     jr      .loop
