@@ -109,6 +109,32 @@ ActorsUpdate::
     add     hl, bc
     inc     [hl]
     
+    call    ActorsGetAnimationCel
+    ; Check if this is the goto special value
+    ld      a, [hli]
+    ASSERT ANIMATION_GOTO == -1
+    inc     a
+    jr      nz, .noGoto
+    
+    ld      a, [hl] ; a = new cel number
+    ld      hl, wActorCelTable
+    add     hl, bc
+    ld      [hl], a
+    
+    ; Use this new cel's duration
+    add     a, a    ; a * 2 (Meta-sprite + Duration)
+    add     a, e
+    ld      l, a
+    adc     a, d
+    sub     a, l
+    ld      h, a
+    inc     hl      ; Get duration
+.noGoto
+    ld      a, [hl]
+    ld      hl, wActorCelCountdownTable
+    add     hl, bc
+    ld      [hl], a
+    
 .noCelUpdate
     ; Update the actor's position
     ; X position
@@ -131,8 +157,9 @@ ActorsUpdate::
     ldh     a, [hScratch]   ; a = actor type
     add     a, LOW(ActorRoutineTable)
     ld      l, a
-    ASSERT HIGH(ActorRoutineTable.end - 1) == HIGH(ActorRoutineTable)
-    ld      h, HIGH(ActorRoutineTable)
+    adc     a, HIGH(ActorRoutineTable)
+    sub     a, l
+    ld      h, a
     
     ld      a, [hli]
     ldh     [hCurrentBank], a
@@ -156,45 +183,9 @@ ActorsUpdate::
     ld      a, [hl]
     ldh     [hActorXPos], a
     
-    ; Find animation table
-    ldh     a, [hScratch]   ; a = actor type
-    add     a, LOW(ActorAnimationTable)
-    ld      l, a
-    ASSERT HIGH(ActorAnimationTable.end - 1) == HIGH(ActorAnimationTable)
-    ld      h, HIGH(ActorAnimationTable)
+    call    ActorsGetAnimationCel
     
-    ; Point hl to actor's type's animation table
-    ld      a, [hli]
-    ldh     [hCurrentBank], a
-    ld      [rROMB0], a
-    ld      a, [hli]
-    ld      d, [hl]
-    ld      e, a
-    
-    ; Get actor's current cel
-    ld      hl, wActorCelTable
-    add     hl, bc
-    ld      a, [hl]     ; a = cel number
-.getMetaspriteNum
-    ; Get current meta-sprite
-    add     a, a        ; a * 2 (Meta-sprite + Duration)
-    add     a, e
-    ld      l, a
-    adc     a, d
-    sub     a, l
-    ld      h, a
-    ld      a, [hli]    ; a = meta-sprite number
-    ASSERT ANIMATION_GOTO == -1
-    inc     a
-    jr      nz, .gotMetaspriteNum
-    ; Go to a specific new cel number
-    ld      a, [hl]
-    ld      hl, wActorCelTable
-    add     hl, bc
-    ld      [hl], a
-    jr      .getMetaspriteNum
-.gotMetaspriteNum
-    dec     a           ; Undo inc
+    ld      a, [hl]     ; a = meta-sprite number
     add     a, a        ; a * 2 (Pointer)
     ld      e, a        ; Save in e
     
@@ -395,5 +386,41 @@ ActorsAddSpeedToPos:
     rl      e       ; Restore carry from fractional part
     adc     a, [hl] ; Add integer part + fractional part carry to position
     ld      [hl], a
+    
+    ret
+
+SECTION "Actor Get Animation Table", ROM0
+
+; Point hl to the current cel in the current actor's animation table
+; @param    bc          Actor index
+; @param    [hScratch]  Actor type * 3
+; @return   hl          Pointer to current animation cel data
+ActorsGetAnimationCel:
+    ; Find animation table
+    ldh     a, [hScratch]   ; a = actor type * 3
+    add     a, LOW(ActorAnimationTable)
+    ld      l, a
+    ASSERT HIGH(ActorAnimationTable.end - 1) == HIGH(ActorAnimationTable)
+    ld      h, HIGH(ActorAnimationTable)
+    
+    ; Point hl to actor's type's animation table
+    ld      a, [hli]
+    ldh     [hCurrentBank], a
+    ld      [rROMB0], a
+    ld      a, [hli]
+    ld      d, [hl]
+    ld      e, a
+    
+    ; Get actor's current cel
+    ld      hl, wActorCelTable
+    add     hl, bc
+    ld      a, [hl] ; a = cel number
+    ; Get current cel's duration
+    add     a, a    ; a * 2 (Meta-sprite + Duration)
+    add     a, e
+    ld      l, a
+    adc     a, d
+    sub     a, l
+    ld      h, a
     
     ret
