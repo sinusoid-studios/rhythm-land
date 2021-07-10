@@ -44,6 +44,21 @@ Initialize::
     ld      a, 1
     ldh     [hCurrentBank], a
     
+    ; Clear OAM
+    ld      hl, _OAMRAM
+    call    HideAllObjectsAtAddress
+    ; Clear shadow OAM
+    ld      hl, wShadowOAM
+    ; a = 0
+    ld      c, OAM_COUNT * sizeof_OAM_ATTRS
+    rst     MemsetSmall
+    
+    ; Copy OAM DMA routine to HRAM
+    ld      de, OAMDMA
+    ld      hl, hOAMDMA
+    ld      c, OAMDMA.end - OAMDMA
+    call    MemcopySmall
+    
     ; Initialize SoundSystem
     call    SoundSystem_Init
     ld      bc, BANK(SFX_Table)
@@ -73,7 +88,7 @@ Initialize::
     ei
     
     ; Turn on the LCD
-    ld      a, LCDCF_ON | LCDCF_BG8800 | LCDCF_BG9800 | LCDCF_BGON
+    ld      a, LCDCF_ON | LCDCF_BG8800 | LCDCF_BG9800 | LCDCF_BGON | LCDCF_OBJ16 | LCDCF_OBJON
     ldh     [rLCDC], a
     
     ; Jump to the game select screen

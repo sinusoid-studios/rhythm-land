@@ -1,6 +1,9 @@
 ; Number of bytes to allocate for the stack
 DEF STACK_SIZE EQU 24 * 2
 
+; Number of cycles the OAM DMA routine's waitloop takes each iteration
+DEF DMA_LOOP_CYCLES EQU 1 + 3
+
 ; Timing constants
 
 ; Number of frames the window for a Perfect hit lasts (centred; half

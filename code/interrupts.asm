@@ -20,9 +20,13 @@ SECTION "VBlank Interrupt Vector", ROM0[$0040]
 SECTION "VBlank Interrupt Handler", ROM0
 
 VBlankHandler:
-    ei      ; Timing-insensitive stuff follows
-    
     push    bc
+    
+    ld      a, HIGH(wShadowOAM)
+    lb      bc, (OAM_COUNT * sizeof_OAM_ATTRS) / DMA_LOOP_CYCLES + 1, LOW(rDMA)
+    call    hOAMDMA
+    
+    ei      ; Timing-insensitive stuff follows
     
     ; Read the joypad
     

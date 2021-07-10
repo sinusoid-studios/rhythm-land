@@ -155,8 +155,7 @@ ActorsNew::
     jr      z, .foundEmptySlot
     
     ; Move to the next slot
-    ASSERT HIGH(wActorTypeTable + MAX_NUM_ACTORS) == HIGH(wActorTypeTable)
-    inc     l
+    inc     hl
     ASSERT MAX_NUM_ACTORS < 256
     inc     c
     ld      a, c

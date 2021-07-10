@@ -42,6 +42,20 @@ MemsetSmall::
     jr      nz, MemsetSmall
     ret
 
+SECTION "RST $28", ROM0[$0028]
+
+; Copy a block of memory from one place to another
+; @param    de  Pointer to beginning of block to copy
+; @param    hl  Pointer to destination
+; @param    c   Number of bytes to copy
+MemcopySmall::
+    ld      a, [de]
+    ld      [hli], a
+    inc     de
+    dec     c
+    jr      nz, MemcopySmall
+    ret
+
 SECTION "Draw Hex", ROM0
 
 ; @param    a   Value to draw
