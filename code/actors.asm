@@ -13,15 +13,12 @@ SECTION "Actor Type Table", WRAM0
 wActorTypeTable::
     DS MAX_NUM_ACTORS
 
-SECTION "Actor X Position Table", WRAM0
+SECTION "Actor Position Tables", WRAM0
 
-; 8-bit X position, relative to the screen
+; 8-bit positions, relative to the screen
+
 wActorXPosTable::
     DS MAX_NUM_ACTORS
-
-SECTION "Actor Y Position Table", WRAM0
-
-; 8-bit Y position, relative to the screen
 wActorYPosTable::
     DS MAX_NUM_ACTORS
 
@@ -396,6 +393,8 @@ ActorsAddSpeedToPos:
     jr      z, .positive
     or      a, $F0  ; Sign extend
 .positive
+    ld      hl, wActorXPosTable
+    add     hl, bc
     rl      e       ; Restore carry from fractional part
     adc     a, [hl] ; Add integer part + fractional part carry to position
     ld      [hl], a
