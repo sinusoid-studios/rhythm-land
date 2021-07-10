@@ -24,13 +24,9 @@ wActorYPosTable::
 
 SECTION "Actor Speed Tables", WRAM0
 
-; Q4.4 (reversed) fixed point speeds
+; Q4.4 fixed point speeds
 ; Fractional part added to fractional accumulator, integer part and
 ; fractional accumulator carry added to position
-
-; Reversed Q4.4 means the fractional part is in the high nibble and the
-; integer part is in the low nibble. This means no nibble swapping is
-; necessary.
 
 wActorXSpeedTable::
     DS MAX_NUM_ACTORS
@@ -372,9 +368,10 @@ ActorsAddSpeedToPos:
     ld      hl, wActorXSpeedTable
     add     hl, bc
     ld      a, [hl]
+    swap    a
     ld      e, a    ; Save speed temporarily in e
     
-    ; Get fractional part (in high nibble)
+    ; Get fractional part in high nibble
     and     $F0
     ; Add fractional part to fractional accumulator
     ld      hl, wActorXSpeedAccTable
@@ -384,7 +381,7 @@ ActorsAddSpeedToPos:
     
     ld      a, e    ; Restore speed from e
     rr      e       ; Save carry from fractional part in e
-    ; Get integer part (in low nibble)
+    ; Get integer part in low nibble
     and     a, $0F
     ; If the speed is negative, sign extend the integer part
     ; Don't need to do this with the fractional part since it will still
