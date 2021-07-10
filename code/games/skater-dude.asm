@@ -26,6 +26,11 @@ xGameSkaterDude::
     ld      bc, xGameSkaterDudeSpriteTiles.end - xGameSkaterDudeSpriteTiles
     rst     LCDMemcopy
     
+    ; Create the Skater Dude actor
+    ASSERT BANK(xActorSkaterDudeDefinition) == BANK(@)
+    ld      de, xActorSkaterDudeDefinition
+    call    ActorsNew
+    
     ; Start music
     ld      bc, BANK(Inst_SkaterDude)
     ld      de, Inst_SkaterDude
@@ -50,6 +55,7 @@ xGameSkaterDude::
     ldh     [hVBlankFlag], a
     
     call    EngineUpdate
+    call    ActorsUpdate
     
     ldh     a, [hHitTableBank]
     and     a, a
@@ -82,10 +88,47 @@ xGameSkaterDudeMap:
     INCBIN "res/skater-dude/background.tilemap"
 .end
 
+xActorSkaterDudeDefinition:
+    DB ACTOR_SKATER_DUDE, SKATER_DUDE_X, SKATER_DUDE_GROUND_Y
+
 SECTION "Skater Dude Warning Cue", ROMX
 
 xCueSkaterDudeWarning::
     ldh     a, [rBGP]
     cpl
     ldh     [rBGP], a
+    ret
+
+SECTION "Skater Dude Actor", ROMX
+
+xActorSkaterDude::
+    ldh     a, [hNewKeys]
+    bit     PADB_A, a
+    jr      z, .noJump
+    
+    ; Player pressed the A button -> jump
+    ld      hl, wActorYSpeedTable
+    add     hl, bc
+    ld      [hl], SKATER_DUDE_JUMP_SPEED
+    ret
+
+.noJump
+    ; Apply gravity unless already on the ground
+    ld      hl, wActorYPosTable
+    add     hl, bc
+    ld      a, [hl]
+    cp      a, SKATER_DUDE_GROUND_Y
+    jr      nc, .onGround
+    
+    ; Currently in the air -> fall
+    ld      hl, wActorYSpeedTable
+    add     hl, bc
+    dec     [hl]
+    ret
+
+.onGround
+    ld      [hl], SKATER_DUDE_GROUND_Y
+    ld      hl, wActorYSpeedTable
+    add     hl, bc
+    ld      [hl], 0
     ret
