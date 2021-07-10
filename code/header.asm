@@ -44,6 +44,20 @@ Initialize::
     ld      a, 1
     ldh     [hCurrentBank], a
     
+    ; Set initial palettes
+    ldh     a, [hConsoleType]
+    and     a, a
+    jr      z, .colour
+    ld      a, %11100100
+    ldh     [rBGP], a
+    ldh     [rOBP1], a      ; Black, Dark gray, Light gray
+    ld      a, %11010010
+    ldh     [rOBP0], a      ; Black, Light gray, White
+.colour
+    ; TODO: Work out colour palettes
+    jr      .donePalettes
+    
+.donePalettes
     ; Clear OAM
     ld      hl, _OAMRAM
     call    HideAllObjectsAtAddress
