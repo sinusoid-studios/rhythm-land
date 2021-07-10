@@ -1,5 +1,12 @@
 INCLUDE "defines.inc"
 
+SECTION "Actor Rendering Temporary Variables", HRAM
+
+hActorYPos:
+    DS 1
+hActorXPos:
+    DS 1
+
 SECTION "Actor Type Table", WRAM0
 
 ; Type of actor, ACTOR_EMPTY for empty
@@ -64,12 +71,14 @@ ActorsUpdate::
     ldh     a, [hCurrentBank]
     push    af
     
+    xor     a, a
+    ldh     [hNextOAMSlot], a
     ld      bc, 0   ; bc = actor index
 .loop
     ld      hl, wActorTypeTable
     add     hl, bc
     ; If actor type is ACTOR_EMPTY, skip this actor
-    ld      a, [hli]
+    ld      a, [hl]
     ASSERT ACTOR_EMPTY == -1
     inc     a
     jr      nz, .update
@@ -90,6 +99,12 @@ ActorsUpdate::
     ret
 
 .update
+    ; Save this actor's type * 3 for quick access
+    dec     a       ; Undo inc
+    add     a, a    ; a * 2 (Pointer)
+    add     a, [hl] ; a * 3 (+Bank)
+    ldh     [hScratch], a
+    
     ; Update actor's animation cel countdown
     ld      hl, wActorCelCountdownTable
     add     hl, bc
@@ -120,11 +135,7 @@ ActorsUpdate::
     pop     bc
     
     ; Call the actor's update routine
-    ld      hl, wActorTypeTable
-    add     hl, bc
-    ld      a, [hl]
-    add     a, a    ; a * 2 (Pointer)
-    add     a, [hl] ; a * 3 (+Bank)
+    ldh     a, [hScratch]   ; a = actor type
     add     a, LOW(ActorRoutineTable)
     ld      l, a
     ASSERT HIGH(ActorRoutineTable.end - 1) == HIGH(ActorRoutineTable)
@@ -137,7 +148,126 @@ ActorsUpdate::
     ld      h, [hl]
     ld      l, a
     rst     JP_HL
-    jr      .next
+    
+    ; Render this actor
+    
+    ; Save actor's Y position for use in meta-sprites
+    ld      hl, wActorYPosTable
+    add     hl, bc
+    ld      a, [hl]
+    ldh     [hActorYPos], a
+    
+    ; Save actor's X position for use in meta-sprites
+    ld      hl, wActorXPosTable
+    add     hl, bc
+    ld      a, [hl]
+    ldh     [hActorXPos], a
+    
+    ; Find animation table
+    ldh     a, [hScratch]   ; a = actor type
+    add     a, LOW(ActorAnimationTable)
+    ld      l, a
+    ASSERT HIGH(ActorAnimationTable.end - 1) == HIGH(ActorAnimationTable)
+    ld      h, HIGH(ActorAnimationTable)
+    
+    ; Point hl to actor's type's animation table
+    ld      a, [hli]
+    ldh     [hCurrentBank], a
+    ld      [rROMB0], a
+    ld      a, [hli]
+    ld      d, [hl]
+    ld      e, a
+    
+    ; Get actor's current cel
+    ld      hl, wActorCelTable
+    add     hl, bc
+    ld      a, [hl]     ; a = cel number
+.getMetaspriteNum
+    ; Get current meta-sprite
+    add     a, a        ; a * 2 (Meta-sprite + Duration)
+    add     a, e
+    ld      l, a
+    adc     a, d
+    sub     a, e
+    ld      h, a
+    ld      a, [hli]    ; a = meta-sprite number
+    ASSERT ANIMATION_GOTO == -1
+    inc     a
+    jr      nz, .gotMetaspriteNum
+    ; Go to a specific new cel number
+    ld      a, [hl]
+    ld      hl, wActorCelTable
+    add     hl, bc
+    ld      [hl], a
+    jr      .getMetaspriteNum
+.gotMetaspriteNum
+    dec     a           ; Undo inc
+    add     a, a        ; a * 2 (Pointer)
+    ld      e, a        ; Save in e
+    
+    ; Find meta-sprite table
+    ldh     a, [hScratch]   ; a = actor type
+    add     a, LOW(ActorMetaspriteTable)
+    ld      l, a
+    ASSERT HIGH(ActorMetaspriteTable.end - 1) == HIGH(ActorMetaspriteTable)
+    ld      h, HIGH(ActorMetaspriteTable)
+    
+    ; Point hl to actor's type's meta-sprite table
+    ld      a, [hli]
+    ldh     [hCurrentBank], a
+    ld      [rROMB0], a
+    ld      a, [hli]
+    ld      h, [hl]
+    add     a, e
+    ld      l, a
+    
+    ; Point hl to meta-sprite data
+    ld      a, [hli]
+    ld      h, [hl]
+    ld      l, a
+    
+    ; Point de to next OAM slot
+    ldh     a, [hNextOAMSlot]
+    add     a, a
+    add     a, a
+    ld      e, a
+    ld      d, HIGH(wShadowOAM)
+    
+.metaspriteLoop
+    ; Check for end-of-data special value
+    ld      a, [hl]
+    cp      a, METASPRITE_END
+    jp      z, .next
+    
+    ; Y position
+    ldh     a, [hActorYPos]
+    add     a, [hl]
+    inc     hl
+    ld      [de], a
+    inc     e
+    
+    ; X position
+    ldh     a, [hActorXPos]
+    add     a, [hl]
+    inc     hl
+    ld      [de], a
+    inc     e
+    
+    ; Tile number
+    ld      a, [hli]
+    ld      [de], a
+    inc     e
+    
+    ; Attributes
+    ld      a, [hli]
+    ld      [de], a
+    inc     e
+    
+    ; Just took up 1 OAM slot
+    ldh     a, [hNextOAMSlot]
+    inc     a
+    ldh     [hNextOAMSlot], a
+    jr      .metaspriteLoop
 
 SECTION "Actor Creation", ROM0
 
@@ -190,6 +320,7 @@ ActorsNew::
     ld      h, [hl]
     ld      l, a
     ; Use first animation cel's duration
+    inc     l       ; Meta-sprite, Duration (Move to duration)
     ld      a, [hl]
     ld      hl, wActorCelCountdownTable
     add     hl, bc
