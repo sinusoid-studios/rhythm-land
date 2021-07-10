@@ -181,7 +181,7 @@ ActorsUpdate::
     add     a, e
     ld      l, a
     adc     a, d
-    sub     a, e
+    sub     a, l
     ld      h, a
     ld      a, [hli]    ; a = meta-sprite number
     ASSERT ANIMATION_GOTO == -1
