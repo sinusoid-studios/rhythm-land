@@ -21,6 +21,7 @@ FIXFLAGS = -v -p $(PADVALUE) -i "$(MFRCODE)" -k "$(LICENSEE)" -l $(OLDLIC) -m $(
 bin/rhythm-land.gbc: FIXFLAGS += -c
 PALFLAGS = -R
 TILEFLAGS = -B 2 -R -F -T 256
+res/%/sprites.2bpp: TILEFLAGS += -H 16
 MAPFLAGS = -B 2 -F
 
 SRCS := $(wildcard code/*.asm) $(wildcard code/**/*.asm) $(wildcard data/*.asm) $(wildcard data/**/*.asm)

@@ -12,10 +12,18 @@ xGameSkaterDude::
     ld      a, 60 * 2
     ldh     [hEndDelay], a
     
-    ; Load tiles
+    ; Load background tiles
+    ASSERT BANK(xGameSkaterDudeTiles) == BANK(@)
     ld      de, xGameSkaterDudeTiles
     ld      hl, $9000
     ld      bc, xGameSkaterDudeTiles.end - xGameSkaterDudeTiles
+    rst     LCDMemcopy
+    
+    ; Load sprite tiles
+    ASSERT BANK(xGameSkaterDudeSpriteTiles) == BANK(@)
+    ASSERT xGameSkaterDudeSpriteTiles == xGameSkaterDudeTiles.end
+    ld      hl, $8000
+    ld      bc, xGameSkaterDudeSpriteTiles.end - xGameSkaterDudeSpriteTiles
     rst     LCDMemcopy
     
     ; Start music
@@ -63,12 +71,16 @@ xGameSkaterDude::
     jr      .loop
 
 xGameSkaterDudeTiles:
-    INCBIN "res/skater-dude/skater-dude.2bpp"
-.end::
+    INCBIN "res/skater-dude/background.2bpp"
+.end
+
+xGameSkaterDudeSpriteTiles:
+    INCBIN "res/skater-dude/sprites.2bpp"
+.end
 
 xGameSkaterDudeMap:
-    INCBIN "res/skater-dude/skater-dude.tilemap"
-.end::
+    INCBIN "res/skater-dude/background.tilemap"
+.end
 
 SECTION "Skater Dude Warning Cue", ROMX
 
