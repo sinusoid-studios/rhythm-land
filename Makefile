@@ -19,9 +19,11 @@ ASFLAGS  = -h $(addprefix -i ,$(INCDIRS)) -p $(PADVALUE) $(addprefix -W,$(WARNIN
 LDFLAGS  = -p $(PADVALUE)
 FIXFLAGS = -v -p $(PADVALUE) -i "$(MFRCODE)" -k "$(LICENSEE)" -l $(OLDLIC) -m $(MBC) -n $(VERSION) -r $(SRAMSIZE) -t "$(TITLE)" -j
 bin/rhythm-land.gbc: FIXFLAGS += -c
+
 PALFLAGS = -R
-TILEFLAGS = -B 2 -R -F -T 256
-res/%/sprites.2bpp: TILEFLAGS += -H 16
+TILEFLAGS = -B 2 -R -T 256
+res/%.obj.2bpp: TILEFLAGS += -H 16
+res/%.bg.2bpp: TILEFLAGS += -F
 MAPFLAGS = -B 2 -F
 
 SRCS := $(wildcard code/*.asm) $(wildcard code/**/*.asm) $(wildcard data/*.asm) $(wildcard data/**/*.asm)

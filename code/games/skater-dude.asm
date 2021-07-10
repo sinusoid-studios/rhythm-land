@@ -77,15 +77,15 @@ xGameSkaterDude::
     jr      .loop
 
 xGameSkaterDudeTiles:
-    INCBIN "res/skater-dude/background.2bpp"
+    INCBIN "res/skater-dude/background.bg.2bpp"
 .end
 
 xGameSkaterDudeSpriteTiles:
-    INCBIN "res/skater-dude/sprites.2bpp"
+    INCBIN "res/skater-dude/skater-dude.obj.2bpp"
 .end
 
 xGameSkaterDudeMap:
-    INCBIN "res/skater-dude/background.tilemap"
+    INCBIN "res/skater-dude/background.bg.tilemap"
 .end
 
 xActorSkaterDudeDefinition:
