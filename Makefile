@@ -19,6 +19,9 @@ ASFLAGS  = -h $(addprefix -i ,$(INCDIRS)) -p $(PADVALUE) $(addprefix -W,$(WARNIN
 LDFLAGS  = -p $(PADVALUE)
 FIXFLAGS = -v -p $(PADVALUE) -i "$(MFRCODE)" -k "$(LICENSEE)" -l $(OLDLIC) -m $(MBC) -n $(VERSION) -r $(SRAMSIZE) -t "$(TITLE)" -j
 bin/rhythm-land.gbc: FIXFLAGS += -c
+PALFLAGS = -R
+TILEFLAGS = -B 2 -R -F -T 256
+MAPFLAGS = -B 2 -F
 
 SRCS := $(wildcard code/*.asm) $(wildcard code/**/*.asm) $(wildcard data/*.asm) $(wildcard data/**/*.asm)
 ST_SRCS := code/SoundSystem.asm $(wildcard data/music/*.asm) data/sfx.asm soundtest/soundtest.asm
@@ -61,16 +64,16 @@ obj/%.o dep/%.mk: $(GFX) %.asm
 # Graphics conversion
 res/%.pal.json: gfx/%.png
 	@mkdir -p $(@D)
-	superfamiconv palette -M gb -R -i $< -j $@
+	superfamiconv palette -M gb $(PALFLAGS) -i $< -j $@
 res/%.2bpp: gfx/%.png res/%.pal.json
 	@mkdir -p $(@D)
-	superfamiconv tiles -M gb -B 2 -R -F -T 256 -i $< -p res/$*.pal.json -d $@
+	superfamiconv tiles -M gb $(TILEFLAGS) -i $< -p res/$*.pal.json -d $@
 res/%.1bpp: gfx/%.png res/%.pal.json
 	@mkdir -p $(@D)
-	superfamiconv tiles -M gb -B 1 -R -F -T 256 -i $< -p res/$*.pal.json -d $@
+	superfamiconv tiles -M gb $(TILEFLAGS) -B 1 -i $< -p res/$*.pal.json -d $@
 res/%.tilemap: gfx/%.png res/%.2bpp res/%.pal.json
 	@mkdir -p $(@D)
-	superfamiconv map -M gb -B 2 -F -i $< -t res/$*.2bpp -p res/$*.pal.json -d $@
+	superfamiconv map -M gb $(MAPFLAGS) -i $< -t res/$*.2bpp -p res/$*.pal.json -d $@
 
 # Don't include dependencies if cleaning
 ifneq ($(MAKECMDGOALS),clean)
