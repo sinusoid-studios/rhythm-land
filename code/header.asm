@@ -50,6 +50,12 @@ Initialize::
     ld      de, SFX_Table
     call    SFX_Prepare
     
+    ; Set all actors to empty
+    ld      a, ACTOR_EMPTY
+    ld      hl, wActorTypeTable
+    ld      c, MAX_NUM_ACTORS
+    rst     MemsetSmall
+    
     ; Set up interrupts
     
     ; Update sound at every LY 0

@@ -30,6 +30,18 @@ LCDMemcopy::
     jr      nz, .loop
     ret
 
+SECTION "RST $20", ROM0[$0020]
+
+; Fill an arbitrary number of bytes with the same value
+; @param    a   Value to fill with
+; @param    hl  Pointer to destination
+; @param    c   Number of bytes to fill
+MemsetSmall::
+    ld      [hli], a
+    dec     c
+    jr      nz, MemsetSmall
+    ret
+
 SECTION "Draw Hex", ROM0
 
 ; @param    a   Value to draw
