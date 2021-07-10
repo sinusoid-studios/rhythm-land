@@ -1,5 +1,10 @@
 INCLUDE "defines.inc"
 
+SECTION "RST $00", ROM0[$0000]
+
+JP_HL::
+    jp      hl
+
 SECTION "RST $08", ROM0[$0008]
 
 ; Copy a block of memory from one place to another, even if the LCD is
