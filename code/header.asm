@@ -106,8 +106,8 @@ Initialize::
     ld      a, LCDCF_ON | LCDCF_BG8800 | LCDCF_BG9800 | LCDCF_BGON | LCDCF_OBJ16 | LCDCF_OBJON
     ldh     [rLCDC], a
     
-    ; Jump to the game select screen
-    jp      GameSelect
+    ; Jump to the title screen
+    jp      TitleScreen
 
 SECTION "Stack", WRAM0
 
