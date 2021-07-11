@@ -6,6 +6,12 @@ SECTION UNION "Game Variables", HRAM
 hEndDelay:
     DS 1
 
+; Index into Skater Dude's jump position table
+hSkaterDudePosIndex:
+    DS 1
+hSkaterDudePosCountdown:
+    DS 1
+
 SECTION "Skater Dude Game", ROMX
 
 xGameSkaterDude::
@@ -30,6 +36,8 @@ xGameSkaterDude::
     ASSERT BANK(xActorSkaterDudeDefinition) == BANK(@)
     ld      de, xActorSkaterDudeDefinition
     call    ActorsNew
+    ld      a, -1
+    ldh     [hSkaterDudePosIndex], a
     
     ; Start music
     ld      bc, BANK(Inst_SkaterDude)
@@ -81,7 +89,7 @@ xGameSkaterDudeTiles:
 .end
 
 xGameSkaterDudeSpriteTiles:
-    INCBIN "res/skater-dude/skater-dude.obj.2bpp"
+    INCBIN "res/skater-dude/skater-dude.obj.2bpp", 16 * 2
 .end
 
 xGameSkaterDudeMap:
@@ -102,33 +110,62 @@ xCueSkaterDudeWarning::
 SECTION "Skater Dude Actor", ROMX
 
 xActorSkaterDude::
-    ldh     a, [hNewKeys]
-    bit     PADB_A, a
-    jr      z, .noJump
+    ldh     a, [hSkaterDudePosIndex]
+    inc     a
+    jr      z, .notJumping
     
-    ; Player pressed the A button -> jump
-    ld      hl, wActorYSpeedTable
-    add     hl, bc
-    ld      [hl], SKATER_DUDE_JUMP_SPEED
-    ret
-
-.noJump
-    ; Apply gravity unless already on the ground
+    ld      hl, hSkaterDudePosCountdown
+    dec     [hl]
+    jr      nz, .notJumping
+    
+    ASSERT hSkaterDudePosIndex == hSkaterDudePosCountdown - 1
+    dec     l
+    inc     [hl]
+    ld      a, [hl]
+    add     a, a
+    add     a, LOW(JumpPositionTable)
+    ld      l, a
+    ASSERT HIGH(JumpPositionTable.end - 1) == HIGH(JumpPositionTable)
+    ld      h, HIGH(JumpPositionTable)
+    ld      a, [hli]
+    inc     a
+    jr      z, .finishedJumping
+    dec     a       ; Undo inc
+    ld      e, [hl]
+    
     ld      hl, wActorYPosTable
     add     hl, bc
-    ld      a, [hl]
-    cp      a, SKATER_DUDE_GROUND_Y
-    jr      nc, .onGround
-    
-    ; Currently in the air -> fall
-    ld      hl, wActorYSpeedTable
-    add     hl, bc
-    dec     [hl]
-    ret
+    ld      [hl], a
+    ld      a, e
+    ldh     [hSkaterDudePosCountdown], a
+    jr      .notJumping
 
-.onGround
-    ld      [hl], SKATER_DUDE_GROUND_Y
-    ld      hl, wActorYSpeedTable
+.finishedJumping
+    ld      a, -1
+    ldh     [hSkaterDudePosIndex], a
+    
+.notJumping
+    ldh     a, [hNewKeys]
+    bit     PADB_A, a
+    ret     z
+    
+    ; Player pressed the A button -> jump
+    xor     a, a
+    ldh     [hSkaterDudePosIndex], a
+    inc     a
+    ldh     [hSkaterDudePosCountdown], a
+    
+    ld      hl, wActorCelTable
     add     hl, bc
-    ld      [hl], 0
-    ret
+    ld      [hl], CEL_SKATER_DUDE_JUMPING
+    jp      ActorsResetCelCountdown
+
+JumpPositionTable:
+    DB SKATER_DUDE_GROUND_Y - SKATER_DUDE_JUMP_HEIGHT * 1/3, 1
+    DB SKATER_DUDE_GROUND_Y - SKATER_DUDE_JUMP_HEIGHT * 2/3, 1
+    DB SKATER_DUDE_GROUND_Y - SKATER_DUDE_JUMP_HEIGHT, (MUSIC_SKATER_DUDE_SPEED * 4) - (1 + 1 + 1) * 2
+    DB SKATER_DUDE_GROUND_Y - SKATER_DUDE_JUMP_HEIGHT * 2/3, 1
+    DB SKATER_DUDE_GROUND_Y - SKATER_DUDE_JUMP_HEIGHT * 1/3, 1
+    DB SKATER_DUDE_GROUND_Y, 1
+    DB -1
+.end
