@@ -22,5 +22,4 @@ xGameTestHitTable::
     hit 8, PADF_A
     hit 8, PADF_A
     hit 8, PADF_A
-    hit 8, PADF_A
     hits_end
