@@ -35,6 +35,7 @@ Initialize::
     ; Reset variables
     ; a = 0
     ldh     [hVBlankFlag], a
+    ldh     [hNextHitKeys], a
     ldh     [hNewKeys], a
     dec     a       ; a = $FF = all pressed
     ; Make all keys pressed so hNewKeys is correct
