@@ -41,6 +41,8 @@ RatingScreen::
     inc     a
     add     a, b
     
+    ld      hl, vGameID + (3 * SCRN_VX_B)
+    
     ; Score is negative -> go straight to Bad
     bit     7, a
     jr      nz, .bad
@@ -54,8 +56,6 @@ RatingScreen::
     ; b = numerator, c = denominator
     call    CalcPercentDigit
     ; a = tens digit
-    
-    ld      hl, vGameID + (3 * SCRN_VX_B)
     
     cp      a, RATING_OK_MIN
     jr      c, .bad
