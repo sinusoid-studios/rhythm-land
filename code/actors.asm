@@ -304,7 +304,7 @@ ActorsNew::
     ld      h, [hl]
     ld      l, a
     ; Use first animation cel's duration
-    inc     l       ; Meta-sprite, Duration (Move to duration)
+    inc     hl      ; Move to duration (Meta-sprite, Duration)
     ld      a, [hl]
     ld      hl, wActorCelCountdownTable
     add     hl, bc
@@ -395,7 +395,48 @@ SECTION "Actor Get Animation Table", ROM0
 ; @param    bc          Actor index
 ; @param    [hScratch]  Actor type * 3
 ; @return   hl          Pointer to current animation cel data
+; @return   de          Pointer to animation table
 ActorsGetAnimationCel:
+    ; Find animation table
+    ldh     a, [hScratch]   ; a = actor type * 3
+    add     a, LOW(ActorAnimationTable)
+    ld      l, a
+    ASSERT HIGH(ActorAnimationTable.end - 1) == HIGH(ActorAnimationTable)
+    ld      h, HIGH(ActorAnimationTable)
+    
+    ; Point hl to actor's type's animation table
+    ld      a, [hli]
+    ldh     [hCurrentBank], a
+    ld      [rROMB0], a
+    ld      a, [hli]
+    ld      d, [hl]
+    ld      e, a
+    
+    ; Get actor's current cel
+    ld      hl, wActorCelTable
+    add     hl, bc
+    ld      a, [hl] ; a = cel number
+    ; Get current cel
+    add     a, a    ; a * 2 (Meta-sprite + Duration)
+    add     a, e
+    ld      l, a
+    adc     a, d
+    sub     a, l
+    ld      h, a
+    
+    ret
+
+SECTION "Actor Set Animation Cel", ROM0
+
+; @param    bc          Actor index
+; @param    [hScratch]  Actor type * 3
+; @return   hl          Pointer to current animation cel data
+; @return   de          Pointer to animation table
+ActorsResetCelCountdown::
+    ; Save current bank to restore when finished
+    ldh     a, [hCurrentBank]
+    push    af
+    
     ; Find animation table
     ldh     a, [hScratch]   ; a = actor type * 3
     add     a, LOW(ActorAnimationTable)
@@ -422,5 +463,16 @@ ActorsGetAnimationCel:
     adc     a, d
     sub     a, l
     ld      h, a
+    inc     hl      ; Get duration
+    ld      a, [hl]
     
+    ; Set animation cel countdown
+    ld      hl, wActorCelCountdownTable
+    add     hl, bc
+    ld      [hl], a
+    
+    ; Restore bank
+    pop     af
+    ldh     [hCurrentBank], a
+    ld      [rROMB0], a
     ret
