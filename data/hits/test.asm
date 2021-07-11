@@ -7,19 +7,19 @@ SECTION "Test Game Hit Table", ROMX
 
 xGameTestHitTable::
     hit 8, PADF_A
+    hit 8, PADF_B
     hit 8, PADF_A
+    hit 8, PADF_B
     hit 8, PADF_A
+    hit 8, PADF_B
     hit 8, PADF_A
+    hit 8, PADF_B
     hit 8, PADF_A
+    hit 8, PADF_B
     hit 8, PADF_A
+    hit 8, PADF_B
     hit 8, PADF_A
+    hit 8, PADF_B
     hit 8, PADF_A
-    hit 8, PADF_A
-    hit 8, PADF_A
-    hit 8, PADF_A
-    hit 8, PADF_A
-    hit 8, PADF_A
-    hit 8, PADF_A
-    hit 8, PADF_A
-    hit 8, PADF_A
+    hit 8, PADF_B
     hits_end
