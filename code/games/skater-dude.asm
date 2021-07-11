@@ -125,8 +125,9 @@ xActorSkaterDude::
     add     a, a
     add     a, LOW(JumpPositionTable)
     ld      l, a
-    ASSERT HIGH(JumpPositionTable.end - 1) == HIGH(JumpPositionTable)
-    ld      h, HIGH(JumpPositionTable)
+    adc     a, HIGH(JumpPositionTable)
+    sub     a, l
+    ld      h, a
     ld      a, [hli]
     inc     a
     jr      z, .finishedJumping
