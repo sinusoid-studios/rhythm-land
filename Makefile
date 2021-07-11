@@ -18,7 +18,6 @@ WARNINGS := all extra
 ASFLAGS  = -h $(addprefix -i ,$(INCDIRS)) -p $(PADVALUE) $(addprefix -W,$(WARNINGS))
 LDFLAGS  = -p $(PADVALUE)
 FIXFLAGS = -v -p $(PADVALUE) -i "$(MFRCODE)" -k "$(LICENSEE)" -l $(OLDLIC) -m $(MBC) -n $(VERSION) -r $(SRAMSIZE) -t "$(TITLE)" -j
-bin/rhythm-land.gbc: FIXFLAGS += -c
 
 PALFLAGS = -R
 TILEFLAGS = -B 2 -R -T 256
@@ -29,7 +28,7 @@ MAPFLAGS = -B 2 -F
 SRCS := $(wildcard code/*.asm) $(wildcard code/**/*.asm) $(wildcard data/*.asm) $(wildcard data/**/*.asm)
 ST_SRCS := code/SoundSystem.asm $(wildcard data/music/*.asm) data/sfx.asm soundtest/soundtest.asm
 
-game: bin/rhythm-land.gbc
+game: bin/rhythm-land.gb
 .PHONY: game
 
 soundtest: bin/soundtest.gb
@@ -54,10 +53,10 @@ bin/soundtest.gb: $(patsubst %.asm,obj/%.o,$(ST_SRCS))
 	rgbfix $(FIXFLAGS) $@
 
 # Build the game, along with map and symbol files
-bin/%.gbc bin/%.sym bin/%.map: $(GFX) $(patsubst %.asm,obj/%.o,$(SRCS))
+bin/%.gb bin/%.sym bin/%.map: $(GFX) $(patsubst %.asm,obj/%.o,$(SRCS))
 	@mkdir -p $(@D)
-	rgblink $(LDFLAGS) -m bin/$*.map -n bin/$*.sym -o bin/$*.gbc $(patsubst %.asm,obj/%.o,$(SRCS))
-	rgbfix $(FIXFLAGS) bin/$*.gbc
+	rgblink $(LDFLAGS) -m bin/$*.map -n bin/$*.sym -o bin/$*.gb $(patsubst %.asm,obj/%.o,$(SRCS))
+	rgbfix $(FIXFLAGS) bin/$*.gb
 
 # Assemble an assembly file and save dependencies
 obj/%.o dep/%.mk: $(GFX) %.asm
