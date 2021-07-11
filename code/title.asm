@@ -4,10 +4,10 @@ SECTION "Title Screen", ROM0
 
 TitleScreen::
     ; Start music
-    ld      bc, BANK(Inst_Title)
+    ld      c, BANK(Inst_Title)
     ld      de, Inst_Title
     call    Music_PrepareInst
-    ld      bc, BANK(Music_Title)
+    ld      c, BANK(Music_Title)
     ld      de, Music_Title
     call    Music_Play
     
