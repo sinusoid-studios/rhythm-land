@@ -21,9 +21,7 @@ FIXFLAGS = -v -p $(PADVALUE) -i "$(MFRCODE)" -k "$(LICENSEE)" -l $(OLDLIC) -m $(
 
 PALFLAGS = -R
 TILEFLAGS = -B 2 -R -T 256
-res/%.obj.2bpp: TILEFLAGS += -H 16
-res/%.bg.2bpp: TILEFLAGS += -F
-MAPFLAGS = -B 2 -F
+GFXFLAGS = -u
 
 SRCS := $(wildcard code/*.asm) $(wildcard code/**/*.asm) $(wildcard data/*.asm) $(wildcard data/**/*.asm)
 ST_SRCS := code/SoundSystem.asm $(wildcard data/music/*.asm) data/sfx.asm soundtest/soundtest.asm
@@ -67,15 +65,12 @@ obj/%.o dep/%.mk: %.asm
 res/%.pal.json: gfx/%.png
 	@mkdir -p $(@D)
 	superfamiconv palette -M gb $(PALFLAGS) -i $< -j $@
-res/%.2bpp: gfx/%.png res/%.pal.json
+res/%.obj.2bpp: gfx/%.obj.png res/%.obj.pal.json
 	@mkdir -p $(@D)
-	superfamiconv tiles -M gb $(TILEFLAGS) -i $< -p res/$*.pal.json -d $@
-res/%.1bpp: gfx/%.png res/%.pal.json
+	superfamiconv tiles -M gb $(TILEFLAGS) -H 16 -i $< -p res/$*.obj.pal.json -d $@
+res/%.bg.2bpp res/%.bg.tilemap: gfx/%.bg.png
 	@mkdir -p $(@D)
-	superfamiconv tiles -M gb $(TILEFLAGS) -B 1 -i $< -p res/$*.pal.json -d $@
-res/%.tilemap: gfx/%.png res/%.2bpp res/%.pal.json
-	@mkdir -p $(@D)
-	superfamiconv map -M gb $(MAPFLAGS) -i $< -t res/$*.2bpp -p res/$*.pal.json -d $@
+	rgbgfx $(GFXFLAGS) -o res/$*.bg.2bpp -t res/$*.bg.tilemap $<
 
 # Don't include dependencies if cleaning
 ifneq ($(MAKECMDGOALS),clean)
