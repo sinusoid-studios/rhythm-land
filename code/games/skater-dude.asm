@@ -25,6 +25,13 @@ xGameSkaterDude::
     ld      bc, xGameSkaterDudeTiles.end - xGameSkaterDudeTiles
     rst     LCDMemcopy
     
+    ; Load sprite tiles
+    ASSERT BANK(xGameSkaterDudeSpriteTiles) == BANK(@)
+    ASSERT xGameSkaterDudeSpriteTiles == xGameSkaterDudeTiles.end
+    ld      hl, $8000
+    ld      bc, xGameSkaterDudeSpriteTiles.end - xGameSkaterDudeSpriteTiles
+    rst     LCDMemcopy
+    
     ; Set up the background map
     ld      hl, hMapWidth
     ld      [hl], MAP_SKATER_DUDE_WIDTH
@@ -51,13 +58,8 @@ xGameSkaterDude::
     xor     a, a
     ld      [hli], a
     ld      [hl], a
-    
-    ; Load sprite tiles
-    ASSERT BANK(xGameSkaterDudeSpriteTiles) == BANK(@)
-    ASSERT xGameSkaterDudeSpriteTiles == xGameSkaterDudeTiles.end
-    ld      hl, $8000
-    ld      bc, xGameSkaterDudeSpriteTiles.end - xGameSkaterDudeSpriteTiles
-    rst     LCDMemcopy
+    ; Draw the initial visible map
+    call    MapDraw
     
     ; Create the Skater Dude actor
     ASSERT BANK(xActorSkaterDudeDefinition) == BANK(@)

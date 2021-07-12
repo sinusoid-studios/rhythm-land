@@ -30,6 +30,47 @@ hMapYPos::
 .high::
     DS 1
 
+SECTION "Background Map Drawing", ROM0
+
+; Draw the entire visible portion of the map onto the background map,
+; for use during setup
+MapDraw::
+    ; Reset scroll
+    xor     a, a
+    ldh     [hSCX], a
+    
+    ; Get X tile position
+    ld      hl, hMapXPos
+    ld      a, [hli]    ; Low byte
+    ld      b, [hl]     ; High byte
+.getPos
+    srl     b
+    rra                 ; pos / 2
+    srl     b
+    rra                 ; pos / 4
+    srl     b
+    rra                 ; pos / 8
+    
+    ; Draw every column on the screen
+    ld      c, SCRN_X_B
+    ld      b, a
+.loop
+    push    bc
+    ld      a, b
+    call    MapDrawColumn.posOk
+    pop     bc
+    ldh     a, [hSCX]
+    add     a, 8
+    ldh     [hSCX], a
+    inc     b
+    dec     c
+    jr      nz, .loop
+    
+    ; Reset scroll again
+    xor     a, a
+    ldh     [hSCX], a
+    ret
+
 SECTION "Background Map Scrolling", ROM0
 
 ; Scroll the background map to the left by 1 pixel
@@ -61,8 +102,13 @@ MapScrollLeft::
     ; Check if gone past the end of the map
     bit     7, [hl]     ; High byte
     ; Gone too far
-    jr      nz, .negative
-    
+    jp      z, MapDrawColumn
+    jp      MapDrawColumn.negative
+
+SECTION "Background Map Column Drawing", ROM0
+
+; @param    hl  hMapXPos.high
+MapDrawColumn:
     ; Get X tile position
     ld      b, [hl]     ; High byte
     dec     l
