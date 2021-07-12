@@ -204,6 +204,9 @@ ActorsUpdate::
     ld      h, [hl]
     add     a, e
     ld      l, a
+    adc     a, h
+    sub     a, l
+    ld      h, a
     
     ; Point hl to meta-sprite data
     ld      a, [hli]
