@@ -19,17 +19,17 @@ xGameSkaterDude::
     ldh     [hEndDelay], a
     
     ; Load background tiles
-    ASSERT BANK(xGameSkaterDudeTiles) == BANK(@)
-    ld      de, xGameSkaterDudeTiles
+    ASSERT BANK(xBackgroundTilesSkaterDude) == BANK(@)
+    ld      de, xBackgroundTilesSkaterDude
     ld      hl, $9000
-    ld      bc, xGameSkaterDudeTiles.end - xGameSkaterDudeTiles
+    ld      bc, xBackgroundTilesSkaterDude.end - xBackgroundTilesSkaterDude
     rst     LCDMemcopy
     
     ; Load sprite tiles
-    ASSERT BANK(xGameSkaterDudeSpriteTiles) == BANK(@)
-    ASSERT xGameSkaterDudeSpriteTiles == xGameSkaterDudeTiles.end
+    ASSERT BANK(xSpriteTilesSkaterDude) == BANK(@)
+    ASSERT xSpriteTilesSkaterDude == xBackgroundTilesSkaterDude.end
     ld      hl, $8000
-    ld      bc, xGameSkaterDudeSpriteTiles.end - xGameSkaterDudeSpriteTiles
+    ld      bc, xSpriteTilesSkaterDude.end - xSpriteTilesSkaterDude
     rst     LCDMemcopy
     
     ; Set up the background map
@@ -77,9 +77,9 @@ xGameSkaterDude::
     call    Music_Play
     
     ; Set up game data
-    lb      bc, BANK(xGameSkaterDudeHitTable), BANK(xGameSkaterDudeCueTable)
-    ld      de, xGameSkaterDudeCueTable
-    ld      hl, xGameSkaterDudeHitTable
+    lb      bc, BANK(xHitTableSkaterDude), BANK(xCueTableSkaterDude)
+    ld      de, xCueTableSkaterDude
+    ld      hl, xHitTableSkaterDude
     call    EngineInit
 
 .loop
@@ -114,11 +114,11 @@ xGameSkaterDude::
     call    SFX_Play
     jr      .loop
 
-xGameSkaterDudeTiles:
+xBackgroundTilesSkaterDude:
     INCBIN "res/skater-dude/background.bg.2bpp"
 .end
 
-xGameSkaterDudeSpriteTiles:
+xSpriteTilesSkaterDude:
     INCBIN "res/skater-dude/skater-dude.obj.2bpp", 16 * 2
 .end
 

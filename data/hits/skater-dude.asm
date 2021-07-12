@@ -5,7 +5,7 @@ DEF MUSIC_SPEED EQU MUSIC_SKATER_DUDE_SPEED
 
 SECTION "Skater Dude Game Hit Table", ROMX
 
-xGameSkaterDudeHitTable::
+xHitTableSkaterDude::
     ; Section A
     hit 64 + 4, PADF_A
     hit 32, PADF_A

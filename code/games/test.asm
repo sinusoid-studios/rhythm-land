@@ -21,9 +21,9 @@ xGameTest::
     call    Music_Play
     
     ; Set up game data
-    lb      bc, BANK(xGameTestHitTable), BANK(xGameTestCueTable)
-    ld      de, xGameTestCueTable
-    ld      hl, xGameTestHitTable
+    lb      bc, BANK(xHitTableTest), BANK(xCueTableTest)
+    ld      de, xCueTableTest
+    ld      hl, xHitTableTest
     call    EngineInit
 
 .loop

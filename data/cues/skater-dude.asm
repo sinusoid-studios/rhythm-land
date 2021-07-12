@@ -5,7 +5,7 @@ DEF MUSIC_SPEED EQU MUSIC_SKATER_DUDE_SPEED
 
 SECTION "Skater Dude Game Cue Table", ROMX
 
-xGameSkaterDudeCueTable::
+xCueTableSkaterDude::
     ; Section A
     cue 64, CUE_SKATER_DUDE_WARNING
     cue 2, CUE_SKATER_DUDE_WARNING
