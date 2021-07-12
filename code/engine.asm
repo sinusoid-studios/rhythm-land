@@ -70,7 +70,6 @@ hLastRatedHitNumber:
 SECTION "Engine Initialization", ROM0
 
 ; Prepare the engine for a game
-; NOTE: Call Music_Play before this!!!
 ; @param    c   Bank number of cue table
 ; @param    b   Bank number of hit table
 ; @param    de  Pointer to cue table
@@ -146,7 +145,7 @@ EngineUpdate::
     ld      l, LOW(hNextHit.high)
     ld      a, [hl]
     ld      l, LOW(hHitBadCount)
-    ; High byte is always 1 higher than it really is (for using `nz` with `dec`)
+    ; High byte is always 1 higher than it really is (for using Z with `dec`)
     dec     a
     jr      nz, .countLoop
     
