@@ -34,6 +34,8 @@ hNewKeys::
 hCurrentBank::
     DS 1
 
-; Temporary variable for whatever
-hScratch::
+; Temporary variables for whatever
+hScratch1::
+    DS 1
+hScratch2::
     DS 1

@@ -170,7 +170,7 @@ EngineUpdate::
 .notEarly
     ; Save hit number
     ld      l, a
-    ldh     [hScratch], a
+    ldh     [hScratch1], a
     
     ; Check if the player pressed the hit keys
     ldh     a, [hNewKeys]
@@ -197,7 +197,7 @@ EngineUpdate::
     
     ; OK
     cp      a, HIT_PERFECT_WINDOW / 2
-    ldh     a, [hScratch]   ; Restore hit number
+    ldh     a, [hScratch1]  ; Restore hit number
     ASSERT hHitOkCount == hHitBadCount + 1
     inc     l       ; Doesn't affect carry
     jr      nc, .gotRating

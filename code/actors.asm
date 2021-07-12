@@ -96,7 +96,7 @@ ActorsUpdate::
     dec     a       ; Undo inc
     add     a, a    ; a * 2 (Pointer)
     add     a, [hl] ; a * 3 (+Bank)
-    ldh     [hScratch], a
+    ldh     [hScratch1], a
     
     ; Update actor's animation cel countdown
     ld      hl, wActorCelCountdownTable
@@ -154,7 +154,7 @@ ActorsUpdate::
     pop     bc
     
     ; Call the actor's update routine
-    ldh     a, [hScratch]   ; a = actor type
+    ldh     a, [hScratch1]  ; a = actor type
     add     a, LOW(ActorRoutineTable)
     ld      l, a
     adc     a, HIGH(ActorRoutineTable)
@@ -190,7 +190,7 @@ ActorsUpdate::
     ld      e, a        ; Save in e
     
     ; Find meta-sprite table
-    ldh     a, [hScratch]   ; a = actor type
+    ldh     a, [hScratch1]  ; a = actor type
     add     a, LOW(ActorMetaspriteTable)
     ld      l, a
     ASSERT HIGH(ActorMetaspriteTable.end - 1) == HIGH(ActorMetaspriteTable)
@@ -393,12 +393,12 @@ SECTION "Actor Get Animation Table", ROM0
 
 ; Point hl to the current cel in the current actor's animation table
 ; @param    bc          Actor index
-; @param    [hScratch]  Actor type * 3
+; @param    [hScratch1] Actor type * 3
 ; @return   hl          Pointer to current animation cel data
 ; @return   de          Pointer to animation table
 ActorsGetAnimationCel:
     ; Find animation table
-    ldh     a, [hScratch]   ; a = actor type * 3
+    ldh     a, [hScratch1]  ; a = actor type * 3
     add     a, LOW(ActorAnimationTable)
     ld      l, a
     ASSERT HIGH(ActorAnimationTable.end - 1) == HIGH(ActorAnimationTable)
@@ -429,7 +429,7 @@ ActorsGetAnimationCel:
 SECTION "Actor Set Animation Cel", ROM0
 
 ; @param    bc          Actor index
-; @param    [hScratch]  Actor type * 3
+; @param    [hScratch1] Actor type * 3
 ; @return   hl          Pointer to current animation cel data
 ; @return   de          Pointer to animation table
 ActorsResetCelCountdown::
@@ -438,7 +438,7 @@ ActorsResetCelCountdown::
     push    af
     
     ; Find animation table
-    ldh     a, [hScratch]   ; a = actor type * 3
+    ldh     a, [hScratch1]  ; a = actor type * 3
     add     a, LOW(ActorAnimationTable)
     ld      l, a
     ASSERT HIGH(ActorAnimationTable.end - 1) == HIGH(ActorAnimationTable)
