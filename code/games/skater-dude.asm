@@ -25,6 +25,33 @@ xGameSkaterDude::
     ld      bc, xGameSkaterDudeTiles.end - xGameSkaterDudeTiles
     rst     LCDMemcopy
     
+    ; Set up the background map
+    ld      hl, hMapWidth
+    ld      [hl], MAP_SKATER_DUDE_WIDTH
+    ASSERT hMapHeight == hMapWidth + 1
+    inc     l
+    ld      [hl], MAP_SKATER_DUDE_HEIGHT
+    ASSERT hMapBank == hMapHeight + 1
+    inc     l
+    ld      [hl], BANK(xMapSkaterDude)
+    ASSERT hMapPointer == hMapBank + 1
+    inc     l
+    ld      [hl], LOW(xMapSkaterDude)
+    inc     l
+    ld      [hl], HIGH(xMapSkaterDude)
+    ; Set initial map position
+    ASSERT hMapXPos == hMapPointer + 2
+    inc     l
+    ld      [hl], LOW(MAP_SKATER_DUDE_START_X)
+    inc     l
+    ld      [hl], HIGH(MAP_SKATER_DUDE_START_X)
+    ASSERT hMapYPos == hMapXPos + 2
+    inc     l
+    ASSERT MAP_SKATER_DUDE_START_Y == 0
+    xor     a, a
+    ld      [hli], a
+    ld      [hl], a
+    
     ; Load sprite tiles
     ASSERT BANK(xGameSkaterDudeSpriteTiles) == BANK(@)
     ASSERT xGameSkaterDudeSpriteTiles == xGameSkaterDudeTiles.end
@@ -64,6 +91,8 @@ xGameSkaterDude::
     
     call    EngineUpdate
     call    ActorsUpdate
+    ld      de, SKATER_DUDE_SCROLL_DISTANCE
+    call    MapScrollX
     
     ldh     a, [hHitTableBank]
     and     a, a

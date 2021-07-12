@@ -22,6 +22,7 @@ FIXFLAGS = -v -p $(PADVALUE) -i "$(MFRCODE)" -k "$(LICENSEE)" -l $(OLDLIC) -m $(
 PALFLAGS = -R
 TILEFLAGS = -B 2 -R -T 256
 GFXFLAGS = -u
+res/skater-dude/background.bg.tilemap: GFXFLAGS += -h
 
 SRCS := $(wildcard code/*.asm) $(wildcard code/**/*.asm) $(wildcard data/*.asm) $(wildcard data/**/*.asm)
 ST_SRCS := code/SoundSystem.asm $(wildcard data/music/*.asm) data/sfx.asm soundtest/soundtest.asm
