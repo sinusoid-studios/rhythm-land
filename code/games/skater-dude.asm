@@ -122,10 +122,6 @@ xGameSkaterDudeSpriteTiles:
     INCBIN "res/skater-dude/skater-dude.obj.2bpp", 16 * 2
 .end
 
-xGameSkaterDudeMap:
-    INCBIN "res/skater-dude/background.bg.tilemap"
-.end
-
 xActorSkaterDudeDefinition:
     DB ACTOR_SKATER_DUDE, SKATER_DUDE_X, SKATER_DUDE_GROUND_Y
 
