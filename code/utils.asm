@@ -76,3 +76,33 @@ LCDDrawHex::
     ld      [hli], a    ; 2 cycles
     ; Total 12 cycles
     ret
+
+SECTION "Multiply u8 by u8", ROM0
+
+; Original code copyright 2017-2018 Antonio Niño Díaz
+; (AntonioND/SkyLyrac)
+; Taken from µCity <https://github.com/AntonioND/ucity>
+; Modified slightly in this file
+
+; Multiply a by c and store the result in hl
+; @param    a   Multiplicand (unsigned)
+; @param    c   Multiplier (unsigned)
+; @return   hl  Product (unsigned)
+Multiply::
+    ld      b, 0
+    ld      h, a
+    ld      l, b
+    
+    ; Add (c * current bit place value) to product for every set bit in a
+    REPT 8 - 1
+    add     hl, hl
+    jr      nc, .skip\@
+    add     hl, bc
+.skip\@
+    ENDR
+    
+    ; Use conditional return instead of jump for the last bit
+    add     hl, hl
+    ret     nc
+    add     hl, bc
+    ret

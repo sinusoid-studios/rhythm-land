@@ -26,6 +26,11 @@ VBlankHandler:
     lb      bc, (OAM_COUNT * sizeof_OAM_ATTRS) / DMA_LOOP_CYCLES + 1, LOW(rDMA)
     call    hOAMDMA
     
+    ldh     a, [hMapXPos.low]
+    ldh     [rSCX], a
+    ldh     a, [hMapYPos.low]
+    ldh     [rSCY], a
+    
     ei      ; Timing-insensitive stuff follows
     
     ; Read the joypad

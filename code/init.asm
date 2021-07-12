@@ -17,6 +17,9 @@ Initialize::
     ; a = 0
     ldh     [hVBlankFlag], a
     ldh     [hNextHitKeys], a
+    ldh     [hMapXPos.low], a
+    ldh     [hMapYPos.low], a
+    
     ldh     [hNewKeys], a
     dec     a       ; a = $FF = all pressed
     ; Make all keys pressed so hNewKeys is correct
