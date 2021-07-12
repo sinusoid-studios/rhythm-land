@@ -53,15 +53,15 @@ bin/soundtest.gb: $(patsubst %.asm,obj/%.o,$(ST_SRCS))
 	rgbfix $(FIXFLAGS) $@
 
 # Build the game, along with map and symbol files
-bin/%.gb bin/%.sym bin/%.map: $(GFX) $(patsubst %.asm,obj/%.o,$(SRCS))
+bin/%.gb bin/%.sym bin/%.map: $(patsubst %.asm,obj/%.o,$(SRCS))
 	@mkdir -p $(@D)
-	rgblink $(LDFLAGS) -m bin/$*.map -n bin/$*.sym -o bin/$*.gb $(patsubst %.asm,obj/%.o,$(SRCS))
+	rgblink $(LDFLAGS) -m bin/$*.map -n bin/$*.sym -o bin/$*.gb $^
 	rgbfix $(FIXFLAGS) bin/$*.gb
 
 # Assemble an assembly file and save dependencies
-obj/%.o dep/%.mk: $(GFX) %.asm
+obj/%.o dep/%.mk: %.asm
 	@mkdir -p obj/$(*D) dep/$(*D)
-	rgbasm $(ASFLAGS) -i $(*D) -M dep/$*.mk -MG -MP -MQ obj/$*.o -MQ dep/$*.mk -o obj/$*.o $*.asm
+	rgbasm $(ASFLAGS) -i $(*D) -M dep/$*.mk -MG -MP -MQ obj/$*.o -MQ dep/$*.mk -o obj/$*.o $<
 
 # Graphics conversion
 res/%.pal.json: gfx/%.png
