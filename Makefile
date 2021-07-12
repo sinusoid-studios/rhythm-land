@@ -16,7 +16,7 @@ INCDIRS = code include
 WARNINGS := all extra
 
 ASFLAGS  = -h $(addprefix -i ,$(INCDIRS)) -p $(PADVALUE) $(addprefix -W,$(WARNINGS))
-LDFLAGS  = -p $(PADVALUE)
+LDFLAGS  = -p $(PADVALUE) -d
 FIXFLAGS = -v -p $(PADVALUE) -i "$(MFRCODE)" -k "$(LICENSEE)" -l $(OLDLIC) -m $(MBC) -n $(VERSION) -r $(SRAMSIZE) -t "$(TITLE)" -j
 
 PALFLAGS = -R
