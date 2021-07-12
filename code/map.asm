@@ -32,44 +32,35 @@ hMapYPos::
 
 SECTION "Background Map Scrolling", ROM0
 
-; Scroll the background map horizontally by an arbitrary pixel distance
-; @param    de  Scroll distance
-MapScrollX::
-    ; Add scroll distance to map position
-    ld      hl, hMapXPos
-    ld      a, [hli]    ; Low byte
-    add     a, e
-    ld      b, a        ; Don't overwrite, save for comparing
-    ld      a, [hl]     ; High byte
-    adc     a, d
-    ld      [hld], a    ; Okay to overwrite (not comparing high byte)
-    
-    ; Add scroll distance to hSCX
+; Scroll the background map to the left by 1 pixel
+MapScrollLeft::
+    ; Update hSCX
     ldh     a, [hSCX]
-    add     a, e
+    dec     a
     ldh     [hSCX], a
     
+    ; Update map position
+    ld      hl, hMapXPos
+    ld      a, [hl]     ; Low byte
+    sub     a, LOW(1)
+    ld      [hli], a
+    jr      nc, .noBorrow
+    dec     [hl]        ; High byte
+.noBorrow
     ; Check if just scrolled past a tile boundary
-    ld      a, [hl]     ; Old position
-    and     a, ~7       ; Ignore pixel position (1 tile = 8 pixels)
-    ld      [hl], b     ; Overwrite new position
-    ld      b, a
-    ld      a, [hli]    ; New position
-    and     a, ~7       ; Ignore pixel position
-    cp      a, b        ; Compare old and new *tile* positions
+    ; Ignore non-pixel bits ("tile bits")
+    or      a, ~7
+    ; If just moved to the next tile (%XXXXX000 -> %XXXXX111), a should
+    ; now be %11111111, increment to get 0 if scrolled to new tile
+    inc     a
     ; Didn't scroll to a new tile, finished
-    ret     z
-    
-    ; Theoretically, the above check would wrongly find that no tile
-    ; boundary was crossed if the scroll distance is a multiple of 256.
-    ; However, that's fine by me because a scroll distance greater than
-    ; 255 or less than -255 is ridiculous.
+    ret     nz
     
     ; Scrolled to a new tile -> load a new column of tiles
     
     ; Check if gone past the end of the map
     bit     7, [hl]     ; High byte
-    ; Gone too far left (into negative position)
+    ; Gone too far
     jr      nz, .negative
     
     ; Get X tile position
@@ -83,17 +74,6 @@ MapScrollX::
     rra                 ; pos / 4
     srl     b
     rra                 ; pos / 8
-    
-    ld      b, a
-    ldh     a, [hMapWidth]
-    dec     a           ; Check for > instead of >=
-    cp      a, b
-    jr      nc, .posOk
-    
-    ; Gone too far right
-    xor     a, a
-    ld      [hld], a    ; High byte
-    ld      [hl], a     ; Low byte
     jr      .posOk
 
 .negative
@@ -105,12 +85,12 @@ MapScrollX::
     rl      b           ; pos * 4
     add     a, a
     rl      b           ; pos * 8
-    ; Add scroll distance
-    add     a, e
+    ; Scroll a pixel left
+    sub     a, LOW(1)
     dec     l
     ld      [hli], a    ; Low byte
     ld      a, b
-    adc     a, d
+    sbc     a, HIGH(1)
     ld      [hld], a    ; High byte
     
     ld      a, [hli]    ; Low byte
@@ -118,7 +98,6 @@ MapScrollX::
     jr      .getPos
 
 .posOk
-    ld      a, b
     ; If X is 0 product will be 0
     and     a, a
     jr      z, .skipMultiply

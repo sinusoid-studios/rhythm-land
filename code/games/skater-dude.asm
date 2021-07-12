@@ -91,8 +91,7 @@ xGameSkaterDude::
     
     call    EngineUpdate
     call    ActorsUpdate
-    ld      de, SKATER_DUDE_SCROLL_DISTANCE
-    call    MapScrollX
+    call    MapScrollLeft
     
     ldh     a, [hHitTableBank]
     and     a, a
