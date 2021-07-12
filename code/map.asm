@@ -19,7 +19,6 @@ hMapPointer::
     DS 1
 
 ; Position, in pixels, of the viewport to the current background map
-; Low bytes copied to rSCX and rSCY in the VBlank interrupt handler
 hMapXPos::
 .low::
     DS 1
@@ -45,12 +44,17 @@ MapScrollX::
     adc     a, d
     ld      [hld], a    ; Okay to overwrite (not comparing high byte)
     
+    ; Add scroll distance to hSCX
+    ldh     a, [hSCX]
+    add     a, e
+    ldh     [hSCX], a
+    
     ; Check if just scrolled past a tile boundary
     ld      a, [hl]     ; Old position
     and     a, ~7       ; Ignore pixel position (1 tile = 8 pixels)
     ld      [hl], b     ; Overwrite new position
     ld      b, a
-    ld      a, [hl]     ; New position
+    ld      a, [hli]    ; New position
     and     a, ~7       ; Ignore pixel position
     cp      a, b        ; Compare old and new *tile* positions
     ; Didn't scroll to a new tile, finished
@@ -63,9 +67,16 @@ MapScrollX::
     
     ; Scrolled to a new tile -> load a new column of tiles
     
+    ; Check if gone past the end of the map
+    bit     7, [hl]     ; High byte
+    ; Gone too far left (into negative position)
+    jr      nz, .negative
+    
     ; Get X tile position
-    ld      a, [hli]    ; Low byte
     ld      b, [hl]     ; High byte
+    dec     l
+    ld      a, [hli]    ; Low byte
+.getPos
     srl     b
     rra                 ; pos / 2
     srl     b
@@ -73,9 +84,41 @@ MapScrollX::
     srl     b
     rra                 ; pos / 8
     
-    ; Save for drawing on the background map
-    ldh     [hScratch1], a
+    ld      b, a
+    ldh     a, [hMapWidth]
+    dec     a           ; Check for > instead of >=
+    cp      a, b
+    jr      nc, .posOk
     
+    ; Gone too far right
+    xor     a, a
+    ld      [hld], a    ; High byte
+    ld      [hl], a     ; Low byte
+    jr      .posOk
+
+.negative
+    ldh     a, [hMapWidth]
+    ld      b, 0
+    add     a, a
+    rl      b           ; pos * 2
+    add     a, a
+    rl      b           ; pos * 4
+    add     a, a
+    rl      b           ; pos * 8
+    ; Add scroll distance
+    add     a, e
+    dec     l
+    ld      [hli], a    ; Low byte
+    ld      a, b
+    adc     a, d
+    ld      [hld], a    ; High byte
+    
+    ld      a, [hli]    ; Low byte
+    ld      b, [hl]     ; High byte
+    jr      .getPos
+
+.posOk
+    ld      a, b
     ; If X is 0 product will be 0
     and     a, a
     jr      z, .skipMultiply
@@ -102,9 +145,6 @@ MapScrollX::
     srl     b
     rra                 ; pos / 8
     
-    ; Save for drawing on the background map
-    ldh     [hScratch2], a
-    
     ld      l, a
     ld      h, 0
     add     hl, de
@@ -128,17 +168,19 @@ MapScrollX::
     ld      [rROMB0], a
     
     ; Copy map data to the background map
-    ldh     a, [hScratch2]  ; Y position
-    and     a, SCRN_VY_B - 1
+    ldh     a, [hSCY]
+    ; a = y * 8
+    and     a, (SCRN_VY_B - 1) << 3
+    ldh     [hScratch2], a
     ld      l, a
     ld      h, 0
-    add     hl, hl          ; y * 2
-    add     hl, hl          ; y * 4
-    add     hl, hl          ; y * 8
-    add     hl, hl          ; y * 16
-    add     hl, hl          ; y * 32
+    add     hl, hl      ; y * 16
+    add     hl, hl      ; y * 32
     
-    ldh     a, [hScratch1]  ; X position
+    ldh     a, [hSCX]
+    srl     a           ; x / 2
+    srl     a           ; x / 4
+    srl     a           ; x / 8
     and     a, SCRN_VX_B - 1
     ld      c, a
     ld      b, HIGH(_SCRN0)
