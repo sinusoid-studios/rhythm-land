@@ -118,7 +118,10 @@ xBackgroundTilesSkaterDude:
 .end
 
 xSpriteTilesSkaterDude:
+    ; Remove the first 2 tiles which are blank on purpose to get rid of
+    ; any blank objects in the image
     INCBIN "res/skater-dude/skater-dude.obj.2bpp", 16 * 2
+    INCBIN "res/skater-dude/skateboard.obj.2bpp", 16 * 2
 .end
 
 xActorSkaterDudeDefinition:

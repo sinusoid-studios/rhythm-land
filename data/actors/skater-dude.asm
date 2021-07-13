@@ -4,16 +4,19 @@ SECTION "Skater Dude Actor Animation Data", ROMX
 
 xActorSkaterDudeAnimation::
     ; Skating
-    DB 0, MUSIC_SKATER_DUDE_SPEED * 2
-    DB 1, MUSIC_SKATER_DUDE_SPEED * 2
+    DB 0, MUSIC_SKATER_DUDE_SPEED
+    DB 1, MUSIC_SKATER_DUDE_SPEED
+    DB 2, MUSIC_SKATER_DUDE_SPEED
+    DB 3, MUSIC_SKATER_DUDE_SPEED
     DB ANIMATION_GOTO, 0
     
     ; Jumping
-    DB 2, 2
-    DB 3, 2
-    DB 4, (MUSIC_SKATER_DUDE_SPEED * 4) - ((2 + 2) + (3 + 2))
-    DB 5, 3
-    DB 3, 2
+    DB 4, 2
+    DB 5, 2
+    DB 6, (MUSIC_SKATER_DUDE_SPEED * 4) - ((2 + 2) + (3 + 2))
+    DB 7, 3
+    DB 5, 2
+    DB ANIMATION_GOTO, 0
     DB ANIMATION_GOTO, 0
 
 SECTION "Skater Dude Actor Meta-Sprite Data", ROMX
@@ -22,6 +25,8 @@ xActorSkaterDudeMetasprites::
     ; Skating
     DW .skating1
     DW .skating2
+    DW .skating3
+    DW .skating4
     
     ; Jumping
     DW .jumping1
@@ -30,20 +35,56 @@ xActorSkaterDudeMetasprites::
     DW .jumping4
 
 .skating1
+    ; Skater Dude
     DB 0, 0, $00, 0
     DB 0, 8, $02, 0
     DB 0, 16, $04, 0
     DB 16, 0, $12, 0
     DB 16, 8, $14, 0
     DB 16, 16, $16, 0
+    ; Skateboard
+    DB 24, 0, $5E, OAMF_PAL1
+    DB 24, 8, $60, OAMF_PAL1
+    DB 24, 16, $62, OAMF_PAL1
     DB METASPRITE_END
 .skating2
+    ; Skater Dude
+    DB 0, 0, $00, 0
+    DB 0, 8, $02, 0
+    DB 0, 16, $04, 0
+    DB 16, 0, $12, 0
+    DB 16, 8, $14, 0
+    DB 16, 16, $16, 0
+    ; Skateboard
+    DB 24, 0, $64, OAMF_PAL1
+    DB 24, 8, $60, OAMF_PAL1
+    DB 24, 16, $66, OAMF_PAL1
+    DB METASPRITE_END
+.skating3
+    ; Skater Dude
     DB 0, 0, $06, 0
     DB 0, 8, $08, 0
     DB 0, 16, $0A, 0
     DB 16, 0, $18, 0
     DB 16, 8, $1A, 0
     DB 16, 16, $1C, 0
+    ; Skateboard
+    DB 24, 0, $68, OAMF_PAL1
+    DB 24, 8, $60, OAMF_PAL1
+    DB 24, 16, $6A, OAMF_PAL1
+    DB METASPRITE_END
+.skating4
+    ; Skater Dude
+    DB 0, 0, $06, 0
+    DB 0, 8, $08, 0
+    DB 0, 16, $0A, 0
+    DB 16, 0, $18, 0
+    DB 16, 8, $1A, 0
+    DB 16, 16, $1C, 0
+    ; Skateboard
+    DB 24, 0, $6C, OAMF_PAL1
+    DB 24, 8, $60, OAMF_PAL1
+    DB 24, 16, $6E, OAMF_PAL1
     DB METASPRITE_END
 
 .jumping1
