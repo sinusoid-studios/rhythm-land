@@ -89,7 +89,7 @@ ActorsUpdate::
     ldh     [hCurrentBank], a
     ld      [rROMB0], a
     
-    ret
+    jp      HideUnusedObjects
 
 .update
     ; Save this actor's type * 3 for quick access
