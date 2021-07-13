@@ -81,13 +81,7 @@ RatingScreen::
 .draw
     call    LCDDrawHex
 .wait
-    ; Wait for VBlank
-    halt
-    ldh     a, [hVBlankFlag]
-    and     a, a
-    jr      z, .wait
-    xor     a, a
-    ldh     [hVBlankFlag], a
+    rst     WaitVBlank
     
     ldh     a, [hNewKeys]
     and     a, PADF_A | PADF_START

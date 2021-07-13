@@ -9,9 +9,8 @@ hVBlankFlag::
 SECTION "VBlank Interrupt Vector", ROM0[$0040]
 
     push    af
-    ; Signal VBlank occurred
-    ld      a, 1
-    ldh     [hVBlankFlag], a
+    ldh     a, [hSCX]
+    ldh     [rSCX], a
     jp      VBlankHandler
     
     ; Ensure no space is wasted
@@ -20,16 +19,14 @@ SECTION "VBlank Interrupt Vector", ROM0[$0040]
 SECTION "VBlank Interrupt Handler", ROM0
 
 VBlankHandler:
+    ldh     a, [hSCY]
+    ldh     [rSCY], a
+    
     push    bc
     
     ld      a, HIGH(wShadowOAM)
     lb      bc, (OAM_COUNT * sizeof_OAM_ATTRS) / DMA_LOOP_CYCLES + 1, LOW(rDMA)
     call    hOAMDMA
-    
-    ldh     a, [hSCX]
-    ldh     [rSCX], a
-    ldh     a, [hSCY]
-    ldh     [rSCY], a
     
     ei      ; Timing-insensitive stuff follows
     
@@ -61,6 +58,14 @@ VBlankHandler:
     
     ; Bank was never changed, no need to restore
     
+    ldh     a, [hVBlankFlag]
+    and     a, a
+    jr      z, .normalReturn
+    xor     a, a
+    ldh     [hVBlankFlag], a
+    ; Called from WaitVBlank -> return to caller of that function
+    pop     af
+.normalReturn
     pop     bc
     pop     af
     ret         ; Interrupts already enabled

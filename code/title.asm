@@ -12,13 +12,7 @@ TitleScreen::
     call    Music_Play
     
 .loop
-    ; Wait for VBlank
-    halt
-    ldh     a, [hVBlankFlag]
-    and     a, a
-    jr      z, .loop
-    xor     a, a
-    ldh     [hVBlankFlag], a
+    rst     WaitVBlank
     
     ld      a, [wMusicSyncData]
     and     a, a

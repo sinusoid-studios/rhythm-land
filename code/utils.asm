@@ -56,6 +56,18 @@ MemcopySmall::
     jr      nz, MemcopySmall
     ret
 
+SECTION "RST $30", ROM0[$0030]
+
+; Wait for a VBlank interrupt to occur
+; The VBlank interrupt handler will return to the caller of this
+; function once it is finished
+WaitVBlank::
+    ld      a, 1
+    ldh     [hVBlankFlag], a
+.loop
+    halt
+    jr      .loop
+
 SECTION "Draw Hex", ROM0
 
 ; @param    a   Value to draw

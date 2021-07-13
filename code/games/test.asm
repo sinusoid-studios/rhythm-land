@@ -26,13 +26,7 @@ xGameTest::
     call    EngineInit
 
 .loop
-    ; Wait for VBlank
-    halt
-    ldh     a, [hVBlankFlag]
-    and     a, a
-    jr      z, .loop
-    xor     a, a
-    ldh     [hVBlankFlag], a
+    rst     WaitVBlank
     
     call    EngineUpdate
     
