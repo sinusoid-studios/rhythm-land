@@ -77,8 +77,7 @@ xGameSkaterDude::
     call    Music_Play
     
     ; Set up game data
-    lb      bc, BANK(xHitTableSkaterDude), BANK(xCueTableSkaterDude)
-    ld      de, xCueTableSkaterDude
+    ld      c, BANK(xHitTableSkaterDude)
     ld      hl, xHitTableSkaterDude
     call    EngineInit
 

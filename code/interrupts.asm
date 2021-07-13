@@ -89,6 +89,10 @@ STATHandler:
     push    de
     push    hl
     
+    ; Clear any previous music sync data
+    xor     a, a
+    ld      [wMusicSyncData], a
+    
     ; Save current bank to restore when finished
     ldh     a, [hCurrentBank]
     push    af

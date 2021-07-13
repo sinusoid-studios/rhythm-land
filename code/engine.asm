@@ -2,22 +2,6 @@ INCLUDE "defines.inc"
 
 SECTION "Engine Variables", HRAM
 
-; Bank number of current game's cue table
-hCueTableBank:
-    DS 1
-; Pointer to current position in current game's cue table
-hCueTablePointer:
-.low
-    DS 1
-.high
-    DS 1
-; Number of frames until next cue
-hCueCountdown:
-.low
-    DS 1
-.high
-    DS 1
-
 ; Bank number of current game's hit table
 ; Also used for telling whether or not there are any more hits left in
 ; the game. No more hits = 0
@@ -70,9 +54,7 @@ hLastRatedHitNumber:
 SECTION "Engine Initialization", ROM0
 
 ; Prepare the engine for a game
-; @param    c   Bank number of cue table
-; @param    b   Bank number of hit table
-; @param    de  Pointer to cue table
+; @param    c   Bank number of hit table
 ; @param    hl  Pointer to hit table
 EngineInit::
     ; Save current bank to restore when finished
@@ -80,7 +62,7 @@ EngineInit::
     push    af
     
     ; Set hit table pointer
-    ld      a, b
+    ld      a, c
     ldh     [hHitTableBank], a
     ldh     [hCurrentBank], a
     ld      [rROMB0], a
@@ -90,17 +72,8 @@ EngineInit::
     ldh     [hHitTablePointer.high], a
     call    SetNextHit.skip
     
-    ; Set cue table pointer
-    ld      hl, hCueTableBank
-    ld      a, c
-    ld      [hli], a
-    ASSERT hCueTablePointer == hCueTableBank + 1
-    ld      [hl], e
-    inc     l
-    ld      [hl], d
-    
     ; Reset hit rating counts
-    ld      l, LOW(hHitBadCount)
+    ld      hl, hHitBadCount
     xor     a, a
     ld      [hli], a
     ASSERT hHitOkCount == hHitBadCount + 1
@@ -114,13 +87,7 @@ EngineInit::
     dec     a       ; Haven't rated any hits
     ld      [hli], a
     
-    ; Set first cue
-    ld      a, c
-    ldh     [hCurrentBank], a
-    ld      [rROMB0], a
-    ld      l, e
-    ld      h, d
-    jp      SetNextCue
+    jp      BankedReturn
 
 SECTION "Engine Update", ROM0
 
@@ -245,35 +212,16 @@ EngineUpdate::
     call    z, SetNextHit
 
 .updateCues
-    ldh     a, [hCueTableBank]
-    and     a, a    ; Bank number 0 = no cue updates (finished)
-    jr      z, BankedReturn
+    ; Check for any cues
+    ld      a, [wMusicSyncData]
+    ld      b, a    ; Save for multiplying by 3
+    add     a, a    ; Bit 7 set = cue
+    jr      nc, BankedReturn
     
-    ld      hl, hCueCountdown
-    dec     [hl]
-    jr      nz, BankedReturn    ; Still waiting; nothing to do
-    inc     l
-    dec     [hl]
-    jr      nz, BankedReturn
-    
-    ; Countdown hit 0, call the cue subroutine
-    ; Get the current position in the cue table
-    ; a = [hCueTableBank]
-    ldh     [hCurrentBank], a
-    ld      [rROMB0], a
-    ld      hl, hCueTablePointer
-    ld      a, [hli]
-    ld      h, [hl]
-    ld      l, a
-    ; Fall-through
-
-; Call the next cue's subroutine
-; @param    hl  Pointer to current position in cue table (hCueTablePointer)
-FireCue:
     ; Get a pointer to the cue's subroutine
-    ld      a, [hl]     ; a = Cue ID
-    add     a, a        ; a * 2 (Pointer)
-    add     a, [hl]     ; a * 3 (+Bank)
+    ; a = cue ID * 2
+    res     7, b
+    add     a, b    ; a * 3 (+Bank)
     add     a, LOW(CueRoutineTable)
     ld      l, a
     ASSERT HIGH(CueRoutineTable.end - 1) == HIGH(CueRoutineTable)
@@ -288,63 +236,6 @@ FireCue:
     ld      l, a
     rst     JP_HL
     
-    ; Move to next cue
-    ldh     a, [hCueTableBank]
-    ldh     [hCurrentBank], a
-    ld      [rROMB0], a
-    ld      hl, hCueTablePointer
-    ld      a, [hli]
-    ld      h, [hl]
-    ld      l, a
-    inc     hl
-    ; Fall-through
-
-; Update the cue countdown for the next cue in the table
-; @param    hl  Pointer to current position in cue table (hCueTablePointer)
-SetNextCue:
-    ; Get next cue delay
-    ld      a, [hli]
-    ASSERT CUES_END == -1
-    inc     a       ; a = -1
-    jr      z, .cuesEnd
-    
-    dec     a       ; Undo inc
-    ; Set countdown
-    ldh     [hCueCountdown.low], a
-    ld      a, [hli]
-    jr      z, .zeroCue
-.notZeroCue
-    ldh     [hCueCountdown.high], a
-    ; Save new pointer
-    ld      a, l
-    ldh     [hCueTablePointer.low], a
-    ld      a, h
-    ldh     [hCueTablePointer.high], a
-    jr      BankedReturn
-
-.zeroCue
-    ; Both low and high bytes are 0
-    and     a, a
-    jr      nz, .notZeroCue
-    
-    ; Fire this cue immediately
-    ; Save new pointer
-    ld      a, l
-    ldh     [hCueTablePointer.low], a
-    ld      a, h
-    ldh     [hCueTablePointer.high], a
-    
-    ; Fire this cue
-    ldh     a, [hCueTableBank]
-    ldh     [hCurrentBank], a
-    ld      [rROMB0], a
-    jr      FireCue
-
-.cuesEnd
-    ; No more cues
-    ; Set cue table bank to 0 to signal no cue updates
-    ; a = 0
-    ldh     [hCueTableBank], a
     ; Fall-through
 
 BankedReturn:
