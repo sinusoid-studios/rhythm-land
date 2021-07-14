@@ -1,10 +1,9 @@
-; Y speed value set when Skater Dude jumps
-DEF SKATER_DUDE_JUMP_HEIGHT EQU 32
-; Y position of the ground, to figure out where to stop Skater Dude from
-; falling
-DEF SKATER_DUDE_GROUND_Y EQU SCRN_Y * 2/3
+; Y position of Skater Dude normally
+DEF SKATER_DUDE_Y EQU SCRN_Y * 1/2 + 5
 ; X position of Skater Dude (stays constant the entire game)
-DEF SKATER_DUDE_X EQU SCRN_X * 5/6
+DEF SKATER_DUDE_X EQU SCRN_X * 5/6 - 8
+; Number of pixels Skater Dude moves vertically when jumping
+DEF SKATER_DUDE_JUMP_HEIGHT EQU 32
 
 ; Animation constants
 DEF CEL_SKATER_DUDE_JUMPING EQU 5
