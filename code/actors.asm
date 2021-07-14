@@ -175,12 +175,16 @@ ActorsUpdate::
     ld      h, a
     
     ld      a, [hli]
+    and     a, a
+    ; If the bank number is 0, the actor has no update routine
+    jr      z, .noUpdate
     ldh     [hCurrentBank], a
     ld      [rROMB0], a
     ld      a, [hli]
     ld      h, [hl]
     ld      l, a
     rst     JP_HL
+.noUpdate
     
     ; Render this actor
     

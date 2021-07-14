@@ -1,5 +1,13 @@
 INCLUDE "defines.inc"
 
+SECTION "Null Pointer", ROM0[$0000]
+
+; Don't use this unless the code responsible for jumping to the pointer
+; checks for this!
+; The only part of the game that does is the ActorsUpdate function when
+; calling an actor's update routine.
+Null::
+
 SECTION "RST $00", ROM0[$0000]
 
 JP_HL::
