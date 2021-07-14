@@ -192,12 +192,14 @@ ActorsUpdate::
     ld      hl, wActorYPosTable
     add     hl, bc
     ld      a, [hl]
+    add     a, 16
     ldh     [hActorYPos], a
     
     ; Save actor's X position for use in meta-sprites
     ld      hl, wActorXPosTable
     add     hl, bc
     ld      a, [hl]
+    add     a, 8
     ldh     [hActorXPos], a
     
     call    ActorsGetAnimationCel
