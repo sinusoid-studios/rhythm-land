@@ -5,7 +5,7 @@ DEF START EQU TRANSITION_START_POS << 16
 
 SECTION "Screen Transition Window Position Table", ROM0, ALIGN[8]
 
-; Quartic ease-in
+; Exponential ease-in
 ; Formula from <https://gizma.com/easing>
 TransitionPosTable::
     ; Extra values for blocks above the bottom one (transition starts
