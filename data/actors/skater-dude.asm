@@ -306,7 +306,5 @@ xActorSkaterDudeMetasprites::
     DB 16, 16, $58, 0
     DB 16, 24, $5A, 0
     DB 16, 32, $5C, 0
-    DB METASPRITE_END
-
 .nothing
     DB METASPRITE_END
