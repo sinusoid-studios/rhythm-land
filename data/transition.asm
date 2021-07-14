@@ -18,8 +18,11 @@ TransitionPosTable::
         DEF TIME_FRACTION = DIV(TIME << 16, TRANSITION_DURATION << 16)
         DEF VALUE = (MUL(CHANGE, POW(2.0, MUL(10.0, TIME_FRACTION - 1.0))) + START) >> 16
         ; WX=166 doesn't work properly due to hardware bugs, and there
-        ; isn't much I can do about it but skip that value entirely
-        IF VALUE != 166
+        ; isn't much to do about it but skip that value entirely.
+        ; Also, since the start and end positions are set before and
+        ; after the transition anyway, it's not necessary to include
+        ; them in this table.
+        IF VALUE != 166 && VALUE != TRANSITION_START_POS && VALUE != TRANSITION_END_POS
             DB VALUE
         ENDC
     ENDR
