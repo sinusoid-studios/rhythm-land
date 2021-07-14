@@ -12,3 +12,4 @@ MACRO lb
 ENDM
 
 INCLUDE "hits.inc"
+INCLUDE "actors.inc"

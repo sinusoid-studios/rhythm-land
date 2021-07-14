@@ -3,68 +3,71 @@ INCLUDE "defines.inc"
 SECTION "Skater Dude Actor Animation Data", ROMX
 
 xActorSkaterDudeAnimation::
-    ; Skating
-    DB 0, MUSIC_SKATER_DUDE_SPEED
-    DB 1, MUSIC_SKATER_DUDE_SPEED
-    DB 2, MUSIC_SKATER_DUDE_SPEED
-    DB 3, MUSIC_SKATER_DUDE_SPEED
-    DB ANIMATION_GOTO, 0
-    
-    ; Jumping
-    DB 4, 2
-    DB 5, 2
-    DB 6, 2
-    DB 7, (MUSIC_SKATER_DUDE_SPEED * 4) - (2 * 3) - (5 * 3)
-    DB 8, 5
-    DB 9, 5
-    DB 10, 5
-    DB ANIMATION_GOTO, 1
-    
-    ; Falling
-    DB 11, 4
-    DB 12, 4
-    DB 13, 4
-    DB 14, 4
-    DB 15, 4
-    DB 16, 4
-    DB 17, 4
-    DB 18, (MUSIC_SKATER_DUDE_SPEED * 4) - (4 * 7)
-    DB 19, MUSIC_SKATER_DUDE_SPEED * 1
-    DB 18, MUSIC_SKATER_DUDE_SPEED * 1
-    DB 19, MUSIC_SKATER_DUDE_SPEED * 1
-    DB 18, MUSIC_SKATER_DUDE_SPEED * 1
-    DB ANIMATION_GOTO, 0
+    animation_def xActorSkaterDude
+
+.skating
+    cel skating1, MUSIC_SKATER_DUDE_SPEED
+.skatingSkip
+    cel skating2, MUSIC_SKATER_DUDE_SPEED
+    cel skating3, MUSIC_SKATER_DUDE_SPEED
+    cel skating4, MUSIC_SKATER_DUDE_SPEED
+    goto_cel .skating
+
+.jumping
+    cel jumping1, 2
+    cel jumping2, 2
+    cel jumping3, 2
+    cel jumping4, (MUSIC_SKATER_DUDE_SPEED * 4) - (2 * 3) - (5 * 3)
+    cel jumping5, 5
+    cel jumping6, 5
+    cel jumping7, 5
+    goto_cel .skatingSkip
+
+.falling
+    cel falling1, 4
+    cel falling2, 4
+    cel falling3, 4
+    cel falling4, 4
+    cel falling5, 4
+    cel falling6, 4
+    cel falling7, 4
+    cel falling8, (MUSIC_SKATER_DUDE_SPEED * 4) - (4 * 7)
+    cel nothing, MUSIC_SKATER_DUDE_SPEED * 1
+    cel falling8, MUSIC_SKATER_DUDE_SPEED * 1
+    cel nothing, MUSIC_SKATER_DUDE_SPEED * 1
+    cel falling8, MUSIC_SKATER_DUDE_SPEED * 1
+    goto_cel .skating
 
 SECTION "Skater Dude Actor Meta-Sprite Data", ROMX
 
 xActorSkaterDudeMetasprites::
     ; Skating
-    DW .skating1
-    DW .skating2
-    DW .skating3
-    DW .skating4
+    metasprite .skating1
+    metasprite .skating2
+    metasprite .skating3
+    metasprite .skating4
     
     ; Jumping
-    DW .jumping1
-    DW .jumping2
-    DW .jumping3
-    DW .jumping4
-    DW .jumping5
-    DW .jumping6
-    DW .jumping7
+    metasprite .jumping1
+    metasprite .jumping2
+    metasprite .jumping3
+    metasprite .jumping4
+    metasprite .jumping5
+    metasprite .jumping6
+    metasprite .jumping7
     
     ; Falling
-    DW .falling1
-    DW .falling2
-    DW .falling3
-    DW .falling4
-    DW .falling5
-    DW .falling6
-    DW .falling7
-    DW .falling8
+    metasprite .falling1
+    metasprite .falling2
+    metasprite .falling3
+    metasprite .falling4
+    metasprite .falling5
+    metasprite .falling6
+    metasprite .falling7
+    metasprite .falling8
     
     ; Nothing
-    DW .nothing
+    metasprite .nothing
 
 .skating1
     ; Skater Dude
