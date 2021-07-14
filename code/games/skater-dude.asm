@@ -12,9 +12,9 @@ hSkaterDudePosIndex:
 hSkaterDudePosCountdown:
     DS 1
 
-SECTION "Skater Dude Game", ROMX
+SECTION "Skater Dude Game Setup", ROMX
 
-xGameSkaterDude::
+xGameSetupSkaterDude::
     ld      a, 60 * 2
     ldh     [hEndDelay], a
     
@@ -68,6 +68,28 @@ xGameSkaterDude::
     ld      a, -1
     ldh     [hSkaterDudePosIndex], a
     
+    ; Set up game data
+    ld      c, BANK(xHitTableSkaterDude)
+    ld      hl, xHitTableSkaterDude
+    jp      EngineInit
+
+xBackgroundTilesSkaterDude:
+    INCBIN "res/skater-dude/background.bg.2bpp"
+.end
+
+xSpriteTilesSkaterDude:
+    ; Remove the first 2 tiles which are blank on purpose to get rid of
+    ; any blank objects in the image
+    INCBIN "res/skater-dude/skater-dude.obj.2bpp", 16 * 2
+    INCBIN "res/skater-dude/skateboard.obj.2bpp", 16 * 2
+.end
+
+xActorSkaterDudeDefinition:
+    DB ACTOR_SKATER_DUDE, SKATER_DUDE_X, SKATER_DUDE_GROUND_Y
+
+SECTION "Skater Dude Game Loop", ROMX
+
+xGameSkaterDude::
     ; Start music
     ld      c, BANK(Inst_SkaterDude)
     ld      de, Inst_SkaterDude
@@ -76,11 +98,6 @@ xGameSkaterDude::
     ld      de, Music_SkaterDude
     call    Music_Play
     
-    ; Set up game data
-    ld      c, BANK(xHitTableSkaterDude)
-    ld      hl, xHitTableSkaterDude
-    call    EngineInit
-
 .loop
     rst     WaitVBlank
     
@@ -106,20 +123,6 @@ xGameSkaterDude::
     ld      b, SFX_SKATER_DUDE_JUMP
     call    SFX_Play
     jr      .loop
-
-xBackgroundTilesSkaterDude:
-    INCBIN "res/skater-dude/background.bg.2bpp"
-.end
-
-xSpriteTilesSkaterDude:
-    ; Remove the first 2 tiles which are blank on purpose to get rid of
-    ; any blank objects in the image
-    INCBIN "res/skater-dude/skater-dude.obj.2bpp", 16 * 2
-    INCBIN "res/skater-dude/skateboard.obj.2bpp", 16 * 2
-.end
-
-xActorSkaterDudeDefinition:
-    DB ACTOR_SKATER_DUDE, SKATER_DUDE_X, SKATER_DUDE_GROUND_Y
 
 SECTION "Skater Dude Warning Cue", ROMX
 

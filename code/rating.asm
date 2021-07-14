@@ -87,7 +87,8 @@ RatingScreen::
     and     a, PADF_A | PADF_START
     jr      z, .wait
     
-    jp      GameSelect
+    ld      a, ID_GAME_SELECT
+    jp      Transition
 
 SECTION "Percentage Calculation", ROM0
 

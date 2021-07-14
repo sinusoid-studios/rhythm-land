@@ -46,3 +46,8 @@ hSCX::
     DS 1
 hSCY::
     DS 1
+
+; The ID of the current game
+; See constants/games.inc for possible values
+hGameID::
+    DS 1

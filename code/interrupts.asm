@@ -61,12 +61,23 @@ VBlankHandler:
     ldh     a, [hVBlankFlag]
     and     a, a
     jr      z, .normalReturn
+    inc     a
+    jr      z, .finished
     xor     a, a
     ldh     [hVBlankFlag], a
     ; Called from WaitVBlank -> return to caller of that function
-    pop     af
-.normalReturn
     pop     bc
+    pop     af
+    jr      .return
+.normalReturn
+    ; a = 0
+    dec     a
+    ; Use -1 to make the flag non-zero but allow checking for it in
+    ; order to know when to ignore a non-zero VBlank flag value
+    ldh     [hVBlankFlag], a
+.finished
+    pop     bc
+.return
     pop     af
     ret         ; Interrupts already enabled
 
@@ -86,10 +97,15 @@ VBlankHandler:
 SECTION "STAT Interrupt Vector", ROM0[$0048]
 
 STATHandler:
+    push    af
+    
+    ldh     a, [rSTAT]
+    and     a, STATF_LYCF
+    jr      z, HBlankHandler
+    
     ; Just updating sound, which is interruptable
     ei
     
-    push    af
     push    bc
     push    de
     push    hl
@@ -147,3 +163,9 @@ STATHandler:
     ; Not waiting for specifically the beginning of HBlank (i.e. just
     ; waiting for HBlank) would result in 20 - 7 (pop + reti) = only 13
     ; cycles!!!
+
+HBlankHandler:
+    ld      a, [hScratch1]
+    ldh     [rWX], a
+    pop     af
+    reti

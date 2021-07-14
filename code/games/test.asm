@@ -6,9 +6,9 @@ SECTION UNION "Game Variables", HRAM
 hEndDelay:
     DS 1
 
-SECTION "Test Game", ROMX
+SECTION "Test Game Setup", ROMX
 
-xGameTest::
+xGameSetupTest::
     ld      a, 60
     ldh     [hEndDelay], a
     
@@ -23,9 +23,11 @@ xGameTest::
     ; Set up game data
     ld      c, BANK(xHitTableTest)
     ld      hl, xHitTableTest
-    call    EngineInit
+    jp      EngineInit
 
-.loop
+SECTION "Test Game Loop", ROMX
+
+xGameTest::
     rst     WaitVBlank
     
     call    EngineUpdate
@@ -90,14 +92,14 @@ xGameTest::
     
     ldh     a, [hLastHit.low]
     and     a, a
-    jr      nz, .loop
+    jr      nz, xGameTest
     ldh     a, [hLastHit.high]
     and     a, a
-    jr      nz, .loop
+    jr      nz, xGameTest
     
     ld      b, SFX_BEEP
     call    SFX_Play
-    jr      .loop
+    jr      xGameTest
 
 SECTION "Test Cue", ROMX
 

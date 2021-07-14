@@ -1,13 +1,13 @@
 INCLUDE "defines.inc"
 
-SECTION "Current Game", HRAM
+SECTION "Currently Select Game ID", HRAM
 
-hCurrentGame::
+hCurrentGameSelection:
     DS 1
 
-SECTION "Game Select Screen", ROM0
+SECTION "Game Select Screen Setup", ROM0
 
-GameSelect::
+SetupGameSelectScreen::
     ; Load tiles
     ld      de, HexDigitTiles
     ld      hl, $9000
@@ -48,12 +48,17 @@ GameSelect::
     jr      nz, .rowLoop
     
     ; Set up defaults
-    ld      hl, hCurrentGame
+    ld      hl, hCurrentGameSelection
     ld      [hl], 0
     ld      de, vGameID
     ; Draw the initial game ID
-    call    UpdateGameID
+    jp      UpdateGameID
 
+SECTION "Game Select Screen Loop", ROM0
+
+GameSelectScreen::
+    ld      hl, hCurrentGameSelection
+    ld      de, vGameID
 .loop
     rst     WaitVBlank
     
@@ -74,23 +79,9 @@ GameSelect::
     and     a, PADF_A | PADF_START
     jr      z, .loop
 
-    ; Start the selected game
+    ; Jump to the selected game
     ld      a, [hl]
-    add     a, a        ; a * 2 (Pointer)
-    add     a, [hl]     ; a * 3 (+Bank)
-    add     a, LOW(GameTable)
-    ld      l, a
-    ASSERT HIGH(GameTable.end - 1) == HIGH(GameTable)
-    ld      h, HIGH(GameTable)
-    
-    ; Jump to game
-    ld      a, [hli]
-    ldh     [hCurrentBank], a
-    ld      [rROMB0], a
-    ld      a, [hli]
-    ld      h, [hl]
-    ld      l, a
-    jp      hl
+    jp      Transition
 
 .increment
     inc     [hl]
@@ -114,7 +105,7 @@ GameSelect::
     call    UpdateGameID
     jr      .loop
 
-SECTION "Game Select Game ID Update", ROM0
+SECTION "Game Select Screen Game ID Update", ROM0
 
 ; @param    hl  Pointer to game ID
 ; @param    de  Pointer to destination on map

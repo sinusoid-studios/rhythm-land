@@ -1,17 +1,19 @@
 INCLUDE "defines.inc"
 
-SECTION "Title Screen", ROM0
+SECTION "Title Screen Setup", ROM0
 
-TitleScreen::
+SetupTitleScreen::
     ; Start music
     ld      c, BANK(Inst_Title)
     ld      de, Inst_Title
     call    Music_PrepareInst
     ld      c, BANK(Music_Title)
     ld      de, Music_Title
-    call    Music_Play
-    
-.loop
+    jp      Music_Play
+
+SECTION "Title Screen Loop", ROM0
+
+TitleScreen::
     rst     WaitVBlank
     
     ld      a, [wMusicSyncData]
@@ -35,7 +37,8 @@ TitleScreen::
 .noSyncData
     ldh     a, [hNewKeys]
     and     a, PADF_A | PADF_START
-    jr      z, .loop
+    jr      z, TitleScreen
     
     ; Move to game select screen
-    jp      GameSelect
+    ld      a, ID_GAME_SELECT
+    jp      Transition

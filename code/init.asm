@@ -51,6 +51,25 @@ Initialize::
     ld      c, OAMDMA.end - OAMDMA
     call    MemcopySmall
     
+    ; Fill the window black
+    ; TODO: Find something better
+    
+    ; Black tile
+    ld      hl, $8FF0
+    ld      a, $FF
+    ld      c, 16
+    rst     MemsetSmall
+    ; Fill window tilemap
+    ld      hl, _SCRN1
+    ; a = $FF
+    lb      bc, HIGH(SCRN_VX_B * SCRN_Y_B) + 1, LOW(SCRN_VX_B * SCRN_Y_B)
+.loop
+    ld      [hli], a
+    dec     c
+    jr      nz, .loop
+    dec     b
+    jr      nz, .loop
+    
     ; Initialize SoundSystem
     call    SoundSystem_Init
     ld      c, BANK(SFX_Table)
@@ -62,6 +81,9 @@ Initialize::
     ld      hl, wActorTypeTable
     ld      c, MAX_NUM_ACTORS
     rst     MemsetSmall
+    
+    ; Starting with the title screen -> set it up
+    call    SetupTitleScreen
     
     ; Set up interrupts
     
@@ -80,7 +102,7 @@ Initialize::
     ei
     
     ; Turn on the LCD
-    ld      a, LCDCF_ON | LCDCF_BG8800 | LCDCF_BG9800 | LCDCF_BGON | LCDCF_OBJ16 | LCDCF_OBJON
+    ld      a, LCDCF_ON | LCDCF_BG8800 | LCDCF_BG9800 | LCDCF_BGON | LCDCF_WIN9C00 | LCDCF_OBJ16 | LCDCF_OBJON
     ldh     [rLCDC], a
     
     ; Jump to the title screen
