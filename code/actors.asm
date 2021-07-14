@@ -129,8 +129,21 @@ ActorsUpdate::
     sub     a, l
     ld      h, a
     inc     hl      ; Get duration
+    jr      .setCountdown
 .noGoto
-    ld      a, [hl]
+    ASSERT ANIMATION_KILL_ACTOR == -2
+    inc     a
+    jr      nz, .setCountdown
+    
+    ; Kill this actor
+    ld      hl, wActorTypeTable
+    add     hl, bc
+    ld      [hl], ACTOR_EMPTY
+    ; Don't update because the actor is now gone
+    jr      .next
+
+.setCountdown
+    ld      a, [hl] ; a = cel duration
     ld      hl, wActorCelCountdownTable
     add     hl, bc
     ld      [hl], a

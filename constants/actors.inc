@@ -10,5 +10,7 @@ DEF ACTOR_EMPTY EQU -1
 
 ; Animation special values
 DEF ANIMATION_GOTO EQU -1
+DEF ANIMATION_KILL_ACTOR EQU -2
+
 ; Meta-sprite special values
 DEF METASPRITE_END EQU -128
