@@ -1,5 +1,4 @@
 INCLUDE "defines.inc"
-INCLUDE "hits.inc"
 
 DEF MUSIC_SPEED EQU MUSIC_FILE_SELECT_SPEED
 
