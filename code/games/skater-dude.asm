@@ -82,6 +82,7 @@ xSpriteTilesSkaterDude:
     ; any blank objects in the image
     INCBIN "res/skater-dude/skater-dude.obj.2bpp", 16 * 2
     INCBIN "res/skater-dude/skateboard.obj.2bpp", 16 * 2
+    INCBIN "res/skater-dude/danger-alert.obj.2bpp"
 .end
 
 xActorSkaterDudeDefinition:
@@ -124,13 +125,16 @@ xGameSkaterDude::
     call    SFX_Play
     jr      .loop
 
-SECTION "Skater Dude Warning Cue", ROMX
+SECTION "Skater Dude Danger Alert Cue", ROMX
 
-xCueSkaterDudeWarning::
-    ldh     a, [rBGP]
-    cpl
-    ldh     [rBGP], a
-    ret
+xCueDangerAlert::
+    ; Create a Danger Alert actor
+    ASSERT BANK(xActorDangerAlertDefinition) == BANK(@)
+    ld      de, xActorDangerAlertDefinition
+    jp      ActorsNew
+
+xActorDangerAlertDefinition:
+    DB ACTOR_DANGER_ALERT, DANGER_ALERT_X, DANGER_ALERT_Y
 
 SECTION "Skater Dude Actor", ROMX
 

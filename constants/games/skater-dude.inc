@@ -5,6 +5,10 @@ DEF SKATER_DUDE_X EQU SCRN_X * 5/6 - 8
 ; Number of pixels Skater Dude moves vertically when jumping
 DEF SKATER_DUDE_JUMP_HEIGHT EQU 32
 
+; Position of the Danger Alert
+DEF DANGER_ALERT_X EQU 8 * 1
+DEF DANGER_ALERT_Y EQU 12 * 8 - 2
+
 ; Animation constants
 DEF CEL_SKATER_DUDE_JUMPING EQU 5
 DEF CEL_SKATER_DUDE_FALLING EQU 13
