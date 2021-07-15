@@ -45,12 +45,19 @@ VBlankHandler:
     ld      b, a
     
     ; Update hNewKeys
-    ld      a, [hPressedKeys]
+    ldh     a, [hPressedKeys]
     xor     a, b        ; a = keys that changed state
+    ld      c, a        ; Save for hReleasedKeys
     and     a, b        ; a = keys that changed to pressed
-    ld      [hNewKeys], a
+    ldh     [hNewKeys], a
+    ; Update hReleasedKeys
+    ld      a, b        ; a = pressed keys
+    cpl                 ; a = unpressed keys
+    and     a, c        ; a = keys that changed to unpressed
+    ldh     [hReleasedKeys], a
+    
     ld      a, b
-    ld      [hPressedKeys], a
+    ldh     [hPressedKeys], a
     
     ; Done reading
     ld      a, P1F_GET_NONE

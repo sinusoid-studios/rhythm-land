@@ -102,8 +102,17 @@ SECTION "Engine Update", ROM0
 EngineUpdate::
     ldh     a, [hNewKeys]
     and     a, a
+    jr      nz, .hit
+    
+    ; Check if this game uses release hits
+    ldh     a, [hGameHitKeys]
+    bit     HITB_RELEASE, a
     jr      z, .noHit
     
+    ldh     a, [hReleasedKeys]
+    and     a, a
+    jr      z, .noHit
+.hit
     ; Check if these keys are hit keys in this game
     ld      b, a
     ldh     a, [hGameHitKeys]
@@ -152,9 +161,17 @@ EngineUpdate::
     ldh     [hScratch1], a
     
     ; Check if the player pressed the hit keys
+    ld      a, [de]
+    bit     HITB_RELEASE, a
+    jr      nz, .release
     ldh     a, [hNewKeys]
+    DB      $C2     ; jp nz, a16 to consume the next 2 bytes
+.release
+    ldh     a, [hReleasedKeys]
+    
     ld      b, a
     ld      a, [de]
+    res     HITB_RELEASE, a
     and     a, b
     ; The player hit the wrong keys
     jr      z, .wrong

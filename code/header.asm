@@ -28,6 +28,9 @@ hPressedKeys::
 ; Keys that were just pressed this frame
 hNewKeys::
     DS 1
+; Keys that were just released this frame
+hReleasedKeys::
+    DS 1
 
 ; Current bank number of the $4000-$7FFF range, for interrupt handlers
 ; to restore
