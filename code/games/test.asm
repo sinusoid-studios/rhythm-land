@@ -12,14 +12,6 @@ xGameSetupTest::
     ld      a, 60
     ldh     [hEndDelay], a
     
-    ; Start music
-    ld      c, BANK(Inst_FileSelect)
-    ld      de, Inst_FileSelect
-    call    Music_PrepareInst
-    ld      c, BANK(Music_FileSelect)
-    ld      de, Music_FileSelect
-    call    Music_Play
-    
     ; Set up game data
     ld      c, BANK(xHitTableTest)
     ld      hl, xHitTableTest
@@ -28,6 +20,15 @@ xGameSetupTest::
 SECTION "Test Game Loop", ROMX
 
 xGameTest::
+    ; Start music
+    ld      c, BANK(Inst_FileSelect)
+    ld      de, Inst_FileSelect
+    call    Music_PrepareInst
+    ld      c, BANK(Music_FileSelect)
+    ld      de, Music_FileSelect
+    call    Music_Play
+    
+.loop
     rst     WaitVBlank
     
     call    EngineUpdate
@@ -92,14 +93,14 @@ xGameTest::
     
     ldh     a, [hLastHit.low]
     and     a, a
-    jr      nz, xGameTest
+    jr      nz, .loop
     ldh     a, [hLastHit.high]
     and     a, a
-    jr      nz, xGameTest
+    jr      nz, .loop
     
     ld      b, SFX_BEEP
     call    SFX_Play
-    jr      xGameTest
+    jr      .loop
 
 SECTION "Test Cue", ROMX
 
