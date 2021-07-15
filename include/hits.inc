@@ -22,8 +22,3 @@ MACRO fhit
     DW FRAMES
     DB \2
 ENDM
-
-; Signal the end of a hit table
-MACRO hits_end
-    DB HITS_END
-ENDM

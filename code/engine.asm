@@ -13,6 +13,9 @@ hHitTablePointer:
     DS 1
 .high
     DS 1
+; Keys that are used as hit keys in the current game
+hGameHitKeys::
+    DS 1
 ; Keys that the player must press for the next hit
 hNextHitKeys::
     DS 1
@@ -61,11 +64,15 @@ EngineInit::
     ldh     a, [hCurrentBank]
     push    af
     
-    ; Set hit table pointer
+    ; Set hit table bank
     ld      a, c
     ldh     [hHitTableBank], a
     ldh     [hCurrentBank], a
     ld      [rROMB0], a
+    ; Save this game's hit keys
+    ld      a, [hli]
+    ldh     [hGameHitKeys], a
+    ; Save hit table pointer
     ld      a, l
     ldh     [hHitTablePointer.low], a
     ld      a, h
@@ -97,8 +104,14 @@ EngineUpdate::
     and     a, a
     jr      z, .noHit
     
+    ; Check if these keys are hit keys in this game
+    ld      b, a
+    ldh     a, [hGameHitKeys]
+    and     a, b
+    ; These keys do nothing in this game; ignore
+    jr      z, .noHit
+    
     ; Player pressed keys: Give rating based on how on-time it was
-    ld      b, a    ; Save for checking correctness
     ld      hl, hLastHit.high
     ld      e, LOW(hLastHitKeys)
     ld      d, h
@@ -143,8 +156,8 @@ EngineUpdate::
     ld      b, a
     ld      a, [de]
     and     a, b
-    ; The player hit other keys; ignore
-    jr      z, .noHit
+    ; The player hit the wrong keys
+    jr      z, .wrong
     
     ld      b, a    ; Save pressed hit keys for rating count
     
@@ -182,6 +195,14 @@ EngineUpdate::
     srl     b       ; b = pressed hit keys
     jr      z, .noHit
     jr      nc, .next
+    jr      .countLoop
+
+.wrong
+    ; The player hit the wrong keys -> give them a Bad for every wrong
+    ; key
+    ldh     a, [hGameHitKeys]
+    and     a, b    ; b = [hNewKeys]
+    ld      l, LOW(hHitBadCount)
     jr      .countLoop
 
 .noHit
