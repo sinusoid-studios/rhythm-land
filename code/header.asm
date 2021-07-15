@@ -42,6 +42,8 @@ hScratch1::
     DS 1
 hScratch2::
     DS 1
+hScratch3::
+    DS 1
 
 ; Mirrors of rSCX and rSCY, copied to rSCX and rSCY in the VBlank
 ; interrupt handler

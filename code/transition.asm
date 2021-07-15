@@ -9,6 +9,10 @@ Transition::
     ; Save next screen's game ID
     ldh     [hGameID], a
     
+    ; Set initial music fade delay (use hScratch3 for it)
+    ld      a, TRANSITION_MUSIC_FADE_SPEED
+    ldh     [hScratch3], a
+    
     ; Signal transition coming on
     xor     a, a
     ldh     [hScratch2], a
@@ -37,6 +41,7 @@ Transition::
     
     ; hl used as pointer to current position for each block,
     ; recalculated for each block
+    ASSERT HIGH(TransitionPosTable.end) == HIGH(TransitionPosTable)
     ld      h, d
     ; The final position of the window, for when the pointer to the
     ; current position is past the end of the table
@@ -62,8 +67,20 @@ Transition::
     ; Check if this part of the transition is over
     ld      a, e
     cp      a, LOW(TransitionPosTable.end)
-    jr      c, .nextFrame
+    jr      nc, .covered
     
+    ; Set first block's position before LY 0
+    ld      a, [de]
+    ldh     [hScratch1], a
+    ldh     [rWX], a
+    
+    ; This must also be called when the transition is coming off if it
+    ; cuts into that time
+    ASSERT TRANSITION_MUSIC_FADE_SPEED * 8 <= TRANSITION_DURATION + TRANSITION_DELAY
+    call    MusicFadeOut
+    jr      .loop
+
+.covered
     ; The screen is now entirely covered, so setup for the next screen
     ; can be done!
     
@@ -99,6 +116,7 @@ Transition::
     ld      c, TRANSITION_DELAY
 .delayLoop
     rst     WaitVBlank
+    call    MusicFadeOut
     dec     c
     jr      nz, .delayLoop
     
@@ -119,8 +137,7 @@ Transition::
     ASSERT LOW(TransitionPosTable) == 0
     inc     a
     jr      z, .finished
-
-.nextFrame
+    
     ; Set first block's position before LY 0
     ld      a, [de]
     ldh     [hScratch1], a
@@ -188,3 +205,39 @@ Transition::
     ld      h, [hl]
     ld      l, a
     jp      hl
+
+SECTION "Music Fade Out", ROM0
+
+; This can be inlined if it doesn't cut into the delay (separate loop)
+ASSERT TRANSITION_MUSIC_FADE_SPEED * 8 > TRANSITION_DURATION
+
+MusicFadeOut:
+    ldh     a, [hScratch3]
+    dec     a
+    jr      nz, .noDecrease
+    ; Subtract 1 from volume on each terminal
+    ldh     a, [rNR50]
+    sub     a, $11
+    jr      c, .musicOff
+    ldh     [rNR50], a
+    ; Reset countdown
+    ld      a, TRANSITION_MUSIC_FADE_SPEED
+    jr      .noDecrease
+.musicOff
+    ; Stop the music (master volume = 0 isn't silent)
+    push    bc
+    push    de
+    call    Music_Pause
+    pop     de
+    pop     bc
+    ASSERT HIGH(TransitionPosTable.end) == HIGH(TransitionPosTable)
+    ld      h, d
+    ; Reset master volume to max, excluding VIN signal
+    ld      a, $FF ^ (AUDVOL_VIN_LEFT | AUDVOL_VIN_RIGHT)
+    ldh     [rNR50], a
+    ; Countdown will become -1 next frame
+    ASSERT LOW(-1) > TRANSITION_DURATION - TRANSITION_MUSIC_FADE_SPEED * 8
+    xor     a, a
+.noDecrease
+    ldh     [hScratch3], a
+    ret

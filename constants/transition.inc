@@ -9,3 +9,6 @@ DEF TRANSITION_END_POS EQU 0 + 7
 
 ; Number of frames difference (delay) between each block
 DEF TRANSITION_BLOCK_DIFFERENCE EQU 2
+
+; Number of frames between each master volume decrease step
+DEF TRANSITION_MUSIC_FADE_SPEED EQU (TRANSITION_DURATION * 3/2) / 8
