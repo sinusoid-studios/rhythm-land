@@ -7,8 +7,8 @@ xActorSkaterDudeAnimation::
 
 .skating
     cel skating1, MUSIC_SKATER_DUDE_SPEED
-.skatingSkip
     cel skating2, MUSIC_SKATER_DUDE_SPEED
+.skatingSkip
     cel skating3, MUSIC_SKATER_DUDE_SPEED
     cel skating4, MUSIC_SKATER_DUDE_SPEED
     goto_cel .skating
