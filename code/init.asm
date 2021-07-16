@@ -81,6 +81,12 @@ Initialize::
     ld      hl, wActorTypeTable
     ld      c, MAX_NUM_ACTORS
     rst     MemsetSmall
+    ; Reset all actor speed fractional accumulators
+    xor     a, a
+    ld      hl, wActorXSpeedAccTable
+    ASSERT wActorYSpeedAccTable == wActorXSpeedAccTable + MAX_NUM_ACTORS
+    ld      c, MAX_NUM_ACTORS * 2
+    rst     MemsetSmall
     
     ; Starting with the title screen -> set it up
     call    SetupTitleScreen

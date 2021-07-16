@@ -86,7 +86,9 @@ xSpriteTilesSkaterDude:
 .end
 
 xActorSkaterDudeDefinition:
-    DB ACTOR_SKATER_DUDE, SKATER_DUDE_X, SKATER_DUDE_Y
+    DB ACTOR_SKATER_DUDE
+    DB SKATER_DUDE_X, SKATER_DUDE_Y
+    DB 0, 0
 
 SECTION "Skater Dude Game Loop", ROMX
 
@@ -134,7 +136,9 @@ xCueDangerAlert::
     jp      ActorsNew
 
 xActorDangerAlertDefinition:
-    DB ACTOR_DANGER_ALERT, DANGER_ALERT_X, DANGER_ALERT_Y
+    DB ACTOR_DANGER_ALERT
+    DB DANGER_ALERT_X, DANGER_ALERT_Y
+    DB 0, 0
 
 SECTION "Skater Dude Actor", ROMX
 

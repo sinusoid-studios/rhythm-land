@@ -359,35 +359,25 @@ ActorsNew::
     inc     de
     ld      [hl], a
     
-    ; Reset actor speed
-    xor     a, a
-    
+    ; Set actor speed
     ld      hl, wActorXSpeedTable
     add     hl, bc
+    ld      a, [de]
+    inc     de
     ld      [hl], a
     ld      hl, wActorYSpeedTable
     add     hl, bc
-    ld      [hl], a
-    ld      hl, wActorXSpeedAccTable
-    add     hl, bc
-    ld      [hl], a
-    ld      hl, wActorYSpeedAccTable
-    add     hl, bc
+    ld      a, [de]
+    inc     de
     ld      [hl], a
     
     ; Reset actor animation cel
     ld      hl, wActorCelTable
     add     hl, bc
-    ; a = 0
-    ld      [hl], a
-    
-    ; a = 0
-    ASSERT ANIMATION_OVERRIDE_NONE == -1
-    dec     a
-    
+    ld      [hl], 0
     ld      hl, wActorCelOverrideTable
     add     hl, bc
-    ld      [hl], a
+    ld      [hl], ANIMATION_OVERRIDE_NONE
     
     ret
 
