@@ -90,6 +90,11 @@ xActorSkaterDudeDefinition:
     DB SKATER_DUDE_X, SKATER_DUDE_Y
     DB 0, 0
 
+SECTION "Skater Dude Game Background Map", ROMX
+
+xMapSkaterDude:
+    INCBIN "res/skater-dude/background.bg.tilemap"
+
 SECTION "Skater Dude Game Loop", ROMX
 
 xGameSkaterDude::
