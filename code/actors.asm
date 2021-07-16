@@ -44,17 +44,30 @@ wActorXSpeedAccTable::
 wActorYSpeedAccTable::
     DS MAX_NUM_ACTORS
 
-SECTION "Actor Animation Cel Table", WRAM0
+SECTION "Actor Animation Cel Tables", WRAM0
 
 ; Index of the current animation cel, used to find meta-sprite data in
 ; the actor's type's animation table
 wActorCelTable::
     DS MAX_NUM_ACTORS
 
-SECTION "Actor Animation Cel Countdown Table", WRAM0
+; A value other than ANIMATION_OVERRIDE_NONE here means an animation override
+; is in effect, and that value will be used instead of the main
+; animation's current cel number
+; The main animation will continue to be updated as normal: animation
+; overrides are used to keep the main animation in sync with the music
+; while another animation plays temporarily
+wActorCelOverrideTable::
+    DS MAX_NUM_ACTORS
+
+SECTION "Actor Animation Cel Countdown Tables", WRAM0
 
 ; Number of frames left until the next animation cel
 wActorCelCountdownTable::
+    DS MAX_NUM_ACTORS
+
+; Ditto, but for the override animation
+wActorCelOverrideCountdownTable::
     DS MAX_NUM_ACTORS
 
 SECTION "Actor Update", ROM0
@@ -98,57 +111,32 @@ ActorsUpdate::
     add     a, [hl] ; a * 3 (+Bank)
     ldh     [hScratch1], a
     
-    ; Update actor's animation cel countdown
-    ld      hl, wActorCelCountdownTable
-    add     hl, bc
-    dec     [hl]
-    jr      nz, .noCelUpdate
+    ; Update actor's regular animation
+    call    ActorsUpdateAnimation
     
-    ; Animation cel countdown reached 0, increment animation cel ID
-    ld      hl, wActorCelTable
+    ; Check for override animation
+    ld      hl, wActorCelOverrideTable
     add     hl, bc
-    inc     [hl]
-    
-    call    ActorsGetAnimationCel
-    ; Check if this is the goto special value
-    ld      a, [hli]
-    ASSERT ANIMATION_GOTO == -1
+    ld      a, [hl]
+    ASSERT ANIMATION_OVERRIDE_NONE == -1
     inc     a
-    jr      nz, .noGoto
+    jr      z, .noOverrideAnimationUpdate
     
-    ld      a, [hl] ; a = new cel number
-    ld      hl, wActorCelTable
-    add     hl, bc
-    ld      [hl], a
+    ; Update actor's override animation
+    ASSERT wActorCelOverrideTable == wActorCelTable + MAX_NUM_ACTORS
+    ASSERT wActorCelOverrideCountdownTable == wActorCelCountdownTable + MAX_NUM_ACTORS
+    ; Override animation tables directly follow the regular animation
+    ; tables, so MAX_NUM_ACTORS (the tables' sizes) can simply be added
+    ; to the entity index in bc
+    push    bc
+    ASSERT MAX_NUM_ACTORS * 2 < 256
+    ld      a, c
+    add     a, MAX_NUM_ACTORS
+    ld      c, a
+    call    ActorsUpdateAnimation
+    pop     bc
+.noOverrideAnimationUpdate
     
-    ; Use this new cel's duration
-    add     a, a    ; a * 2 (Meta-sprite + Duration)
-    add     a, e
-    ld      l, a
-    adc     a, d
-    sub     a, l
-    ld      h, a
-    inc     hl      ; Get duration
-    jr      .setCountdown
-.noGoto
-    ASSERT ANIMATION_KILL_ACTOR == -2
-    inc     a
-    jr      nz, .setCountdown
-    
-    ; Kill this actor
-    ld      hl, wActorTypeTable
-    add     hl, bc
-    ld      [hl], ACTOR_EMPTY
-    ; Don't update because the actor is now gone
-    jr      .next
-
-.setCountdown
-    ld      a, [hl] ; a = cel duration
-    ld      hl, wActorCelCountdownTable
-    add     hl, bc
-    ld      [hl], a
-    
-.noCelUpdate
     ; Update the actor's position
     ; X position
     call    ActorsAddSpeedToPos
@@ -202,8 +190,30 @@ ActorsUpdate::
     add     a, 8
     ldh     [hActorXPos], a
     
-    call    ActorsGetAnimationCel
+    ; Use actor's override animation cel if an animation override is in
+    ; effect
+    ld      hl, wActorCelOverrideTable
+    add     hl, bc
+    ld      a, [hl]
+    ASSERT ANIMATION_OVERRIDE_NONE == -1
+    inc     a
+    jr      nz, .override
     
+    ; No animation override -> get regular animation cel
+    call    ActorsGetAnimationCel
+    jr      .render
+.override
+    ; Animation override -> get animation override cel
+    ASSERT wActorCelOverrideTable == wActorCelTable + MAX_NUM_ACTORS
+    ASSERT wActorCelOverrideCountdownTable == wActorCelCountdownTable + MAX_NUM_ACTORS
+    push    bc
+    ASSERT MAX_NUM_ACTORS * 2 < 256
+    ld      a, c
+    add     a, MAX_NUM_ACTORS
+    ld      c, a
+    call    ActorsGetAnimationCel
+    pop     bc
+.render
     ld      a, [hl]     ; a = meta-sprite number
     add     a, a        ; a * 2 (Pointer)
     ld      e, a        ; Save in e
@@ -349,9 +359,9 @@ ActorsNew::
     inc     de
     ld      [hl], a
     
+    ; Reset actor speed
     xor     a, a
     
-    ; Reset actor speed
     ld      hl, wActorXSpeedTable
     add     hl, bc
     ld      [hl], a
@@ -367,6 +377,15 @@ ActorsNew::
     
     ; Reset actor animation cel
     ld      hl, wActorCelTable
+    add     hl, bc
+    ; a = 0
+    ld      [hl], a
+    
+    ; a = 0
+    ASSERT ANIMATION_OVERRIDE_NONE == -1
+    dec     a
+    
+    ld      hl, wActorCelOverrideTable
     add     hl, bc
     ld      [hl], a
     
@@ -411,6 +430,85 @@ ActorsAddSpeedToPos:
     
     ret
 
+SECTION "Actor Animation Update", ROM0
+
+; Update an actor's animation cel countdown and update its cel number as
+; well if necessary
+; @param    bc  Actor index
+ActorsUpdateAnimation:
+    ; Update actor's animation cel countdown
+    ld      hl, wActorCelCountdownTable
+    add     hl, bc
+    dec     [hl]
+    ; If not reached 0 yet, there's nothing to do
+    ret     nz
+    
+    ; Animation cel countdown reached 0, increment animation cel number
+    ld      hl, wActorCelTable
+    add     hl, bc
+    inc     [hl]
+    
+    call    ActorsGetAnimationCel
+    ; Check if this is a command (bit 7 set)
+    bit     7, [hl]
+    jr      nz, .command
+.setCountdown
+    inc     hl      ; Get duration
+    ld      a, [hl] ; a = cel duration
+    ld      hl, wActorCelCountdownTable
+    add     hl, bc
+    ld      [hl], a
+    ret
+
+.command
+    ; Figure out which command this is
+    ld      a, [hli]
+    and     a, LOW(~$80)
+    ASSERT ANIMATION_GOTO & ~$80 == 0
+    jr      z, .goto
+    ASSERT ANIMATION_KILL_ACTOR & ~$80 == 1
+    dec     a
+    jr      z, .killActor
+    ASSERT ANIMATION_OVERRIDE_END & ~$80 == 2
+    ASSERT NUM_ANIMATION_SPECIAL_VALUES == 3
+    
+    ; Animation override end
+    ; WARNING: This will break if the animation override end command is
+    ; encountered outside of an animation override, since this code
+    ; assumes bc has the animation override offset!
+    ld      hl, wActorCelTable
+    add     hl, bc
+    ; hl should now point to the actor's spot in wActorCelOverrideTable
+    ld      [hl], ANIMATION_OVERRIDE_NONE
+    ret
+
+.goto
+    ; Goto: Jump to another position in the animation
+    ld      a, [hl] ; a = new cel number
+    ld      hl, wActorCelTable
+    add     hl, bc
+    ld      [hl], a
+    
+    ; Use this new cel's duration instead
+    add     a, a    ; a * 2 (Meta-sprite + Duration)
+    add     a, e
+    ld      l, a
+    adc     a, d
+    sub     a, l
+    ld      h, a
+    jr      .setCountdown
+
+.killActor
+    ; Kill this actor
+    ; WARNING: This will break if the kill actor command is encountered
+    ; in an animation override, since bc isn't actually correct!
+    ld      hl, wActorTypeTable
+    add     hl, bc
+    ld      [hl], ACTOR_EMPTY
+    ; Don't update because the actor is now gone
+    pop     af      ; Skip return to ActorsUpdate
+    jp      ActorsUpdate.next
+
 SECTION "Actor Get Animation Table", ROM0
 
 ; Point hl to the current cel in the current actor's animation table
@@ -450,11 +548,21 @@ ActorsGetAnimationCel:
 
 SECTION "Actor Set Animation Cel", ROM0
 
+; Set an actor's current cel and set the cel countdown to its starting
+; value
+; @param    a           Cel number
 ; @param    bc          Actor index
 ; @param    [hScratch1] Actor type * 3
 ; @return   hl          Pointer to current animation cel data
 ; @return   de          Pointer to animation table
-ActorsResetCelCountdown::
+ActorsSetCel::
+    ; Set new cel number
+    ld      hl, wActorCelTable
+    add     hl, bc
+    ld      [hl], a
+    ; Save new cel number for later reference
+    ldh     [hScratch2], a
+    
     ; Save current bank to restore when finished
     ldh     a, [hCurrentBank]
     push    af
@@ -475,9 +583,7 @@ ActorsResetCelCountdown::
     ld      e, a
     
     ; Get actor's current cel
-    ld      hl, wActorCelTable
-    add     hl, bc
-    ld      a, [hl] ; a = cel number
+    ldh     a, [hScratch2]
     ; Get current cel's duration
     add     a, a    ; a * 2 (Meta-sprite + Duration)
     add     a, e
@@ -497,4 +603,28 @@ ActorsResetCelCountdown::
     pop     af
     ldh     [hCurrentBank], a
     ld      [rROMB0], a
+    ret
+
+SECTION "Actor Set Animation Override Cel", ROM0
+
+; Set an actor's animation override cel and set the override cel \
+; countdown to its starting value
+; @param    a           Cel number
+; @param    bc          Actor index
+; @param    [hScratch1] Actor type * 3
+; @return   hl          Pointer to current animation cel data
+; @return   de          Pointer to animation table
+ActorsSetAnimationOverride::
+    ASSERT wActorCelOverrideTable == wActorCelTable + MAX_NUM_ACTORS
+    ASSERT wActorCelOverrideCountdownTable == wActorCelCountdownTable + MAX_NUM_ACTORS
+    push    bc
+    ld      b, a    ; Save cel number
+    ASSERT MAX_NUM_ACTORS * 2 < 256
+    ld      a, c
+    add     a, MAX_NUM_ACTORS
+    ld      c, a
+    ld      a, b    ; Restore cel number
+    ld      b, 0
+    call    ActorsSetCel
+    pop     bc
     ret

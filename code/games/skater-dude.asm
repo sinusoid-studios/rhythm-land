@@ -185,10 +185,8 @@ xActorSkaterDude::
     inc     a
     ldh     [hSkaterDudePosCountdown], a
     
-    ld      hl, wActorCelTable
-    add     hl, bc
-    ld      [hl], CEL_SKATER_DUDE_JUMPING
-    jp      ActorsResetCelCountdown
+    ld      a, CEL_SKATER_DUDE_JUMPING
+    jp      ActorsSetCel
 
 JumpPositionTable:
     DB SKATER_DUDE_Y - SKATER_DUDE_JUMP_HEIGHT * 1/3, 1
