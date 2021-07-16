@@ -435,14 +435,17 @@ SoundSystem_Init::
 	ld	e,4
 	IF (SOUNDSYSTEM_LARGE_ROM)
 .instbankloop:
-	ld	a,LOW(BANK(Music_InstrumentEnd))
+	ASSERT(BANK(Music_InstrumentEnd) == 0)
+	; use bank 1 instead of 0 so as to not trigger a bgb exception
+	ld	a,LOW(1)
 	ld	[hl+],a
-	ld	a,HIGH(BANK(Music_InstrumentEnd))
+	ASSERT(HIGH(1) == 0)
+	xor	a
 	ld	[hl+],a
 	dec	e
 	jr	nz,.instbankloop
 	ELSE
-	ld	a,BANK(Music_InstrumentEnd)
+	ld	a,1
 .instbankloop:
 	ld	[hl+],a
 	dec	e
@@ -510,8 +513,6 @@ SoundSystem_Init::
 	ldh	[rAUDTERM],a
 
 	ret
-
-SECTION "Music_InstrumentEnd",ROMX
 
 ; dummy instrument to init/clear instrument pointers
 Music_InstrumentEnd:
