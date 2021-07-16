@@ -76,6 +76,42 @@ WaitVBlank::
     halt
     jr      .loop
 
+SECTION "LCDMemcopyMap", ROM0
+
+; Copy a 20x18 tilemap to the background map, even if the LCD is on
+; @param    de  Pointer to map data
+; @param    hl  Pointer to destination
+LCDMemcopyMap::
+    ld      c, SCRN_Y_B
+.rowLoop
+    DEF UNROLL = 2
+    ASSERT UNROLL * (2 + 2 + 1) <= 16
+    ASSERT SCRN_X_B % UNROLL == 0
+    ld      b, SCRN_X_B / UNROLL
+.tileLoop
+    ldh     a, [rSTAT]
+    and     a, STATF_BUSY
+    jr      nz, .tileLoop
+    
+    REPT UNROLL
+    ld      a, [de]     ; 2 cycles
+    ld      [hli], a    ; 2 cycles
+    inc     de          ; 1 cycle
+    ENDR
+    dec     b
+    jr      nz, .tileLoop
+    
+    ; Move to the next row
+    ld      a, c
+    ld      c, SCRN_VX_B - SCRN_X_B
+    ASSERT HIGH(SCRN_VX_B - SCRN_X_B) == 0
+    ; b = 0
+    add     hl, bc
+    ld      c, a
+    dec     c
+    jr      nz, .rowLoop
+    ret
+
 SECTION "Draw Hex", ROM0
 
 ; @param    a   Value to draw
