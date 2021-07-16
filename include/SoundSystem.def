@@ -36,6 +36,18 @@ SOUNDSYSTEM_GBC_COMPATIBLE	EQU	1
 ; - CPU, code size, and RAM usage is slightly more if this is enabled.
 
 ;-------------------------------
+;SOUNDSYSTEM_ROM_BANKING	EQU	0
+
+; By default, SoundSystem will automatically store and change ROM banks.
+; However, if your ROM does not use banking (i.e. it is a 32KByte ROM),
+; set SOUNDSYSTEM_ROM_BANKING to 0, and the current ROM bank will be
+; left alone.
+;
+; Notes:
+; - If SOUNDSYSTEM_ROM_BANKING is not defined, banking will be enabled.
+; - CPU, code size, and RAM usage is slightly less if this is disabled.
+
+;-------------------------------
 ;SOUNDSYSTEM_CODE_BANK	EQU	1
 
 ; By default, SoundSystem will place its code and data in ROM bank 0.
