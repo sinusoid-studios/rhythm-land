@@ -8,7 +8,6 @@ xActorSkaterDudeAnimation::
 .skating
     cel skating1, MUSIC_SKATER_DUDE_SPEED
     cel skating2, MUSIC_SKATER_DUDE_SPEED
-.skatingSkip
     cel skating3, MUSIC_SKATER_DUDE_SPEED
     cel skating4, MUSIC_SKATER_DUDE_SPEED
     goto_cel .skating
@@ -21,7 +20,7 @@ xActorSkaterDudeAnimation::
     cel jumping5, 5
     cel jumping6, 5
     cel jumping7, 5
-    goto_cel .skatingSkip
+    DB ANIMATION_OVERRIDE_END
 
 .falling
     cel falling1, 4
@@ -36,7 +35,7 @@ xActorSkaterDudeAnimation::
     cel falling8, MUSIC_SKATER_DUDE_SPEED * 1
     cel nothing, MUSIC_SKATER_DUDE_SPEED * 1
     cel falling8, MUSIC_SKATER_DUDE_SPEED * 1
-    goto_cel .skating
+    DB ANIMATION_OVERRIDE_END
 
 SECTION "Skater Dude Actor Meta-Sprite Data", ROMX
 

@@ -186,7 +186,7 @@ xActorSkaterDude::
     ldh     [hSkaterDudePosCountdown], a
     
     ld      a, CEL_SKATER_DUDE_JUMPING
-    jp      ActorsSetCel
+    jp      ActorsSetAnimationOverride
 
 JumpPositionTable:
     DB SKATER_DUDE_Y - SKATER_DUDE_JUMP_HEIGHT * 1/3, 1
