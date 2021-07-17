@@ -137,21 +137,12 @@ xGameSkaterDude::
     
     ldh     a, [hHitTableBank]
     and     a, a
-    jr      nz, :+
+    jr      nz, .loop
     
     ld      hl, hEndDelay
     dec     [hl]
     ; Finished, go to the rating screen
     jp      z, RatingScreen
-    
-:
-    ldh     a, [hNewKeys]
-    bit     PADB_A, a
-    jr      z, .loop
-    
-    ; Player pressed A, play jump sound effect
-    ld      b, SFX_SKATER_DUDE_JUMP
-    call    SFX_Play
     jr      .loop
 
 SECTION "Skater Dude Danger Alert Cue", ROMX
@@ -253,6 +244,22 @@ xActorSkaterDude::
     inc     a
     ldh     [hSkaterDudePosCountdown], a
     
+    ; Depending on the hit rating, play the appropriate sound effect
+    ldh     a, [hLastHitRating]
+    ASSERT HIT_BAD < HIT_OK && HIT_PERFECT > HIT_OK
+    sub     a, HIT_OK + 1
+    ; If Bad or OK, play the wonky jump sound effect
+    ld      a, SFX_SKATER_DUDE_JUMP_OK
+    jr      c, .notPerfect
+    ; If Perfect, play the normal jump sound effect
+    ASSERT SFX_SKATER_DUDE_JUMP_PERFECT == SFX_SKATER_DUDE_JUMP_OK + 1
+    inc     a
+.notPerfect
+    push    bc
+    ld      b, a
+    call    SFX_Play
+    pop     bc
+.noSFX
     ld      a, CEL_SKATER_DUDE_JUMPING
     jp      ActorsSetAnimationOverride
 
