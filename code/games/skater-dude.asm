@@ -161,9 +161,9 @@ xActorSkaterDude::
     inc     [hl]
     ld      a, [hl]
     add     a, a
-    add     a, LOW(JumpPositionTable)
+    add     a, LOW(xJumpPositionTable)
     ld      l, a
-    adc     a, HIGH(JumpPositionTable)
+    adc     a, HIGH(xJumpPositionTable)
     sub     a, l
     ld      h, a
     ld      a, [hli]
@@ -197,7 +197,7 @@ xActorSkaterDude::
     ld      a, CEL_SKATER_DUDE_JUMPING
     jp      ActorsSetAnimationOverride
 
-JumpPositionTable:
+xJumpPositionTable:
     DB SKATER_DUDE_Y - SKATER_DUDE_JUMP_HEIGHT * 1/3, 1
     DB SKATER_DUDE_Y - SKATER_DUDE_JUMP_HEIGHT * 2/3, 1
     DB SKATER_DUDE_Y - SKATER_DUDE_JUMP_HEIGHT, (MUSIC_SKATER_DUDE_SPEED * 4) - (1 + 1 + 1) * 2

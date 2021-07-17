@@ -7,7 +7,7 @@ SECTION "Screen Transition", ROM0
 ; @param    a   Game ID of the next screen
 Transition::
     ; Save next screen's game ID
-    ldh     [hGameID], a
+    ldh     [hCurrentGame], a
     
     ; Set initial music fade delay (use hScratch3 for it)
     ld      a, TRANSITION_MUSIC_FADE_SPEED
@@ -89,7 +89,7 @@ Transition::
     res     STATB_MODE00, [hl]
     
     ; Get next screen's game ID
-    ldh     a, [hGameID]
+    ldh     a, [hCurrentGame]
     ld      b, a
     add     a, a    ; a * 2 (Pointer)
     add     a, b    ; a * 3 (+Bank)
@@ -184,7 +184,7 @@ Transition::
     res     STATB_MODE00, [hl]
     
     ; Jump into the next screen's loop
-    ldh     a, [hGameID]
+    ldh     a, [hCurrentGame]
     ld      b, a
     add     a, a    ; a * 2 (Pointer)
     add     a, b    ; a * 3 (+Bank)

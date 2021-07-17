@@ -1,8 +1,8 @@
 INCLUDE "defines.inc"
 
-SECTION "Currently Select Game ID", HRAM
+SECTION "Currently Selected Game ID", HRAM
 
-hCurrentGameSelection:
+hCurrentSelection:
     DS 1
 
 SECTION "Game Select Screen Setup", ROM0
@@ -48,7 +48,7 @@ SetupGameSelectScreen::
     jr      nz, .rowLoop
     
     ; Set up defaults
-    ld      hl, hCurrentGameSelection
+    ld      hl, hCurrentSelection
     ld      [hl], 0
     ld      de, vGameID
     ; Draw the initial game ID
@@ -57,7 +57,7 @@ SetupGameSelectScreen::
 SECTION "Game Select Screen Loop", ROM0
 
 GameSelectScreen::
-    ld      hl, hCurrentGameSelection
+    ld      hl, hCurrentSelection
     ld      de, vGameID
 .loop
     rst     WaitVBlank

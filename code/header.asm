@@ -20,7 +20,7 @@ SECTION "Stack", WRAM0
     DS STACK_SIZE
 wStackBottom::
 
-SECTION "Global Variables", HRAM
+SECTION "Keypad Variables", HRAM
 
 ; Currently pressed keys (1 = Pressed, 0 = Not pressed)
 hPressedKeys::
@@ -32,10 +32,14 @@ hNewKeys::
 hReleasedKeys::
     DS 1
 
+SECTION "Current ROM Bank Number", HRAM
+
 ; Current bank number of the $4000-$7FFF range, for interrupt handlers
 ; to restore
 hCurrentBank::
     DS 1
+
+SECTION "Scratch Variables", HRAM
 
 ; Temporary variables for whatever
 hScratch1::
@@ -45,6 +49,14 @@ hScratch2::
 hScratch3::
     DS 1
 
+SECTION "Random Number Variable", HRAM
+
+; A random-ish number, modified when Random is called
+hRandomNumber::
+    DS 1
+
+SECTION "Hardware Register Mirrors", HRAM
+
 ; Mirrors of rSCX and rSCY, copied to rSCX and rSCY in the VBlank
 ; interrupt handler
 hSCX::
@@ -52,7 +64,9 @@ hSCX::
 hSCY::
     DS 1
 
+SECTION "Current Game ID", HRAM
+
 ; The ID of the current game
 ; See constants/games.inc for possible values
-hGameID::
+hCurrentGame::
     DS 1
