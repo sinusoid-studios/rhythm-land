@@ -111,6 +111,15 @@ ActorsUpdate::
     add     a, [hl] ; a * 3 (+Bank)
     ldh     [hScratch1], a
     
+    ; Check for slo-mo
+    ldh     a, [hCurrentGame]
+    cp      a, ID_SKATER_DUDE
+    jr      nz, .updateAnimation
+    ldh     a, [hSloMoCountdown]
+    and     a, SKATER_DUDE_SLO_MO_UPDATE_MASK
+    jr      nz, .updatePosition
+    
+.updateAnimation
     ; Update actor's regular animation
     call    ActorsUpdateAnimation
     
@@ -120,7 +129,7 @@ ActorsUpdate::
     ld      a, [hl]
     ASSERT ANIMATION_OVERRIDE_NONE == -1
     inc     a
-    jr      z, .noOverrideAnimationUpdate
+    jr      z, .updatePosition
     
     ; Update actor's override animation
     ASSERT wActorCelOverrideTable == wActorCelTable + MAX_NUM_ACTORS
@@ -135,8 +144,12 @@ ActorsUpdate::
     ld      c, a
     call    ActorsUpdateAnimation
     pop     bc
-.noOverrideAnimationUpdate
     
+.updatePosition
+    ldh     a, [hCurrentGame]
+    cp      a, ID_SKATER_DUDE
+    jp      z, .maybeSloMo
+.noSloMo
     ; Update the actor's position
     ; X position
     call    ActorsAddSpeedToPos
@@ -154,6 +167,7 @@ ActorsUpdate::
     call    ActorsAddSpeedToPos
     pop     bc
     
+.skipPositionUpdate
     ; Call the actor's update routine
     ldh     a, [hScratch1]  ; a = actor type
     add     a, LOW(ActorRoutineTable)
@@ -284,6 +298,53 @@ ActorsUpdate::
     inc     a
     ldh     [hNextOAMSlot], a
     jr      .metaspriteLoop
+
+.maybeSloMo
+    ldh     a, [hSloMoCountdown]
+    and     a, a
+    jp      z, .noSloMo
+    
+    ; Divide speeds
+    ASSERT SKATER_DUDE_SLO_MO_DIVIDE == 4
+    ld      hl, wActorXSpeedTable
+    add     hl, bc
+    ld      a, [hl]
+    ldh     [hScratch2], a
+    sra     a       ; speed / 2
+    sra     a       ; speed / 4
+    ld      [hl], a
+    ld      hl, wActorYSpeedTable
+    add     hl, bc
+    ld      a, [hl]
+    ldh     [hScratch3], a
+    sra     a       ; speed / 2
+    sra     a       ; speed / 4
+    ld      [hl], a
+    
+    ; Update the actor's position
+    ; X position
+    call    ActorsAddSpeedToPos
+    ; Y position
+    ASSERT wActorYSpeedTable == wActorXSpeedTable + MAX_NUM_ACTORS
+    ASSERT wActorYSpeedAccTable == wActorXSpeedAccTable + MAX_NUM_ACTORS
+    push    bc
+    ASSERT MAX_NUM_ACTORS * 2 < 256
+    ld      a, c
+    add     a, MAX_NUM_ACTORS
+    ld      c, a
+    call    ActorsAddSpeedToPos
+    pop     bc
+    
+    ld      hl, wActorXSpeedTable
+    add     hl, bc
+    ldh     a, [hScratch2]
+    ld      [hl], a
+    ld      hl, wActorYSpeedTable
+    add     hl, bc
+    ldh     a, [hScratch3]
+    ld      [hl], a
+    
+    jp      .skipPositionUpdate
 
 SECTION "Actor Creation", ROM0
 

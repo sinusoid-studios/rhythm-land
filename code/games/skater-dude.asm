@@ -12,11 +12,18 @@ hSkaterDudePosIndex:
 hSkaterDudePosCountdown:
     DS 1
 
+hSloMoCountdown::
+    DS 1
+
 SECTION "Skater Dude Game Setup", ROMX
 
 xGameSetupSkaterDude::
     ld      a, 60 * 2
     ldh     [hEndDelay], a
+    
+    ; Initially no slo-mo
+    xor     a, a
+    ldh     [hSloMoCountdown], a
     
     ; Load background tiles
     ASSERT BANK(xBackgroundTilesSkaterDude) == BANK(@)
@@ -71,7 +78,12 @@ xGameSetupSkaterDude::
     ; Set up game data
     ld      c, BANK(xHitTableSkaterDude)
     ld      hl, xHitTableSkaterDude
-    jp      EngineInit
+    call    EngineInit
+    
+    ; Prepare music
+    ld      c, BANK(Inst_SkaterDude)
+    ld      de, Inst_SkaterDude
+    jp      Music_PrepareInst
 
 xBackgroundTilesSkaterDude:
     INCBIN "res/skater-dude/background.bg.2bpp"
@@ -83,6 +95,7 @@ xSpriteTilesSkaterDude:
     INCBIN "res/skater-dude/skater-dude.obj.2bpp", 16 * 2
     INCBIN "res/skater-dude/skateboard.obj.2bpp", 16 * 2
     INCBIN "res/skater-dude/danger-alert.obj.2bpp"
+    INCBIN "res/skater-dude/car.obj.2bpp", 16 * 2
 .end
 
 xActorSkaterDudeDefinition:
@@ -99,9 +112,6 @@ SECTION "Skater Dude Game Loop", ROMX
 
 xGameSkaterDude::
     ; Start music
-    ld      c, BANK(Inst_SkaterDude)
-    ld      de, Inst_SkaterDude
-    call    Music_PrepareInst
     ld      c, BANK(Music_SkaterDude)
     ld      de, Music_SkaterDude
     call    Music_Play
@@ -110,8 +120,20 @@ xGameSkaterDude::
     rst     WaitVBlank
     
     call    EngineUpdate
+    
     call    ActorsUpdate
+    ldh     a, [hSloMoCountdown]
+    and     a, a
+    jr      nz, .noScroll
     call    MapScrollLeft
+.noScroll
+    
+    ld      hl, hSloMoCountdown
+    ld      a, [hl]
+    and     a, a
+    jr      z, .noSloMo
+    dec     [hl]
+.noSloMo
     
     ldh     a, [hHitTableBank]
     and     a, a
@@ -145,6 +167,31 @@ xActorDangerAlertDefinition:
     DB DANGER_ALERT_X, DANGER_ALERT_Y
     DB 0, 0
 
+SECTION "Skater Dude Obstacle Cue", ROMX
+
+xCueObstacle::
+    ; Create an obstacle
+    ; TODO: Add more obstacle types and choose one randomly
+    ASSERT NUM_OBSTACLES == 1
+    ASSERT BANK(xObstacleDefinitions) == BANK(@)
+    ld      de, xObstacleDefinitions
+    jp      ActorsNew
+
+xObstacleDefinitions:
+    ; Car
+    DB ACTOR_CAR
+    DB OBSTACLE_X, OBSTACLE_Y
+    DB OBSTACLE_SPEED, 0
+.end
+
+SECTION "Skater DUde Slo-Mo Cue", ROMX
+
+xCueSloMo::
+    ; Start slo-mo
+    ld      a, SKATER_DUDE_SLO_MO_DURATION
+    ldh     [hSloMoCountdown], a
+    ret
+
 SECTION "Skater Dude Actor", ROMX
 
 xActorSkaterDude::
@@ -152,12 +199,24 @@ xActorSkaterDude::
     inc     a
     jr      z, .notJumping
     
+    ldh     a, [hSloMoCountdown]
+    and     a, a
+    jr      nz, .sloMo
+    
+    ldh     a, [hSkaterDudePosCountdown]
+    sub     a, SKATER_DUDE_SLO_MO_DIVIDE
+    ldh     [hSkaterDudePosCountdown], a
+    jr      z, .jumping
+    jr      nc, .notJumping
+    jr      .jumping
+    
+.sloMo
     ld      hl, hSkaterDudePosCountdown
     dec     [hl]
     jr      nz, .notJumping
     
-    ASSERT hSkaterDudePosIndex == hSkaterDudePosCountdown - 1
-    dec     l
+.jumping
+    ld      hl, hSkaterDudePosIndex
     inc     [hl]
     ld      a, [hl]
     add     a, a

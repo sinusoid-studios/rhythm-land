@@ -13,13 +13,14 @@ xActorSkaterDudeAnimation::
     goto_cel .skating
 
 .jumping
-    cel jumping1, 2
-    cel jumping2, 2
-    cel jumping3, 2
-    cel jumping4, (MUSIC_SKATER_DUDE_SPEED * 4) - (2 * 3) - (5 * 3)
-    cel jumping5, 5
-    cel jumping6, 5
-    cel jumping7, 5
+    ; Jump is 1 beat long in slo-mo
+    cel jumping1, 1
+    cel jumping2, 1
+    cel jumping3, 1
+    cel jumping4, 1
+    cel jumping5, 1
+    cel jumping6, 1
+    cel jumping7, 2
     DB ANIMATION_OVERRIDE_END
 
 .falling
