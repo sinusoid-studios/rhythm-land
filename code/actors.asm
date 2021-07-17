@@ -24,7 +24,7 @@ wActorYPosTable::
 
 SECTION "Actor Speed Tables", WRAM0
 
-; Q4.4 fixed point speeds
+; Q5.3 fixed point speeds
 ; Fractional part added to fractional accumulator, integer part and
 ; fractional accumulator carry added to position
 
@@ -393,8 +393,9 @@ ActorsAddSpeedToPos:
     swap    a
     ld      e, a    ; Save speed temporarily in e
     
-    ; Get fractional part in high nibble
-    and     $F0
+    ; Get fractional part (high 3 bits)
+    add     a, a    ; Shift left
+    and     a, $70
     ; Add fractional part to fractional accumulator
     ld      hl, wActorXSpeedAccTable
     add     hl, bc
@@ -403,14 +404,15 @@ ActorsAddSpeedToPos:
     
     ld      a, e    ; Restore speed from e
     rr      e       ; Save carry from fractional part in e
-    ; Get integer part in low nibble
-    and     a, $0F
+    ; Get integer part (low 5 bits)
+    and     a, $8F
+    rlca
     ; If the speed is negative, sign extend the integer part
     ; Don't need to do this with the fractional part since it will still
     ; produce a carry at the correct rate
-    bit     3, a    ; Sign in bit 3
+    bit     4, a    ; Sign in bit 4
     jr      z, .positive
-    or      a, $F0  ; Sign extend
+    or      a, $70  ; Sign extend
 .positive
     ld      hl, wActorXPosTable
     add     hl, bc
