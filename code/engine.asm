@@ -35,6 +35,12 @@ hLastHit::
 .high::
     DS 1
 
+; The type of rating the last hit the player made got
+; See constants/game.inc for possible values
+hLastHitRating::
+    DS 1
+
+hHitRatingCounts:
 ; Number of Bad hits the player made (not on-time)
 hHitBadCount::
     DS 1
@@ -129,7 +135,6 @@ EngineUpdate::
     ld      b, %11  ; 2 bits set -> increment by 2
     ld      a, [hli]
     and     a, a
-    ASSERT hHitBadCount == hLastHit.high + 1
     jr      z, .notReallyBad
     ld      l, LOW(hNextHit.high)
     ld      a, [hl]
@@ -210,7 +215,7 @@ EngineUpdate::
     inc     [hl]
 .next
     srl     b       ; b = pressed hit keys
-    jr      z, .noHit
+    jr      z, .rated
     jr      nc, .next
     jr      .countLoop
 
@@ -221,6 +226,15 @@ EngineUpdate::
     and     a, b    ; b = [hNewKeys]
     ld      l, LOW(hHitBadCount)
     jr      .countLoop
+
+.rated
+    ; Set the type of rating this hit got
+    ASSERT LOW(hHitBadCount) - LOW(hHitRatingCounts) == HIT_BAD
+    ASSERT LOW(hHitOkCount) - LOW(hHitRatingCounts) == HIT_OK
+    ASSERT LOW(hHitPerfectCount) - LOW(hHitRatingCounts) == HIT_PERFECT
+    ld      a, l
+    sub     a, LOW(hHitRatingCounts)
+    ldh     [hLastHitRating], a
 
 .noHit
     ; Update hit timing
