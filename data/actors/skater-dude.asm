@@ -3,7 +3,7 @@ INCLUDE "defines.inc"
 SECTION "Skater Dude Actor Animation Data", ROMX
 
 xActorSkaterDudeAnimation::
-    animation_def xActorSkaterDude
+    animation_def xActorSkaterDude, SKATER_DUDE
 
 .skating
     cel skating1, MUSIC_SKATER_DUDE_SPEED
@@ -13,6 +13,7 @@ xActorSkaterDudeAnimation::
     goto_cel .skating
 
 .jumping
+    cel_def JUMPING
     ; Jump is 1 beat long in slo-mo
     cel jumping1, 1
     cel jumping2, 1
@@ -24,6 +25,7 @@ xActorSkaterDudeAnimation::
     DB ANIMATION_OVERRIDE_END
 
 .falling
+    cel_def FALLING
     cel falling1, 4
     cel falling2, 4
     cel falling3, 4
