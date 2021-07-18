@@ -57,7 +57,7 @@ hNextHitNumber::
     DS 1
 ; Index of the last hit the player made that wasn't missed, used for
 ; disallowing making a hit multiple times
-hLastRatedHitNumber:
+hLastRatedHitNumber::
     DS 1
 
 SECTION "Engine Initialization", ROM0

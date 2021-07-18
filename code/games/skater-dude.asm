@@ -236,7 +236,7 @@ xActorSkaterDude::
 .notJumping
     ldh     a, [hNewKeys]
     bit     PADB_A, a
-    ret     z
+    jr      z, .noJump
     
     ; Player pressed the A button -> jump
     xor     a, a
@@ -261,6 +261,35 @@ xActorSkaterDude::
     pop     bc
 .noSFX
     ld      a, CEL_SKATER_DUDE_JUMPING
+    jp      ActorsSetAnimationOverride
+
+.noJump
+    ; If the player missed this hit (is late enough), they get hit by
+    ; the obstacle
+    ldh     a, [hLastHit.low]
+    cp      a, HIT_MISS_DELAY
+    ret     nz
+    ldh     a, [hLastHit.high]
+    ASSERT HIGH(HIT_MISS_DELAY) == 0
+    and     a, a
+    ret     nz
+    
+    ; It's late enough, but did the player already make this hit?
+    ldh     a, [hNextHitNumber]
+    ld      e, a
+    ldh     a, [hLastRatedHitNumber]
+    inc     a       ; Comparing with next hit number
+    cp      a, e
+    ; The player already made this hit -> they're not late
+    ret     nc
+    
+    ; The player is late -> play the sound effect and fall down
+    push    bc
+    ld      b, SFX_SKATER_DUDE_FALL
+    call    SFX_Play
+    pop     bc
+    
+    ld      a, CEL_SKATER_DUDE_FALLING
     jp      ActorsSetAnimationOverride
 
 xJumpPositionTable:
