@@ -23,6 +23,7 @@ xActorSkaterDudeAnimation::
     cel jumping6, 1
     cel jumping7, 2
     DB ANIMATION_OVERRIDE_END
+    DS 1
 
 .falling
     cel_def FALLING
