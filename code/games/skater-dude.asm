@@ -186,54 +186,95 @@ xCueSloMo::
 SECTION "Skater Dude Actor", ROMX
 
 xActorSkaterDude::
+    ; If Skater Dude isn't on the ground (fallen), he should be "moving"
+    ; The background scrolls so to "move", Skater Dude must stay in
+    ; place
+    ld      hl, wActorCelOverrideTable
+    add     hl, bc
+    ld      a, [hl]
+    ASSERT ANIMATION_OVERRIDE_NONE == -1
+    inc     a
+    ; No animation override -> skating animation
+    jr      z, .moving
+    ; Add 1 to compensate for inc
+    cp      a, CEL_SKATER_DUDE_FALLING + 1
+    jr      nc, .notMoving
+    
+.moving
+    ; Skater Dude is either skating or jumping -> "move"
+    ld      hl, wActorXSpeedTable
+    add     hl, bc
+    ld      [hl], 0
+    ; Make sure the position is correct after falling
+    ld      hl, wActorXPosTable
+    add     hl, bc
+    ld      [hl], SKATER_DUDE_X
+    
+.notMoving
+    ; If Skater Dude is currently jumping, update his Y position
     ldh     a, [hSkaterDudePosIndex]
     inc     a
     jr      z, .notJumping
     
+    ; If not currently in slo-mo, the countdown works a little
+    ; differently
     ldh     a, [hSloMoCountdown]
     and     a, a
     jr      nz, .sloMo
     
+    ; In not in slo-mo, subtract the denominator of slo-mo speed instead
+    ; of 1 (denominator in normal speed)
     ldh     a, [hSkaterDudePosCountdown]
     sub     a, SKATER_DUDE_SLO_MO_DIVIDE
     ldh     [hSkaterDudePosCountdown], a
+    ; If less than or equal to 0, update Skater Dude's position
     jr      z, .jumping
     jr      nc, .notJumping
     jr      .jumping
     
 .sloMo
+    ; In slo-mo, simply decrement the countdown
     ld      hl, hSkaterDudePosCountdown
     dec     [hl]
     jr      nz, .notJumping
     
 .jumping
+    ; Skater Dude is jumping and it is time to change his Y position
+    ; Update the position table index
     ld      hl, hSkaterDudePosIndex
     inc     [hl]
+    ; Find the new Y position
     ld      a, [hl]
-    add     a, a
+    add     a, a    ; a * 2 (Position, Duration)
     add     a, LOW(xJumpPositionTable)
     ld      l, a
     adc     a, HIGH(xJumpPositionTable)
     sub     a, l
     ld      h, a
-    ld      a, [hli]
-    inc     a
+    ; Get the new Y position
+    ld      a, [hli]    ; a = Y position
+    ; 0 signals the end of the table
+    and     a, a
     jr      z, .finishedJumping
-    dec     a       ; Undo inc
-    ld      e, [hl]
+    ld      e, [hl]     ; e = duration
     
+    ; Set the new Y position
     ld      hl, wActorYPosTable
     add     hl, bc
     ld      [hl], a
+    ; Set the countdown to the new duration
     ld      a, e
     ldh     [hSkaterDudePosCountdown], a
     jr      .notJumping
 
 .finishedJumping
-    ld      a, -1
+    ; Set the position table index to -1 to signal not jumping
+    ; a = 0
+    dec     a
     ldh     [hSkaterDudePosIndex], a
     
 .notJumping
+    ; Check if the player pressed the jump button
     ldh     a, [hNewKeys]
     bit     PADB_A, a
     jr      z, .noJump
@@ -241,6 +282,7 @@ xActorSkaterDude::
     ; Player pressed the A button -> jump
     xor     a, a
     ldh     [hSkaterDudePosIndex], a
+    ; Set countdown to 1 to update next frame
     inc     a
     ldh     [hSkaterDudePosCountdown], a
     
@@ -255,10 +297,12 @@ xActorSkaterDude::
     ASSERT SFX_SKATER_DUDE_JUMP_PERFECT == SFX_SKATER_DUDE_JUMP_OK + 1
     inc     a
 .notPerfect
-    push    bc
-    ld      b, a
+    ld      e, c    ; e not destroyed by SFX_Play
+    ld      b, a    ; b = SFX ID
     call    SFX_Play
-    pop     bc
+    ASSERT HIGH(MAX_NUM_ACTORS) == 0
+    ld      b, 0
+    ld      c, e
 .noSFX
     ld      a, CEL_SKATER_DUDE_JUMPING
     jp      ActorsSetAnimationOverride
@@ -283,16 +327,28 @@ xActorSkaterDude::
     ; The player already made this hit -> they're not late
     ret     nc
     
-    ; The player is late -> play the sound effect and fall down
-    push    bc
+    ; The player missed the hit
+    ld      e, c    ; e not destroyed by SFX_Play
     ld      b, SFX_SKATER_DUDE_FALL
     call    SFX_Play
-    pop     bc
+    ASSERT HIGH(MAX_NUM_ACTORS) == 0
+    ld      b, 0
+    ld      c, e
     
     ; End slo-mo
     xor     a, a
     ldh     [hSloMoCountdown], a
     
+    ; "Stop" moving
+    ; The background normally scrolls with Skater Dude in place, making
+    ; it look like he's the one moving. Since he shouldn't be moving,
+    ; move him in the opposite direction the background is moving.
+    ld      hl, wActorXSpeedTable
+    add     hl, bc
+    ; Background scrolls 1 pixel per frame
+    ld      [hl], 1 << 3
+    
+    ; Start the falling animation
     ld      a, CEL_SKATER_DUDE_FALLING
     jp      ActorsSetAnimationOverride
 
@@ -303,5 +359,5 @@ xJumpPositionTable:
     DB SKATER_DUDE_Y - SKATER_DUDE_JUMP_HEIGHT * 2/3, 1
     DB SKATER_DUDE_Y - SKATER_DUDE_JUMP_HEIGHT * 1/3, 1
     DB SKATER_DUDE_Y, 1
-    DB -1
+    DB 0
 .end
