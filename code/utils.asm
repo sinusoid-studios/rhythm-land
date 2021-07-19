@@ -8,12 +8,12 @@ SECTION "Null Pointer", ROM0[$0000]
 ; calling an actor's update routine.
 Null::
 
-SECTION "RST $00", ROM0[$0000]
+SECTION "Jump to HL", ROM0[$0000]
 
 JP_HL::
     jp      hl
 
-SECTION "RST $08", ROM0[$0008]
+SECTION "LCDMemcopy", ROM0[$0008]
 
 ; Copy a block of memory from one place to another, even if the LCD is
 ; on
@@ -38,7 +38,7 @@ LCDMemcopy::
     jr      nz, .loop
     ret
 
-SECTION "RST $20", ROM0[$0020]
+SECTION "MemsetSmall", ROM0[$0020]
 
 ; Fill an arbitrary number of bytes with the same value
 ; @param    a   Value to fill with
@@ -50,7 +50,7 @@ MemsetSmall::
     jr      nz, MemsetSmall
     ret
 
-SECTION "RST $28", ROM0[$0028]
+SECTION "MemcopySmall", ROM0[$0028]
 
 ; Copy a block of memory from one place to another
 ; @param    de  Pointer to beginning of block to copy
@@ -64,7 +64,7 @@ MemcopySmall::
     jr      nz, MemcopySmall
     ret
 
-SECTION "RST $30", ROM0[$0030]
+SECTION "Wait for VBlank", ROM0[$0030]
 
 ; Wait for a VBlank interrupt to occur
 ; The VBlank interrupt handler will return to the caller of this

@@ -175,7 +175,7 @@ xObstacleDefinitions:
     DB OBSTACLE_SPEED, 0
 .end
 
-SECTION "Skater DUde Slo-Mo Cue", ROMX
+SECTION "Skater Dude Slo-Mo Cue", ROMX
 
 xCueSloMo::
     ; Start slo-mo
