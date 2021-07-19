@@ -69,8 +69,8 @@ TitleScreen::
     ld      a, [hli]
     ASSERT TITLE_SCROLL_END_POS == 0
     and     a, a
-    jr      z, .loop
     ldh     [hSCY], a
+    jr      z, .loop
     jr      .scrollLoop
     
 .loop
