@@ -385,6 +385,11 @@ xActorSkaterDude::
     ; Background scrolls 1 pixel per frame
     ld      [hl], 1 << 3
     
+    ; Reset Skater Dude's position for the event of consecutive misses
+    ld      hl, wActorXPosTable
+    add     hl, bc
+    ld      [hl], SKATER_DUDE_X
+    
     ; Start the falling animation
     ld      a, CEL_SKATER_DUDE_FALLING
     jp      ActorsSetAnimationOverride
