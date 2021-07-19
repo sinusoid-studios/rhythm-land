@@ -21,6 +21,8 @@ Initialize::
     ldh     [rSCX], a
     ldh     [hSCY], a
     ldh     [rSCY], a
+    ASSERT ID_TITLE_SCREEN == 0
+    ldh     [hCurrentGame], a
     ; TODO: Use a player-reliant seed
     ldh     [hRandomNumber], a
     
