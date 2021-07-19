@@ -30,15 +30,54 @@ SetupTitleScreen::
     ld      bc, BackgroundTilesTitle8800.end - BackgroundTilesTitle8800
     rst     LCDMemcopy
     
+    ; Load sprite tiles
+    ld      de, SpriteTilesTitle
+    ld      hl, $8000
+    ld      bc, SpriteTilesTitle.end - SpriteTilesTitle
+    rst     LCDMemcopy
+    
     ; Load background map
     ld      de, MapTitle
     ld      hl, _SCRN0
     call    LCDMemcopyMap
     
+    ; Create star actors
+    ld      de, ActorLargeStar1Definition
+    call    ActorsNew
+    ASSERT ActorLargeStar2Definition == ActorLargeStar1Definition.end
+    call    ActorsNew
+    ASSERT ActorLargeStar3Definition == ActorLargeStar2Definition.end
+    call    ActorsNew
+    ASSERT ActorLargeStar4Definition == ActorLargeStar3Definition.end
+    call    ActorsNew
+    
     ; Prepare music
     ld      c, BANK(Inst_Title)
     ld      de, Inst_Title
     jp      Music_PrepareInst
+
+SECTION "Title Screen Large Star Actor Definitions", ROM0
+
+ActorLargeStar1Definition:
+    DB ACTOR_LARGE_STAR_1
+    DB LARGE_STAR_1_X, LARGE_STAR_1_Y
+    DB 0, 0
+.end
+ActorLargeStar2Definition:
+    DB ACTOR_LARGE_STAR_2
+    DB LARGE_STAR_2_X, LARGE_STAR_2_Y
+    DB 0, 0
+.end
+ActorLargeStar3Definition:
+    DB ACTOR_LARGE_STAR_3
+    DB LARGE_STAR_3_X, LARGE_STAR_3_Y
+    DB 0, 0
+.end
+ActorLargeStar4Definition:
+    DB ACTOR_LARGE_STAR_4
+    DB LARGE_STAR_4_X, LARGE_STAR_4_Y
+    DB 0, 0
+.end
 
 SECTION "Title Screen Background Tiles", ROM0
 
@@ -47,6 +86,15 @@ BackgroundTilesTitle9000:
 .end
 BackgroundTilesTitle8800:
     INCBIN "res/title/background.bg.2bpp", 128 * 16
+.end
+
+SECTION "Title Screen Sprite Tiles", ROM0
+
+SpriteTilesTitle:
+    ; Remove the first 2 tiles which are blank on purpose to get rid of
+    ; any blank objects in the image
+    INCBIN "res/title/stars-large.obj.2bpp", 16 * 2
+    INCBIN "res/title/stars-small.obj.2bpp"
 .end
 
 SECTION "Title Screen Background Map", ROM0
@@ -75,6 +123,8 @@ TitleScreen::
     
 .loop
     rst     WaitVBlank
+    
+    call    ActorsUpdate
     
     ldh     a, [hFlashCountdown]
     and     a, a
@@ -111,3 +161,9 @@ TitleScreen::
     ; Move to game select screen
     ld      a, ID_GAME_SELECT
     jp      Transition
+
+SECTION "Title Screen Actor", ROMX
+
+xActorTitle::
+    ; TODO: Bounce
+    ret
