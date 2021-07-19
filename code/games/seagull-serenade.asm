@@ -19,7 +19,12 @@ xGameSetupSeagullSerenade::
     ASSERT BANK(xMapSeagullSerenade) == BANK(@)
     ld      de, xMapSeagullSerenade
     ld      hl, _SCRN0
-    jp      LCDMemcopyMap
+    call    LCDMemcopyMap
+    
+    ; Prepare music
+    ld      c, BANK(Inst_SeagullSerenade)
+    ld      de, Inst_SeagullSerenade
+    jp      Music_PrepareInst
 
 xBackgroundTilesSeagullSerenade9000:
     INCBIN "res/seagull-serenade/background.bg.2bpp", 0, 128 * 16
@@ -34,5 +39,11 @@ xMapSeagullSerenade:
 SECTION "Seagull Serenade Game Loop", ROMX
 
 xGameSeagullSerenade::
+    ; Start music
+    ld      c, BANK(Music_SeagullSerenade)
+    ld      de, Music_SeagullSerenade
+    call    Music_Play
+    
+.loop
     rst     WaitVBlank
-    jr      xGameSeagullSerenade
+    jr      .loop
