@@ -111,15 +111,6 @@ ActorsUpdate::
     add     a, [hl] ; a * 3 (+Bank)
     ldh     [hScratch1], a
     
-    ; Check for slo-mo
-    ldh     a, [hCurrentGame]
-    cp      a, ID_SKATER_DUDE
-    jr      nz, .updateAnimation
-    ldh     a, [hSloMoCountdown]
-    and     a, SKATER_DUDE_SLO_MO_UPDATE_MASK
-    jr      nz, .updatePosition
-    
-.updateAnimation
     ; Update actor's regular animation
     call    ActorsUpdateAnimation
     
@@ -130,6 +121,15 @@ ActorsUpdate::
     ASSERT ANIMATION_OVERRIDE_NONE == -1
     inc     a
     jr      z, .updatePosition
+    
+    ; Check for slo-mo
+    ; Don't update the override animation during slo-mo
+    ldh     a, [hCurrentGame]
+    cp      a, ID_SKATER_DUDE
+    jr      nz, .updatePosition
+    ldh     a, [hSloMoCountdown]
+    and     a, SKATER_DUDE_SLO_MO_UPDATE_MASK
+    jr      nz, .updatePosition
     
     ; Update actor's override animation
     ASSERT wActorCelOverrideTable == wActorCelTable + MAX_NUM_ACTORS
