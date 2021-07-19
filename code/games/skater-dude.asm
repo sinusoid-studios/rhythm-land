@@ -18,6 +18,7 @@ hSloMoCountdown::
 SECTION "Skater Dude Game Setup", ROMX
 
 xGameSetupSkaterDude::
+    ASSERT SKATER_DUDE_STATE_IN == 0
     xor     a, a
     ldh     [hSkaterDudeState], a
     
@@ -103,7 +104,7 @@ xSpriteTilesSkaterDude:
 xActorSkaterDudeDefinition:
     DB ACTOR_SKATER_DUDE
     DB SKATER_DUDE_START_X, SKATER_DUDE_Y
-    DB SKATER_DUDE_SPEED, 0
+    DB SKATER_DUDE_IN_SPEED, 0
 
 SECTION "Skater Dude Game Background Map", ROMX
 
@@ -127,6 +128,11 @@ xGameSkaterDude::
     ldh     a, [hSloMoCountdown]
     and     a, a
     call    z, MapScrollLeft
+    
+    ; If the game is over, go to the overall rating screen
+    ldh     a, [hSkaterDudeState]
+    cp      a, SKATER_DUDE_STATE_END
+    jp      z, RatingScreen
     
     ld      hl, hSloMoCountdown
     ld      a, [hl]
@@ -200,10 +206,22 @@ xCueSloMo::
 SECTION "Skater Dude Actor", ROMX
 
 xActorSkaterDude::
-    ; Game hasn't started yet -> do special stuff
+    ; Game hasn't started yet -> skate on-screen
     ldh     a, [hSkaterDudeState]
+    ASSERT SKATER_DUDE_STATE_IN == 0
     and     a, a
     jp      z, .skatingOnscreen
+    ; Currently skating off-screen
+    ASSERT SKATER_DUDE_STATE_OUT == 1
+    dec     a
+    ; Nothing to do while skating out
+    jp      z, .skatingOffscreen
+    
+    ; Music ended -> skate off-screen
+    ld      a, [wMusicSyncData]
+    ASSERT SYNC_SKATER_DUDE_END == 1
+    dec     a
+    jp      z, .skateOffscreen
     
     ; If Skater Dude isn't on the ground (fallen), he should be "moving"
     ; The background scrolls so to "move", Skater Dude must stay in
@@ -376,12 +394,46 @@ xActorSkaterDude::
     ld      hl, wActorXPosTable
     add     hl, bc
     ld      a, [hl]
+    ; Speed is slow enough to simply check for the exact position
+    ASSERT SKATER_DUDE_IN_SPEED < 0 && SKATER_DUDE_IN_SPEED >> 3 == -1
     cp      a, SKATER_DUDE_X
     ret     nz
     
     ; Skater Dude has reached his normal position
-    ASSERT SKATER_DUDE_X != 0
-    ; a != 0
+    ASSERT SKATER_DUDE_X >= NUM_SKATER_DUDE_STATES
+    ; State = normal Skater Dude function
+    ldh     [hSkaterDudeState], a
+    ret
+
+.skateOffscreen
+    ld      hl, wActorXSpeedTable
+    add     hl, bc
+    ld      [hl], SKATER_DUDE_OUT_SPEED
+    
+    ld      a, SKATER_DUDE_STATE_OUT
+    ldh     [hSkaterDudeState], a
+    ret
+
+.skatingOffscreen
+    ; Check if Skater Dude is finished skating off-screen
+    ld      hl, wActorXPosTable
+    add     hl, bc
+    ld      a, [hl]
+    ; Can check for end position with sign bit
+    ASSERT SKATER_DUDE_END_X < 0
+    ; Normal position is not negative in two's complement
+    ASSERT SKATER_DUDE_X & (1 << 7) == 0
+    add     a, a    ; Move bit 7 to carry
+    ; Not negative (end position is) -> not there yet
+    ret     nc
+    
+    ; Add 1 to check for > instead of >=, shifted to compensate for
+    ; double (add a, a)
+    cp      a, (SKATER_DUDE_END_X + 1) << 1
+    ret     nc
+    
+    ; Game is over
+    ld      a, SKATER_DUDE_STATE_END
     ldh     [hSkaterDudeState], a
     ret
 

@@ -2,12 +2,22 @@
 DEF SKATER_DUDE_Y EQU SCRN_Y * 1/2 + 5
 ; X position of Skater Dude (stays constant the entire game)
 DEF SKATER_DUDE_X EQU SCRN_X * 2/3
-; Skater Dude starts off-screen and skates on
+; Skater Dude starts off-screen and skates on, skates off-screen at the
+; end
 DEF SKATER_DUDE_START_X EQU SCRN_X
+DEF SKATER_DUDE_END_X EQU -24
 ; Number of pixels Skater Dude moves vertically when jumping
 DEF SKATER_DUDE_JUMP_HEIGHT EQU 32
 ; X speed of Skater Dude when skating on or off the screen
-DEF SKATER_DUDE_SPEED EQU -DIV(1.0, 3.0) >> (16 - 3)
+DEF SKATER_DUDE_IN_SPEED EQU -DIV(1.0, 3.0) >> (16 - 3)
+DEF SKATER_DUDE_OUT_SPEED EQU -1.5 >> (16 - 3)
+
+; Skater Dude states, used at the beginning and end of the game
+RSRESET
+DEF SKATER_DUDE_STATE_IN RB 1
+DEF SKATER_DUDE_STATE_OUT RB 1
+DEF SKATER_DUDE_STATE_END RB 1
+DEF NUM_SKATER_DUDE_STATES EQU _RS
 
 ; Position of the Danger Alert
 DEF DANGER_ALERT_X EQU 8 * 1
