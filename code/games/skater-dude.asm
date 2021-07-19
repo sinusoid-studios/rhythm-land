@@ -289,6 +289,10 @@ xActorSkaterDude::
     call    SFX_Play
     pop     bc
     
+    ; End slo-mo
+    xor     a, a
+    ldh     [hSloMoCountdown], a
+    
     ld      a, CEL_SKATER_DUDE_FALLING
     jp      ActorsSetAnimationOverride
 
