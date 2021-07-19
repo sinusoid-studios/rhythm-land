@@ -2,27 +2,27 @@ INCLUDE "defines.inc"
 
 SECTION UNION "Game Variables", HRAM
 
-; Delay after the game is finished to allow for a late last hit
-hEndDelay:
+; When the game starts or ends, Skater Dude skates on or off the screen
+hSkaterDudeState:
     DS 1
-
 ; Index into Skater Dude's jump position table
 hSkaterDudePosIndex:
     DS 1
 hSkaterDudePosCountdown:
     DS 1
 
+; Number of frames left in slo-mo
 hSloMoCountdown::
     DS 1
 
 SECTION "Skater Dude Game Setup", ROMX
 
 xGameSetupSkaterDude::
-    ld      a, 60 * 2
-    ldh     [hEndDelay], a
+    xor     a, a
+    ldh     [hSkaterDudeState], a
     
     ; Initially no slo-mo
-    xor     a, a
+    ; a = 0
     ldh     [hSloMoCountdown], a
     
     ; Load background tiles
@@ -102,8 +102,8 @@ xSpriteTilesSkaterDude:
 
 xActorSkaterDudeDefinition:
     DB ACTOR_SKATER_DUDE
-    DB SKATER_DUDE_X, SKATER_DUDE_Y
-    DB 0, 0
+    DB SKATER_DUDE_START_X, SKATER_DUDE_Y
+    DB SKATER_DUDE_SPEED, 0
 
 SECTION "Skater Dude Game Background Map", ROMX
 
@@ -126,25 +126,13 @@ xGameSkaterDude::
     call    ActorsUpdate
     ldh     a, [hSloMoCountdown]
     and     a, a
-    jr      nz, .noScroll
-    call    MapScrollLeft
-.noScroll
+    call    z, MapScrollLeft
     
     ld      hl, hSloMoCountdown
     ld      a, [hl]
     and     a, a
-    jr      z, .noSloMo
+    jr      z, .loop
     dec     [hl]
-.noSloMo
-    
-    ldh     a, [hHitTableBank]
-    and     a, a
-    jr      nz, .loop
-    
-    ld      hl, hEndDelay
-    dec     [hl]
-    ; Finished, go to the rating screen
-    jp      z, RatingScreen
     jr      .loop
 
 SECTION "Skater Dude Danger Alert Cue", ROMX
@@ -212,6 +200,11 @@ xCueSloMo::
 SECTION "Skater Dude Actor", ROMX
 
 xActorSkaterDude::
+    ; Game hasn't started yet -> do special stuff
+    ldh     a, [hSkaterDudeState]
+    and     a, a
+    jp      z, .skatingOnscreen
+    
     ; If Skater Dude isn't on the ground (fallen), he should be "moving"
     ; The background scrolls so to "move", Skater Dude must stay in
     ; place
@@ -377,6 +370,20 @@ xActorSkaterDude::
     ; Start the falling animation
     ld      a, CEL_SKATER_DUDE_FALLING
     jp      ActorsSetAnimationOverride
+
+.skatingOnscreen
+    ; Check if Skater Dude has reached his normal position
+    ld      hl, wActorXPosTable
+    add     hl, bc
+    ld      a, [hl]
+    cp      a, SKATER_DUDE_X
+    ret     nz
+    
+    ; Skater Dude has reached his normal position
+    ASSERT SKATER_DUDE_X != 0
+    ; a != 0
+    ldh     [hSkaterDudeState], a
+    ret
 
 xJumpPositionTable:
     DB SKATER_DUDE_Y - SKATER_DUDE_JUMP_HEIGHT * 1/3, 1
