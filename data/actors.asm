@@ -12,6 +12,13 @@ ActorRoutineTable::
     full_pointer xActorTitle    ; ACTOR_LARGE_STAR_2
     full_pointer xActorTitle    ; ACTOR_LARGE_STAR_3
     full_pointer xActorTitle    ; ACTOR_LARGE_STAR_4
+    full_pointer xActorTitle    ; ACTOR_SMALL_STAR_1
+    full_pointer xActorTitle    ; ACTOR_SMALL_STAR_2
+    full_pointer xActorTitle    ; ACTOR_SMALL_STAR_3
+    full_pointer xActorTitle    ; ACTOR_SMALL_STAR_4
+    full_pointer xActorTitle    ; ACTOR_SMALL_STAR_5
+    full_pointer xActorTitle    ; ACTOR_SMALL_STAR_6
+    full_pointer xActorTitle    ; ACTOR_SMALL_STAR_7
 .end::
 
 SECTION "Actor Animation Table", ROM0
@@ -26,6 +33,13 @@ ActorAnimationTable::
     full_pointer xActorLargeStar2Animation  ; ACTOR_LARGE_STAR_2
     full_pointer xActorLargeStar3Animation  ; ACTOR_LARGE_STAR_3
     full_pointer xActorLargeStar4Animation  ; ACTOR_LARGE_STAR_4
+    full_pointer xActorSmallStar1Animation  ; ACTOR_SMALL_STAR_1
+    full_pointer xActorSmallStar2Animation  ; ACTOR_SMALL_STAR_2
+    full_pointer xActorSmallStar3Animation  ; ACTOR_SMALL_STAR_3
+    full_pointer xActorSmallStar4Animation  ; ACTOR_SMALL_STAR_4
+    full_pointer xActorSmallStar5Animation  ; ACTOR_SMALL_STAR_5
+    full_pointer xActorSmallStar6Animation  ; ACTOR_SMALL_STAR_6
+    full_pointer xActorSmallStar7Animation  ; ACTOR_SMALL_STAR_7
 .end::
 
 SECTION "Actor Meta-Sprite Table", ROM0
@@ -40,4 +54,11 @@ ActorMetaspriteTable::
     full_pointer xActorLargeStar2Metasprites    ; ACTOR_LARGE_STAR_2
     full_pointer xActorLargeStar3Metasprites    ; ACTOR_LARGE_STAR_3
     full_pointer xActorLargeStar4Metasprites    ; ACTOR_LARGE_STAR_4
+    full_pointer xActorSmallStar1Metasprites    ; ACTOR_SMALL_STAR_1
+    full_pointer xActorSmallStar2Metasprites    ; ACTOR_SMALL_STAR_2
+    full_pointer xActorSmallStar3Metasprites    ; ACTOR_SMALL_STAR_3
+    full_pointer xActorSmallStar4Metasprites    ; ACTOR_SMALL_STAR_4
+    full_pointer xActorSmallStar5Metasprites    ; ACTOR_SMALL_STAR_5
+    full_pointer xActorSmallStar6Metasprites    ; ACTOR_SMALL_STAR_6
+    full_pointer xActorSmallStar7Metasprites    ; ACTOR_SMALL_STAR_7
 .end::

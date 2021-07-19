@@ -42,14 +42,15 @@ SetupTitleScreen::
     call    LCDMemcopyMap
     
     ; Create star actors
-    ld      de, ActorLargeStar1Definition
+    ld      de, ActorStarDefinitions
+    ld      a, NUM_STARS
+    ldh     [hScratch1], a
+.starLoop
     call    ActorsNew
-    ASSERT ActorLargeStar2Definition == ActorLargeStar1Definition.end
-    call    ActorsNew
-    ASSERT ActorLargeStar3Definition == ActorLargeStar2Definition.end
-    call    ActorsNew
-    ASSERT ActorLargeStar4Definition == ActorLargeStar3Definition.end
-    call    ActorsNew
+    ldh     a, [hScratch1]
+    dec     a
+    ldh     [hScratch1], a
+    jr      nz, .starLoop
     
     ; Prepare music
     ld      c, BANK(Inst_Title)
@@ -58,26 +59,51 @@ SetupTitleScreen::
 
 SECTION "Title Screen Large Star Actor Definitions", ROM0
 
-ActorLargeStar1Definition:
+ActorStarDefinitions:
+    ; Large Star 1
     DB ACTOR_LARGE_STAR_1
     DB LARGE_STAR_1_X, LARGE_STAR_1_Y
     DB 0, 0
-.end
-ActorLargeStar2Definition:
+    ; Large Star 2
     DB ACTOR_LARGE_STAR_2
     DB LARGE_STAR_2_X, LARGE_STAR_2_Y
     DB 0, 0
-.end
-ActorLargeStar3Definition:
+    ; Large Star 3
     DB ACTOR_LARGE_STAR_3
     DB LARGE_STAR_3_X, LARGE_STAR_3_Y
     DB 0, 0
-.end
-ActorLargeStar4Definition:
+    ; Large Star 4
     DB ACTOR_LARGE_STAR_4
     DB LARGE_STAR_4_X, LARGE_STAR_4_Y
     DB 0, 0
-.end
+    ; Small Star 1
+    DB ACTOR_SMALL_STAR_1
+    DB SMALL_STAR_1_X, SMALL_STAR_1_Y
+    DB 0, 0
+    ; Small Star 2
+    DB ACTOR_SMALL_STAR_2
+    DB SMALL_STAR_2_X, SMALL_STAR_2_Y
+    DB 0, 0
+    ; Small Star 3
+    DB ACTOR_SMALL_STAR_3
+    DB SMALL_STAR_3_X, SMALL_STAR_3_Y
+    DB 0, 0
+    ; Small Star 4
+    DB ACTOR_SMALL_STAR_4
+    DB SMALL_STAR_4_X, SMALL_STAR_4_Y
+    DB 0, 0
+    ; Small Star 5
+    DB ACTOR_SMALL_STAR_5
+    DB SMALL_STAR_5_X, SMALL_STAR_5_Y
+    DB 0, 0
+    ; Small Star 6
+    DB ACTOR_SMALL_STAR_6
+    DB SMALL_STAR_6_X, SMALL_STAR_6_Y
+    DB 0, 0
+    ; Small Star 7
+    DB ACTOR_SMALL_STAR_7
+    DB SMALL_STAR_7_X, SMALL_STAR_7_Y
+    DB 0, 0
 
 SECTION "Title Screen Background Tiles", ROM0
 
