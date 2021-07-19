@@ -492,6 +492,13 @@ ActorsUpdateAnimation:
     ; Update actor's animation cel countdown
     ld      hl, wActorCelCountdownTable
     add     hl, bc
+    ; If the cel lasts forever, don't do anything
+    ld      a, [hl]
+    ASSERT ANIMATION_DURATION_FOREVER == -1
+    inc     a
+    ret     z
+    
+    ; Decrement countdown
     dec     [hl]
     ; If not reached 0 yet, there's nothing to do
     ret     nz

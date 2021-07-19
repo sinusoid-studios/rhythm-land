@@ -21,6 +21,9 @@ DEF ANIMATION_KILL_ACTOR RB 1
 DEF ANIMATION_OVERRIDE_END RB 1
 DEF NUM_ANIMATION_SPECIAL_VALUES EQU _RS & ~$80
 
+; Cel duration value that means the current cel never ends
+DEF ANIMATION_DURATION_FOREVER EQU -1
+
 ; Used in wActorCelOverrideTable when no animation override is in effect
 DEF ANIMATION_OVERRIDE_NONE EQU -1
 
