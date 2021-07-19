@@ -57,11 +57,14 @@ hRandomNumber::
 
 SECTION "Hardware Register Mirrors", HRAM
 
-; Mirrors of rSCX and rSCY, copied to rSCX and rSCY in the VBlank
+; Mirrors of hardware registers, copied to the real things in the VBlank
 ; interrupt handler
 hSCX::
     DS 1
 hSCY::
+    DS 1
+
+hBGP::
     DS 1
 
 SECTION "Current Game ID", HRAM

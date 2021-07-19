@@ -4,6 +4,8 @@ SECTION UNION "Game Variables", HRAM
 
 ; Current position in the title screen scroll table
 hScrollIndex:
+; Number of frames left in a flash
+hFlashCountdown:
     DS 1
 
 SECTION "Title Screen Setup", ROM0
@@ -74,17 +76,33 @@ TitleScreen::
 .loop
     rst     WaitVBlank
     
+    ldh     a, [hFlashCountdown]
+    and     a, a
+    jr      z, .checkSync
+    ; Update flash
+    dec     a
+    ldh     [hFlashCountdown], a
+    jr      nz, .checkSync
+    ; Flash is over -> reset to normal palette
+    ld      a, %11100100
+    ldh     [hBGP], a
+.checkSync
     ld      a, [wMusicSyncData]
     ASSERT SYNC_TITLE_BEAT == 1
     dec     a
+    jr      z, .beat
+    ASSERT SYNC_TITLE_FLASH == 2
+    dec     a
     jr      nz, .noSyncData
-    
-    ; TODO: Recreate the fun scaling effect
-    ; For now just invert the background palette
-    ldh     a, [rBGP]
-    cpl
-    ldh     [rBGP], a
-    
+    ; Flash
+    ld      a, %10010000    ; One shade lighter than normal
+    ldh     [hBGP], a
+    ; Reset countdown to flash duration
+    ld      a, TITLE_FLASH_DURATION
+    ldh     [hFlashCountdown], a
+    jr      .noSyncData
+.beat
+    ; TODO: Fancy bouncing
 .noSyncData
     ldh     a, [hNewKeys]
     and     a, PADF_A | PADF_START

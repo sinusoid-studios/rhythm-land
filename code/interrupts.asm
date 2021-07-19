@@ -21,6 +21,8 @@ SECTION "VBlank Interrupt Handler", ROM0
 VBlankHandler:
     ldh     a, [hSCY]
     ldh     [rSCY], a
+    ldh     a, [hBGP]
+    ldh     [rBGP], a
     
     push    bc
     

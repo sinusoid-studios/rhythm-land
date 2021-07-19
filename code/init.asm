@@ -18,7 +18,9 @@ Initialize::
     ldh     [hVBlankFlag], a
     ldh     [hNextHitKeys], a
     ldh     [hSCX], a
+    ldh     [rSCX], a
     ldh     [hSCY], a
+    ldh     [rSCY], a
     ; TODO: Use a player-reliant seed
     ldh     [hRandomNumber], a
     
@@ -33,6 +35,7 @@ Initialize::
     
     ; Set initial palettes
     ld      a, %11100100
+    ldh     [hBGP], a
     ldh     [rBGP], a
     ldh     [rOBP1], a      ; Black, Dark gray, Light gray
     ld      a, %11010010
