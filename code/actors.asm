@@ -456,7 +456,7 @@ ActorsAddSpeedToPos:
     
     ; Get fractional part (high 3 bits)
     add     a, a    ; Shift left
-    and     a, $70
+    and     a, $E0
     ; Add fractional part to fractional accumulator
     ld      hl, wActorXSpeedAccTable
     add     hl, bc
@@ -466,14 +466,14 @@ ActorsAddSpeedToPos:
     ld      a, e    ; Restore speed from e
     rr      e       ; Save carry from fractional part in e
     ; Get integer part (low 5 bits)
-    and     a, $8F
     rlca
+    and     a, $1F
     ; If the speed is negative, sign extend the integer part
     ; Don't need to do this with the fractional part since it will still
     ; produce a carry at the correct rate
     bit     4, a    ; Sign in bit 4
     jr      z, .positive
-    or      a, $70  ; Sign extend
+    or      a, $E0  ; Sign extend
 .positive
     ld      hl, wActorXPosTable
     add     hl, bc
