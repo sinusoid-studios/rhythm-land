@@ -112,6 +112,20 @@ LCDMemcopyMap::
     jr      nz, .rowLoop
     ret
 
+SECTION "Random Number", ROM0
+
+; @return   a   Random-ish number
+Random::
+    ld      hl, hRandomNumber
+    add     a, [hl]
+    ld      l, LOW(rLY)
+    add     a, [hl]
+    rrca
+    ld      l, LOW(rDIV)
+    add     a, [hl]
+    ldh     [hRandomNumber], a
+    ret
+
 SECTION "Draw Hex", ROM0
 
 ; @param    a   Value to draw

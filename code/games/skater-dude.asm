@@ -96,6 +96,8 @@ xSpriteTilesSkaterDude:
     INCBIN "res/skater-dude/skateboard.obj.2bpp", 16 * 2
     INCBIN "res/skater-dude/danger-alert.obj.2bpp"
     INCBIN "res/skater-dude/car.obj.2bpp", 16 * 2
+    INCBIN "res/skater-dude/log.obj.2bpp", 16 * 2
+    INCBIN "res/skater-dude/oil-barrel.obj.2bpp", 16 * 2
 .end
 
 xActorSkaterDudeDefinition:
@@ -161,16 +163,40 @@ xActorDangerAlertDefinition:
 SECTION "Skater Dude Obstacle Cue", ROMX
 
 xCueObstacle::
-    ; Create an obstacle
-    ; TODO: Add more obstacle types and choose one randomly
-    ASSERT NUM_OBSTACLES == 1
+    ; Create a random type of obstacle
+    call    Random
+    ASSERT NUM_OBSTACLES == 3
+    and     a, 3
+    cp      a, NUM_OBSTACLES
+    jr      c, .obstacleOk
+    ; Cars would realistically be more common on the road, so go with
+    ; that
+    ASSERT ACTOR_CAR - ACTOR_OBSTACLES_START == 0
+    xor     a, a
+.obstacleOk
+    ; Get pointer to the actor definition
+    ld      b, a
+    add     a, a    ; a * 2 (X, Y)
+    add     a, a    ; a * 4 (X speed, Y speed)
+    add     a, b    ; a * 5 (Type)
     ASSERT BANK(xObstacleDefinitions) == BANK(@)
-    ld      de, xObstacleDefinitions
+    add     a, LOW(xObstacleDefinitions)
+    ld      e, a
+    ASSERT HIGH(xObstacleDefinitions.end - 1) == HIGH(xObstacleDefinitions)
+    ld      d, HIGH(xObstacleDefinitions)
     jp      ActorsNew
 
 xObstacleDefinitions:
     ; Car
     DB ACTOR_CAR
+    DB OBSTACLE_X, OBSTACLE_Y
+    DB OBSTACLE_SPEED, 0
+    ; Log
+    DB ACTOR_LOG
+    DB OBSTACLE_X, OBSTACLE_Y
+    DB OBSTACLE_SPEED, 0
+    ; Oil Barrel
+    DB ACTOR_OIL_BARREL
     DB OBSTACLE_X, OBSTACLE_Y
     DB OBSTACLE_SPEED, 0
 .end

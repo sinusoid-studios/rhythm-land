@@ -19,6 +19,8 @@ Initialize::
     ldh     [hNextHitKeys], a
     ldh     [hSCX], a
     ldh     [hSCY], a
+    ; TODO: Use a player-reliant seed
+    ldh     [hRandomNumber], a
     
     ldh     [hNewKeys], a
     dec     a       ; a = $FF = all pressed
