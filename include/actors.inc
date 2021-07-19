@@ -1,9 +1,9 @@
 ; Save the scope name of the actor's animation table
 MACRO animation_def
-    DEF ANIMATION_TABLE EQUS "\1Animation"
-    DEF METASPRITE_TABLE EQUS "\1Metasprites"
+    REDEF ANIMATION_TABLE EQUS "\1Animation"
+    REDEF METASPRITE_TABLE EQUS "\1Metasprites"
     IF _NARG == 2
-        DEF ANIMATION_NAME EQUS "\2"
+        REDEF ANIMATION_NAME EQUS "\2"
     ENDC
 ENDM
 
