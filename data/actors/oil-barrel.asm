@@ -5,11 +5,12 @@ SECTION "Skater Dude Oil Barrel Actor Animation Data", ROMX
 xActorOilBarrelAnimation::
     animation_def xActorOilBarrel
 
-    cel oilBarrel1, MUSIC_SKATER_DUDE_SPEED / 2
-    cel oilBarrel2, MUSIC_SKATER_DUDE_SPEED / 2
-    cel oilBarrel3, MUSIC_SKATER_DUDE_SPEED / 2
-    cel oilBarrel4, MUSIC_SKATER_DUDE_SPEED / 2
-    DB ANIMATION_KILL_ACTOR
+.loop
+    cel oilBarrel1, 2
+    cel oilBarrel2, 2
+    cel oilBarrel3, 2
+    cel oilBarrel4, 2
+    goto_cel .loop
 
 SECTION "Skater Dude Oil Barrel Actor Meta-Sprite Data", ROMX
 

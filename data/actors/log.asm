@@ -5,11 +5,12 @@ SECTION "Skater Dude Log Actor Animation Data", ROMX
 xActorLogAnimation::
     animation_def xActorLog
 
-    cel log1, MUSIC_SKATER_DUDE_SPEED / 2
-    cel log2, MUSIC_SKATER_DUDE_SPEED / 2
-    cel log3, MUSIC_SKATER_DUDE_SPEED / 2
-    cel log4, MUSIC_SKATER_DUDE_SPEED / 2
-    DB ANIMATION_KILL_ACTOR
+.loop
+    cel log1, 2
+    cel log2, 2
+    cel log3, 2
+    cel log4, 2
+    goto_cel .loop
 
 SECTION "Skater Dude Log Actor Meta-Sprite Data", ROMX
 

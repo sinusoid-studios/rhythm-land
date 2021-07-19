@@ -5,11 +5,12 @@ SECTION "Skater Dude Car Actor Animation Data", ROMX
 xActorCarAnimation::
     animation_def xActorCar
 
-    cel car1, MUSIC_SKATER_DUDE_SPEED / 2
-    cel car2, MUSIC_SKATER_DUDE_SPEED / 2
-    cel car3, MUSIC_SKATER_DUDE_SPEED / 2
-    cel car4, MUSIC_SKATER_DUDE_SPEED / 2
-    DB ANIMATION_KILL_ACTOR
+.loop
+    cel car1, 2
+    cel car2, 2
+    cel car3, 2
+    cel car4, 2
+    goto_cel .loop
 
 SECTION "Skater Dude Car Actor Meta-Sprite Data", ROMX
 

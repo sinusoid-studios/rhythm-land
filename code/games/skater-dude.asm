@@ -387,3 +387,26 @@ xJumpPositionTable:
     DB SKATER_DUDE_Y, 1
     DB 0
 .end
+
+SECTION "Skater Dude Obstacle Actor", ROMX
+
+xActorObstacle::
+    ; Check if the obstacle has gone off-screen
+    ld      hl, wActorXPosTable
+    add     hl, bc
+    ld      a, [hl]
+    
+    ; Check if the obstacle has not yet come on-screen
+    ASSERT LOW(OBSTACLE_X) & (1 << 7) && LOW(SCRN_X) & (1 << 7)
+    ASSERT LOW(SCRN_X) < LOW(OBSTACLE_X)
+    cp      a, OBSTACLE_X
+    ; Haven't come on-screen yet, nothing to do
+    ret     nc
+    
+    ; Check if the obstacle has gone past the right edge of the screen
+    cp      a, SCRN_X
+    ; Still on-screen, nothing to do
+    ret     c
+    
+    ; Kill this obstacle
+    jp      ActorsKill

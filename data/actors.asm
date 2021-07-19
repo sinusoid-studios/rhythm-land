@@ -5,9 +5,9 @@ SECTION "Actor Subroutine Table", ROM0
 ActorRoutineTable::
     full_pointer xActorSkaterDude   ; ACTOR_SKATER_DUDE
     full_pointer Null   ; ACTOR_DANGER_ALERT
-    full_pointer Null   ; ACTOR_CAR
-    full_pointer Null   ; ACTOR_LOG
-    full_pointer Null   ; ACTOR_OIL_BARREL
+    full_pointer xActorObstacle ; ACTOR_CAR
+    full_pointer xActorObstacle ; ACTOR_LOG
+    full_pointer xActorObstacle ; ACTOR_OIL_BARREL
 .end::
 
 SECTION "Actor Animation Table", ROM0

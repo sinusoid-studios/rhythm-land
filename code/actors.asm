@@ -521,7 +521,10 @@ ActorsUpdateAnimation:
     jr      z, .goto
     ASSERT ANIMATION_KILL_ACTOR & ~$80 == 1
     dec     a
-    jr      z, .killActor
+    ; Kill this actor
+    ; WARNING: This will break if the kill actor command is encountered
+    ; in an animation override, since bc isn't actually correct!
+    jp      z, ActorsKill
     ASSERT ANIMATION_OVERRIDE_END & ~$80 == 2
     ASSERT NUM_ANIMATION_SPECIAL_VALUES == 3
     
@@ -551,10 +554,10 @@ ActorsUpdateAnimation:
     ld      h, a
     jr      .setCountdown
 
-.killActor
-    ; Kill this actor
-    ; WARNING: This will break if the kill actor command is encountered
-    ; in an animation override, since bc isn't actually correct!
+SECTION "Actor Kill", ROM0
+
+; @param    bc  Actor index
+ActorsKill::
     ld      hl, wActorTypeTable
     add     hl, bc
     ld      [hl], ACTOR_EMPTY
