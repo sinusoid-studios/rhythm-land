@@ -1,8 +1,22 @@
 INCLUDE "defines.inc"
 
+SECTION UNION "Game Variables", HRAM
+
+; Current position in the title screen scroll table
+hScrollIndex:
+    DS 1
+
 SECTION "Title Screen Setup", ROM0
 
 SetupTitleScreen::
+    ; Start below the screen and scroll up
+    xor     a, a
+    ldh     [hScrollIndex], a
+    ; a = 0
+    ldh     [hSCX], a
+    ld      a, LOW(-SCRN_Y)
+    ldh     [hSCY], a
+    
     ; Load background tiles
     ld      de, BackgroundTilesTitle9000
     ld      hl, $9000
@@ -45,6 +59,17 @@ TitleScreen::
     ld      c, BANK(Music_Title)
     ld      de, Music_Title
     call    Music_Play
+    
+    ld      hl, TitleScrollPosTable
+.scrollLoop
+    rst     WaitVBlank
+    ; Move to the next scroll position
+    ld      a, [hli]
+    ASSERT TITLE_SCROLL_END_POS == 0
+    and     a, a
+    jr      z, .loop
+    ldh     [hSCY], a
+    jr      .scrollLoop
     
 .loop
     rst     WaitVBlank
