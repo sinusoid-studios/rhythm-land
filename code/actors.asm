@@ -621,12 +621,15 @@ ActorsSetTiles:
     ; Get the pointer to the destination in VRAM
     ASSERT HIGH(MAX_NUM_ACTORS) == 0
     ld      a, c
-    ASSERT NUM_ACTOR_RESERVED_TILES == 8
-    add     a, a    ; actor num * 2
-    add     a, a    ; actor num * 4
-    add     a, a    ; actor num * 8
+    swap    a       ; actor num * 16
+    ASSERT MAX_NUM_ACTORS & ~$0F == 0
+    ; No need to clear low nibble (already 0)
+    ld      h, HIGH($8000 >> 3)
     ld      l, a
-    ld      h, HIGH($8000)
+    ASSERT NUM_ACTOR_RESERVED_TILES == 8
+    add     hl, hl  ; actor num * 2
+    add     hl, hl  ; actor num * 4
+    add     hl, hl  ; actor num * 8
     
     ; Copy the tiles
     ; de = source
