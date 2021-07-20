@@ -745,10 +745,26 @@ ActorsSetCel::
     adc     a, d
     sub     a, l
     ld      h, a
-    inc     hl      ; Get duration
-    ld      a, [hl]
+    ; Check if tiles need to be copied first
+    ld      a, [hli]
+    cp      a, ANIMATION_SET_TILES
+    jr      nz, .setDuration
     
+    ; First copy tiles
+    push    hl
+    call    ActorsSetTiles
+    pop     hl
+    ; Skip over tile pointer + byte count + next meta-sprite number
+    ld      a, l
+    add     a, 4
+    ld      l, a
+    ld      a, h
+    ASSERT HIGH(MAX_NUM_ACTORS) == 0
+    adc     a, b    ; b = 0
+    ld      h, a
+.setDuration
     ; Set animation cel countdown
+    ld      a, [hl] ; a = cel duration
     ld      hl, wActorCelCountdownTable
     add     hl, bc
     ld      [hl], a
