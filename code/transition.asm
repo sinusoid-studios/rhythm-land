@@ -88,6 +88,12 @@ Transition::
     ld      hl, rSTAT
     res     STATB_MODE00, [hl]
     
+    ; Set all actors to empty
+    ld      a, ACTOR_EMPTY
+    ld      hl, wActorTypeTable
+    ld      c, MAX_NUM_ACTORS
+    rst     MemsetSmall
+    
     ; Get next screen's game ID
     ldh     a, [hCurrentGame]
     ld      b, a
