@@ -7,10 +7,10 @@ xActorSeagull3Animation::
 
     set_tiles resting, 6
 .loop
-    cel resting1, MUSIC_SEAGULL_SERENADE_SPEED - 3
-    cel resting2, 3
-    cel resting3, MUSIC_SEAGULL_SERENADE_SPEED - 3
-    cel resting2, 3
+    cel resting1, MUSIC_SEAGULL_SERENADE_SPEED * 2 - 5
+    cel resting2, 5
+    cel resting3, MUSIC_SEAGULL_SERENADE_SPEED * 2 - 5
+    cel resting2, 5
     goto_cel .loop
 
 xActorSeagull3Tiles:
