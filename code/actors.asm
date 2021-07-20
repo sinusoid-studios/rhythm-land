@@ -377,6 +377,11 @@ ActorsNew::
     inc     de
     ld      [hl], a
     
+    ; Reset cel number
+    ld      hl, wActorCelTable
+    add     hl, bc
+    ld      [hl], 0
+    
     ; Set actor animation cel countdown
     ld      l, a
     add     a, a    ; a * 2 (Pointer)
@@ -396,9 +401,29 @@ ActorsNew::
     ld      a, [hli]
     ld      h, [hl]
     ld      l, a
+    ; Set up the first animation cel
+    ld      a, [hli]
+    ; Check if the first item is the set tiles command
+    cp      a, ANIMATION_SET_TILES
+    jr      nz, .setDuration
+    
+    ; First copy tiles
+    push    hl
+    push    de
+    call    ActorsSetTiles
+    pop     de
+    pop     hl
+    ; Skip over tile pointer + byte count + next meta-sprite number
+    ld      a, l
+    add     a, 4
+    ld      l, a
+    ld      a, h
+    ASSERT HIGH(MAX_NUM_ACTORS) == 0
+    adc     a, b    ; b = 0
+    ld      h, a
+.setDuration
     ; Use first animation cel's duration
-    inc     hl      ; Move to duration (Meta-sprite, Duration)
-    ld      a, [hl]
+    ld      a, [hl] ; a = cel duration
     ld      hl, wActorCelCountdownTable
     add     hl, bc
     ld      [hl], a
@@ -432,10 +457,7 @@ ActorsNew::
     inc     de
     ld      [hl], a
     
-    ; Reset actor animation cel
-    ld      hl, wActorCelTable
-    add     hl, bc
-    ld      [hl], 0
+    ; Reset actor animation override
     ld      hl, wActorCelOverrideTable
     add     hl, bc
     ld      [hl], ANIMATION_OVERRIDE_NONE
@@ -508,6 +530,7 @@ ActorsUpdateAnimation:
     add     hl, bc
     inc     [hl]
     
+.advanceAnimation
     call    ActorsGetAnimationCel
     ; Check if this is a command (bit 7 set)
     bit     7, [hl]
@@ -533,8 +556,16 @@ ActorsUpdateAnimation:
     ; in an animation override, since bc isn't actually correct!
     jp      z, ActorsKill
     ASSERT ANIMATION_OVERRIDE_END & ~$80 == 2
-    ASSERT NUM_ANIMATION_SPECIAL_VALUES == 3
+    dec     a
+    jr      z, .overrideEnd
+    ASSERT ANIMATION_SET_TILES & ~$80 == 3
+    ASSERT NUM_ANIMATION_SPECIAL_VALUES == 4
     
+    ; Stream a set of tiles to VRAM
+    call    ActorsSetTiles
+    jr      .advanceAnimation
+
+.overrideEnd
     ; Animation override end
     ; WARNING: This will break if the animation override end command is
     ; encountered outside of an animation override, since this code
@@ -571,6 +602,63 @@ ActorsKill::
     ; Don't update because the actor is now gone
     pop     af      ; Skip return to ActorsUpdate
     jp      ActorsUpdate.next
+
+SECTION "Actor Tile Streaming", ROM0
+
+; Copy tiles to an actor's reserved tiles in VRAM
+; @param    hl  Pointer to 2nd byte of set tiles command
+; @param    bc  Actor index
+ActorsSetTiles:
+    ; Get the pointer to the tile data
+    ld      a, [hli]
+    ld      e, a
+    ld      a, [hli]
+    ld      d, a
+    ASSERT HIGH(MAX_NUM_ACTORS) == 0
+    ; Save number of bytes (halved for copy loop unroll)
+    ld      b, [hl]
+    
+    ; Get the pointer to the destination in VRAM
+    ASSERT HIGH(MAX_NUM_ACTORS) == 0
+    ld      a, c
+    ASSERT NUM_ACTOR_RESERVED_TILES == 8
+    add     a, a    ; actor num * 2
+    add     a, a    ; actor num * 4
+    add     a, a    ; actor num * 8
+    ld      l, a
+    ld      h, HIGH($8000)
+    
+    ; Copy the tiles
+    ; de = source
+    ; hl = destination
+    ; b = length / 2
+.copyLoop
+    ldh     a, [rSTAT]
+    and     a, STATF_BUSY
+    jr      nz, .copyLoop
+    
+    ld      a, [de]     ; 2 cycles
+    ld      [hli], a    ; 2 cycles
+    inc     de          ; 2 cycles
+    ld      a, [de]     ; 2 cycles
+    ld      [hli], a    ; 2 cycles
+    ; Total 10 cycles
+    ; Can't copy 3 bytes at a time because the byte count won't always
+    ; be divisible by 3
+    inc     de
+    dec     b
+    jr      nz, .copyLoop
+    
+    ASSERT HIGH(MAX_NUM_ACTORS) == 0
+    ld      b, 0
+    
+    ; Update cel number to skip the command (4 bytes)
+    ld      hl, wActorCelTable
+    add     hl, bc
+    inc     [hl]    ; Command + HIGH(Tile pointer)
+    inc     [hl]    ; LOW(Tile pointer) + length
+    
+    ret
 
 SECTION "Actor Get Animation Table", ROM0
 

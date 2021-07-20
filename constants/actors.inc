@@ -1,6 +1,9 @@
 ; Number of spots to put in the actor tables
 DEF MAX_NUM_ACTORS EQU 11
 
+; Number of tiles to give each actor for tile streaming
+DEF NUM_ACTOR_RESERVED_TILES EQU 8
+
 ; Actor types
 RSRESET
 DEF ACTOR_SKATER_DUDE RB 1
@@ -32,6 +35,7 @@ RSSET $80
 DEF ANIMATION_GOTO RB 1
 DEF ANIMATION_KILL_ACTOR RB 1
 DEF ANIMATION_OVERRIDE_END RB 1
+DEF ANIMATION_SET_TILES RB 1
 DEF NUM_ANIMATION_SPECIAL_VALUES EQU _RS & ~$80
 
 ; Cel duration value that means the current cel never ends

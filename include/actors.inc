@@ -2,6 +2,7 @@
 MACRO animation_def
     REDEF ANIMATION_TABLE EQUS "\1Animation"
     REDEF METASPRITE_TABLE EQUS "\1Metasprites"
+    REDEF TILE_TABLE EQUS "\1Tiles"
     IF _NARG == 2
         REDEF ANIMATION_NAME EQUS "\2"
     ENDC
@@ -21,6 +22,13 @@ ENDM
 ; Jump to an animation cel
 MACRO goto_cel
     DB ANIMATION_GOTO, ((\1) - {ANIMATION_TABLE}) / 2
+ENDM
+
+; Copy tiles to VRAM
+MACRO set_tiles
+    DB ANIMATION_SET_TILES
+    DW {TILE_TABLE}.\1
+    DB (\2) * 16 / 2
 ENDM
 
 ; Meta-sprites
