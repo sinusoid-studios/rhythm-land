@@ -28,7 +28,7 @@ ENDM
 MACRO override_end
     DB ANIMATION_OVERRIDE_END
     IF _NARG > 0
-        DB \1
+        DB ((\1) - {ANIMATION_TABLE}) / 2
     ELSE
         DB ANIMATION_OVERRIDE_END_NO_TILES
     ENDC
