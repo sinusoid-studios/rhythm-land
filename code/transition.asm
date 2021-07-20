@@ -88,11 +88,14 @@ Transition::
     ld      hl, rSTAT
     res     STATB_MODE00, [hl]
     
+    ; Remove all sprites
     ; Set all actors to empty
     ld      a, ACTOR_EMPTY
     ld      hl, wActorTypeTable
     ld      c, MAX_NUM_ACTORS
     rst     MemsetSmall
+    ; Hide all existing objects
+    call    HideAllObjects
     
     ; Get next screen's game ID
     ldh     a, [hCurrentGame]
@@ -182,7 +185,7 @@ Transition::
     ; stick to the final position
     ld      a, c
     ldh     [hScratch1], a
-    jr      .loop
+    jp      .loop
 
 .finished
     ; Disable the HBlank (Mode 0) interrupt
