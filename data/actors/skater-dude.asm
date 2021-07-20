@@ -22,8 +22,7 @@ xActorSkaterDudeAnimation::
     cel jumping5, 1
     cel jumping6, 1
     cel jumping7, 2
-    DB ANIMATION_OVERRIDE_END
-    DS 1
+    override_end
 
 .falling
     cel_def FALLING
@@ -39,7 +38,7 @@ xActorSkaterDudeAnimation::
     cel falling8, MUSIC_SKATER_DUDE_SPEED * 1
     cel nothing, MUSIC_SKATER_DUDE_SPEED * 1
     cel falling8, MUSIC_SKATER_DUDE_SPEED * 1
-    DB ANIMATION_OVERRIDE_END
+    override_end
 
 SECTION "Skater Dude Actor Meta-Sprite Data", ROMX
 

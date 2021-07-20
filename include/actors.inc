@@ -3,7 +3,7 @@ MACRO animation_def
     REDEF ANIMATION_TABLE EQUS "\1Animation"
     REDEF METASPRITE_TABLE EQUS "\1Metasprites"
     REDEF TILE_TABLE EQUS "\1Tiles"
-    IF _NARG == 2
+    IF _NARG > 1
         REDEF ANIMATION_NAME EQUS "\2"
     ENDC
 ENDM
@@ -22,6 +22,16 @@ ENDM
 ; Jump to an animation cel
 MACRO goto_cel
     DB ANIMATION_GOTO, ((\1) - {ANIMATION_TABLE}) / 2
+ENDM
+
+; End an animation override
+MACRO override_end
+    DB ANIMATION_OVERRIDE_END
+    IF _NARG > 0
+        DB \1
+    ELSE
+        DB ANIMATION_OVERRIDE_END_NO_TILES
+    ENDC
 ENDM
 
 ; Copy tiles to VRAM

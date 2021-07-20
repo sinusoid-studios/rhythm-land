@@ -236,8 +236,10 @@ ActorsUpdate::
     ldh     a, [hScratch1]  ; a = actor type
     add     a, LOW(ActorMetaspriteTable)
     ld      l, a
-    ASSERT HIGH(ActorMetaspriteTable.end - 1) == HIGH(ActorMetaspriteTable)
-    ld      h, HIGH(ActorMetaspriteTable)
+    ASSERT HIGH(ActorMetaspriteTable.end - 1) != HIGH(ActorMetaspriteTable)
+    adc     a, HIGH(ActorMetaspriteTable)
+    sub     a, l
+    ld      h, a
     
     ; Point hl to actor's type's meta-sprite table
     ld      a, [hli]
@@ -570,11 +572,36 @@ ActorsUpdateAnimation:
     ; WARNING: This will break if the animation override end command is
     ; encountered outside of an animation override, since this code
     ; assumes bc has the animation override offset!
+    push    hl
     ld      hl, wActorCelTable
     add     hl, bc
     ; hl should now point to the actor's spot in wActorCelOverrideTable
     ld      [hl], ANIMATION_OVERRIDE_NONE
-    ret
+    pop     hl
+    
+    ; Get cel number to reset to
+    ld      a, [hl]
+    ASSERT ANIMATION_OVERRIDE_END_NO_TILES == -1
+    inc     a
+    ret     z
+    
+    ; Copy tiles
+    ; WARNING: This will break if the given reset cel does not point to
+    ; a set tiles command!
+    dec     a       ; Undo inc
+    add     a, a    ; a * 2 (Meta-sprite + Duration)
+    inc     a       ; Skip set tiles command byte
+    add     a, e
+    ld      l, a
+    adc     a, d
+    sub     a, l
+    ld      h, a
+    ; Fix actor index
+    ASSERT HIGH(MAX_NUM_ACTORS) == 0
+    ld      a, c
+    sub     a, MAX_NUM_ACTORS
+    ld      c, a
+    jp      ActorsSetTiles
 
 .goto
     ; Goto: Jump to another position in the animation

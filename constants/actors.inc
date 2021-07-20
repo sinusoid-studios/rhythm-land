@@ -48,6 +48,8 @@ DEF ANIMATION_DURATION_FOREVER EQU -1
 
 ; Used in wActorCelOverrideTable when no animation override is in effect
 DEF ANIMATION_OVERRIDE_NONE EQU -1
+; When an animation override ends, don't change any tiles
+DEF ANIMATION_OVERRIDE_END_NO_TILES EQU -1
 
 ; Meta-sprite special values
 DEF METASPRITE_END EQU -128
