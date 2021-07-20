@@ -19,9 +19,9 @@ ActorRoutineTable::
     full_pointer xActorTitle    ; ACTOR_SMALL_STAR_5
     full_pointer xActorTitle    ; ACTOR_SMALL_STAR_6
     full_pointer xActorTitle    ; ACTOR_SMALL_STAR_7
-    full_pointer Null   ; ACTOR_SEAGULL_1
-    full_pointer Null   ; ACTOR_SEAGULL_2
-    full_pointer Null   ; ACTOR_SEAGULL_3
+    full_pointer xActorSeagull  ; ACTOR_SEAGULL_1
+    full_pointer xActorSeagull  ; ACTOR_SEAGULL_2
+    full_pointer xActorSeagull  ; ACTOR_SEAGULL_3
 .end::
 
 SECTION "Actor Animation Table", ROM0

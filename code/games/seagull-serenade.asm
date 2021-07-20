@@ -72,3 +72,16 @@ xGameSeagullSerenade::
     call    ActorsUpdate
     
     jr      .loop
+
+SECTION "Seagull Serenade Seagull Actor", ROMX
+
+xActorSeagull::
+    ; Check for sync actions
+    ld      a, [wMusicSyncData]
+    ASSERT SYNC_SEAGULL_SERENADE_GROOVE == 1
+    dec     a
+    ret     nz
+    
+    ; Stop bobbing and start to really get in the groove
+    ld      a, CEL_SEAGULL_GROOVE
+    jp      ActorsSetCel

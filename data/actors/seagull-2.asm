@@ -6,12 +6,18 @@ xActorSeagull2Animation::
     animation_def xActorSeagull2
 
     set_tiles resting, 6
-.loop
+.bobLoop
+    cel resting4, 5
+    cel resting2, MUSIC_SEAGULL_SERENADE_SPEED * 2 - 5
+    goto_cel .bobLoop
+
+    ; Resting tiles already loaded
+.grooveLoop
     cel resting1, MUSIC_SEAGULL_SERENADE_SPEED * 2 - 5
     cel resting2, 5
     cel resting3, MUSIC_SEAGULL_SERENADE_SPEED * 2 - 5
     cel resting2, 5
-    goto_cel .loop
+    goto_cel .grooveLoop
 
 xActorSeagull2Tiles:
 .resting
@@ -37,6 +43,7 @@ xActorSeagull2Metasprites::
     metasprite .resting1
     metasprite .resting2
     metasprite .resting3
+    metasprite .resting4
 
 .resting1
     DB 0, -1, $08, 0
@@ -52,4 +59,9 @@ xActorSeagull2Metasprites::
     DB 0, 1, $08, 0
     DB 0, 9, $0A, 0
     DB 0, 17, $0C, 0
+    DB METASPRITE_END
+.resting4
+    DB 0, 0, $08, 0
+    DB 0, 8, $0A, 0
+    DB 0, 16, $0C, 0
     DB METASPRITE_END
