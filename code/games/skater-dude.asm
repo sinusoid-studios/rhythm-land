@@ -176,9 +176,8 @@ xCueObstacle::
     ASSERT BANK(xObstacleDefinitions) == BANK(@)
     add     a, LOW(xObstacleDefinitions)
     ld      e, a
-    adc     a, HIGH(xObstacleDefinitions)
-    sub     a, e
-    ld      d, a
+    ASSERT HIGH(xObstacleDefinitions.end - 1) == HIGH(xObstacleDefinitions)
+    ld      d, HIGH(xObstacleDefinitions)
     jp      ActorsNew
 
 xObstacleDefinitions:
@@ -286,9 +285,8 @@ xActorSkaterDude::
     add     a, a    ; a * 2 (Position, Duration)
     add     a, LOW(xJumpPositionTable)
     ld      l, a
-    adc     a, HIGH(xJumpPositionTable)
-    sub     a, l
-    ld      h, a
+    ASSERT HIGH(xJumpPositionTable.end - 1) == HIGH(xJumpPositionTable)
+    ld      h, HIGH(xJumpPositionTable)
     ; Get the new Y position
     ld      a, [hli]    ; a = Y position
     ; 0 signals the end of the table

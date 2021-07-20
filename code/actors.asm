@@ -91,7 +91,7 @@ ActorsUpdate::
     
 .next
     ; Move to the next actor
-    ASSERT MAX_NUM_ACTORS < 256
+    ASSERT HIGH(MAX_NUM_ACTORS) == 0
     inc     c
     ld      a, c
     cp      a, MAX_NUM_ACTORS
@@ -138,7 +138,7 @@ ActorsUpdate::
     ; tables, so MAX_NUM_ACTORS (the tables' sizes) can simply be added
     ; to the entity index in bc
     push    bc
-    ASSERT MAX_NUM_ACTORS * 2 < 256
+    ASSERT HIGH(MAX_NUM_ACTORS * 2) == HIGH(MAX_NUM_ACTORS)
     ld      a, c
     add     a, MAX_NUM_ACTORS
     ld      c, a
@@ -160,7 +160,7 @@ ActorsUpdate::
     ; MAX_NUM_ACTORS (the tables' sizes) can simply be added to the
     ; entity index in bc
     push    bc
-    ASSERT MAX_NUM_ACTORS * 2 < 256
+    ASSERT HIGH(MAX_NUM_ACTORS * 2) == HIGH(MAX_NUM_ACTORS)
     ld      a, c
     add     a, MAX_NUM_ACTORS
     ld      c, a
@@ -172,9 +172,8 @@ ActorsUpdate::
     ldh     a, [hScratch1]  ; a = actor type
     add     a, LOW(ActorRoutineTable)
     ld      l, a
-    adc     a, HIGH(ActorRoutineTable)
-    sub     a, l
-    ld      h, a
+    ASSERT HIGH(ActorRoutineTable.end - 1) == HIGH(ActorRoutineTable)
+    ld      h, HIGH(ActorRoutineTable)
     
     ld      a, [hli]
     and     a, a
@@ -221,7 +220,7 @@ ActorsUpdate::
     ASSERT wActorCelOverrideTable == wActorCelTable + MAX_NUM_ACTORS
     ASSERT wActorCelOverrideCountdownTable == wActorCelCountdownTable + MAX_NUM_ACTORS
     push    bc
-    ASSERT MAX_NUM_ACTORS * 2 < 256
+    ASSERT HIGH(MAX_NUM_ACTORS * 2) == HIGH(MAX_NUM_ACTORS)
     ld      a, c
     add     a, MAX_NUM_ACTORS
     ld      c, a
@@ -236,10 +235,8 @@ ActorsUpdate::
     ldh     a, [hScratch1]  ; a = actor type
     add     a, LOW(ActorMetaspriteTable)
     ld      l, a
-    ASSERT HIGH(ActorMetaspriteTable.end - 1) != HIGH(ActorMetaspriteTable)
-    adc     a, HIGH(ActorMetaspriteTable)
-    sub     a, l
-    ld      h, a
+    ASSERT HIGH(ActorMetaspriteTable.end - 1) == HIGH(ActorMetaspriteTable)
+    ld      h, HIGH(ActorMetaspriteTable)
     
     ; Point hl to actor's type's meta-sprite table
     ld      a, [hli]
@@ -330,7 +327,7 @@ ActorsUpdate::
     ASSERT wActorYSpeedTable == wActorXSpeedTable + MAX_NUM_ACTORS
     ASSERT wActorYSpeedAccTable == wActorXSpeedAccTable + MAX_NUM_ACTORS
     push    bc
-    ASSERT MAX_NUM_ACTORS * 2 < 256
+    ASSERT HIGH(MAX_NUM_ACTORS * 2) == HIGH(MAX_NUM_ACTORS)
     ld      a, c
     add     a, MAX_NUM_ACTORS
     ld      c, a
@@ -365,7 +362,7 @@ ActorsNew::
     
     ; Move to the next slot
     inc     hl
-    ASSERT MAX_NUM_ACTORS < 256
+    ASSERT HIGH(MAX_NUM_ACTORS) == 0
     inc     c
     ld      a, c
     ; If gone through all actors, return
@@ -825,7 +822,7 @@ ActorsSetAnimationOverride::
     ASSERT wActorCelOverrideCountdownTable == wActorCelCountdownTable + MAX_NUM_ACTORS
     push    bc
     ld      b, a    ; Save cel number
-    ASSERT MAX_NUM_ACTORS * 2 < 256
+    ASSERT HIGH(MAX_NUM_ACTORS * 2) == HIGH(MAX_NUM_ACTORS)
     ld      a, c
     add     a, MAX_NUM_ACTORS
     ld      c, a
