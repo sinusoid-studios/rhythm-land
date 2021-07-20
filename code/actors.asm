@@ -609,6 +609,15 @@ SECTION "Actor Tile Streaming", ROM0
 ; @param    hl  Pointer to 2nd byte of set tiles command
 ; @param    bc  Actor index
 ActorsSetTiles:
+    ; Check if the actor index is wrong (for override animations)
+    ld      a, c
+    cp      a, MAX_NUM_ACTORS
+    jr      c, .indexOk
+    ; Fix actor index
+    ASSERT HIGH(MAX_NUM_ACTORS) == 0
+    sub     a, MAX_NUM_ACTORS
+    ld      c, a
+.indexOk
     ; Get the pointer to the tile data
     ld      a, [hli]
     ld      e, a
