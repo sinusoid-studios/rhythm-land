@@ -19,6 +19,9 @@ ActorRoutineTable::
     full_pointer xActorTitle    ; ACTOR_SMALL_STAR_5
     full_pointer xActorTitle    ; ACTOR_SMALL_STAR_6
     full_pointer xActorTitle    ; ACTOR_SMALL_STAR_7
+    full_pointer Null   ; ACTOR_SEAGULL_1
+    full_pointer Null   ; ACTOR_SEAGULL_2
+    full_pointer Null   ; ACTOR_SEAGULL_3
 .end::
 
 SECTION "Actor Animation Table", ROM0
@@ -40,6 +43,9 @@ ActorAnimationTable::
     full_pointer xActorSmallStar5Animation  ; ACTOR_SMALL_STAR_5
     full_pointer xActorSmallStar6Animation  ; ACTOR_SMALL_STAR_6
     full_pointer xActorSmallStar7Animation  ; ACTOR_SMALL_STAR_7
+    full_pointer xActorSeagull1Animation    ; ACTOR_SEAGULL_1
+    full_pointer xActorSeagull2Animation    ; ACTOR_SEAGULL_2
+    full_pointer xActorSeagull3Animation    ; ACTOR_SEAGULL_3
 .end::
 
 SECTION "Actor Meta-Sprite Table", ROM0
@@ -61,4 +67,7 @@ ActorMetaspriteTable::
     full_pointer xActorSmallStar5Metasprites    ; ACTOR_SMALL_STAR_5
     full_pointer xActorSmallStar6Metasprites    ; ACTOR_SMALL_STAR_6
     full_pointer xActorSmallStar7Metasprites    ; ACTOR_SMALL_STAR_7
+    full_pointer xActorSeagull1Metasprites  ; ACTOR_SEAGULL_1
+    full_pointer xActorSeagull2Metasprites  ; ACTOR_SEAGULL_2
+    full_pointer xActorSeagull3Metasprites  ; ACTOR_SEAGULL_3
 .end::

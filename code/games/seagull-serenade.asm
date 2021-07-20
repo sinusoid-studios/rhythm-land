@@ -10,7 +10,8 @@ xGameSetupSeagullSerenade::
     ld      bc, xBackgroundTilesSeagullSerenade9000.end - xBackgroundTilesSeagullSerenade9000
     rst     LCDMemcopy
     ASSERT BANK(xBackgroundTilesSeagullSerenade8800) == BANK(@)
-    ld      de, xBackgroundTilesSeagullSerenade8800
+    ASSERT xBackgroundTilesSeagullSerenade8800 == xBackgroundTilesSeagullSerenade9000.end
+    ; de = xBackgroundTilesSeagullSerenade8800
     ld      hl, $8800
     ld      bc, xBackgroundTilesSeagullSerenade8800.end - xBackgroundTilesSeagullSerenade8800
     rst     LCDMemcopy
@@ -21,10 +22,31 @@ xGameSetupSeagullSerenade::
     ld      hl, _SCRN0
     call    LCDMemcopyMap
     
+    ; Create seagull actors
+    ld      de, xActorSeagullDefinitions
+    ASSERT NUM_SEAGULLS == 3
+    call    ActorsNew
+    call    ActorsNew
+    call    ActorsNew
+    
     ; Prepare music
     ld      c, BANK(Inst_SeagullSerenade)
     ld      de, Inst_SeagullSerenade
     jp      Music_PrepareInst
+
+xActorSeagullDefinitions:
+    ; Seagull 1
+    DB ACTOR_SEAGULL_1
+    DB SEAGULL_1_X, SEAGULL_1_Y
+    DB 0, 0
+    ; Seagull 2
+    DB ACTOR_SEAGULL_2
+    DB SEAGULL_2_X, SEAGULL_2_Y
+    DB 0, 0
+    ; Seagull 3
+    DB ACTOR_SEAGULL_3
+    DB SEAGULL_3_X, SEAGULL_3_Y
+    DB 0, 0
 
 xBackgroundTilesSeagullSerenade9000:
     INCBIN "res/seagull-serenade/background.bg.2bpp", 0, 128 * 16
@@ -46,4 +68,7 @@ xGameSeagullSerenade::
     
 .loop
     rst     WaitVBlank
+    
+    call    ActorsUpdate
+    
     jr      .loop
