@@ -1,10 +1,10 @@
 ; Save the scope name of the actor's animation table
-MACRO animation_def
-    REDEF ANIMATION_TABLE EQUS "\1Animation"
-    REDEF METASPRITE_TABLE EQUS "\1Metasprites"
-    REDEF TILE_TABLE EQUS "\1Tiles"
+MACRO animation
+    REDEF ANIMATION_TABLE EQUS "xActor\1Animation"
+    REDEF METASPRITE_TABLE EQUS "xActor\1Metasprites"
+    REDEF TILE_TABLE EQUS "xActor\1Tiles"
     IF _NARG > 1
-        REDEF ANIMATION_NAME EQUS "\2"
+        REDEF ACTOR_NAME EQUS "\2"
     ENDC
 ENDM
 
@@ -15,8 +15,8 @@ ENDM
 
 ; Assign an animation cel's number to a constant and export it
 MACRO cel_def
-    DEF CEL_{ANIMATION_NAME}_\2 EQU ((\1) - {ANIMATION_TABLE}) / 2
-    EXPORT CEL_{ANIMATION_NAME}_\2
+    DEF CEL_{ACTOR_NAME}_\2 EQU ((\1) - {ANIMATION_TABLE}) / 2
+    EXPORT CEL_{ACTOR_NAME}_\2
 ENDM
 
 ; Jump to an animation cel

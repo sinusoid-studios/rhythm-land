@@ -6,7 +6,7 @@ INCLUDE "macros/actors.inc"
 SECTION "Skater Dude Danger Alert Actor Animation Data", ROMX
 
 xActorDangerAlertAnimation::
-    animation_def xActorDangerAlert
+    animation DangerAlert
 
     cel visible, MUSIC_SKATER_DUDE_SPEED
     cel hidden, MUSIC_SKATER_DUDE_SPEED

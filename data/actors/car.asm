@@ -5,7 +5,7 @@ INCLUDE "macros/actors.inc"
 SECTION "Skater Dude Car Actor Animation Data", ROMX
 
 xActorCarAnimation::
-    animation_def xActorCar
+    animation Car
 
 .loop
     cel car1, 2

@@ -4,7 +4,7 @@ INCLUDE "macros/actors.inc"
 SECTION "Title Screen Large Star 1 Actor Animation Data", ROMX
 
 xActorLargeStar1Animation::
-    animation_def xActorLargeStar1
+    animation LargeStar1
 
     cel largeStar1, ANIMATION_DURATION_FOREVER
 
@@ -24,7 +24,7 @@ xActorLargeStar1Metasprites::
 SECTION "Title Screen Large Star 2 Actor Animation Data", ROMX
 
 xActorLargeStar2Animation::
-    animation_def xActorLargeStar2
+    animation LargeStar2
 
     cel largeStar2, ANIMATION_DURATION_FOREVER
 
@@ -45,7 +45,7 @@ xActorLargeStar2Metasprites::
 SECTION "Title Screen Large Star 3 Actor Animation Data", ROMX
 
 xActorLargeStar3Animation::
-    animation_def xActorLargeStar3
+    animation LargeStar3
 
     cel largeStar3, ANIMATION_DURATION_FOREVER
 
@@ -67,7 +67,7 @@ xActorLargeStar3Metasprites::
 SECTION "Title Screen Large Star 4 Actor Animation Data", ROMX
 
 xActorLargeStar4Animation::
-    animation_def xActorLargeStar4
+    animation LargeStar4
 
     cel largeStar4, ANIMATION_DURATION_FOREVER
 
@@ -89,7 +89,7 @@ xActorLargeStar4Metasprites::
 SECTION "Title Screen Small Star 1 Actor Animation Data", ROMX
 
 xActorSmallStar1Animation::
-    animation_def xActorSmallStar1
+    animation SmallStar1
 
     cel smallStar1, ANIMATION_DURATION_FOREVER
 
@@ -105,7 +105,7 @@ xActorSmallStar1Metasprites::
 SECTION "Title Screen Small Star 2 Actor Animation Data", ROMX
 
 xActorSmallStar2Animation::
-    animation_def xActorSmallStar2
+    animation SmallStar2
 
     cel smallStar2, ANIMATION_DURATION_FOREVER
 
@@ -121,7 +121,7 @@ xActorSmallStar2Metasprites::
 SECTION "Title Screen Small Star 3 Actor Animation Data", ROMX
 
 xActorSmallStar3Animation::
-    animation_def xActorSmallStar3
+    animation SmallStar3
 
     cel smallStar3, ANIMATION_DURATION_FOREVER
 
@@ -137,7 +137,7 @@ xActorSmallStar3Metasprites::
 SECTION "Title Screen Small Star 4 Actor Animation Data", ROMX
 
 xActorSmallStar4Animation::
-    animation_def xActorSmallStar4
+    animation SmallStar4
 
     cel smallStar4, ANIMATION_DURATION_FOREVER
 
@@ -153,7 +153,7 @@ xActorSmallStar4Metasprites::
 SECTION "Title Screen Small Star 5 Actor Animation Data", ROMX
 
 xActorSmallStar5Animation::
-    animation_def xActorSmallStar5
+    animation SmallStar5
 
     cel smallStar5, ANIMATION_DURATION_FOREVER
 
@@ -169,7 +169,7 @@ xActorSmallStar5Metasprites::
 SECTION "Title Screen Small Star 6 Actor Animation Data", ROMX
 
 xActorSmallStar6Animation::
-    animation_def xActorSmallStar6
+    animation SmallStar6
 
     cel smallStar6, ANIMATION_DURATION_FOREVER
 
@@ -185,7 +185,7 @@ xActorSmallStar6Metasprites::
 SECTION "Title Screen Small Star 7 Actor Animation Data", ROMX
 
 xActorSmallStar7Animation::
-    animation_def xActorSmallStar7
+    animation SmallStar7
 
     cel smallStar7, ANIMATION_DURATION_FOREVER
 

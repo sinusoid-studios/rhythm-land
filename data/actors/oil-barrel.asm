@@ -5,7 +5,7 @@ INCLUDE "macros/actors.inc"
 SECTION "Skater Dude Oil Barrel Actor Animation Data", ROMX
 
 xActorOilBarrelAnimation::
-    animation_def xActorOilBarrel
+    animation OilBarrel
 
 .loop
     cel oilBarrel1, 2

@@ -5,7 +5,7 @@ INCLUDE "macros/actors.inc"
 SECTION "Seagull Serenade Seagull 2 Actor Animation Data", ROMX
 
 xActorSeagull2Animation::
-    animation_def xActorSeagull2
+    animation Seagull2
 
     set_tiles resting, 6
 .bobLoop

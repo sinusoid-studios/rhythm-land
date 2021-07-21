@@ -6,7 +6,7 @@ INCLUDE "macros/actors.inc"
 SECTION "Skater Dude Actor Animation Data", ROMX
 
 xActorSkaterDudeAnimation::
-    animation_def xActorSkaterDude, SKATER_DUDE
+    animation SkaterDude, SKATER_DUDE
 
 .skating
     cel skating1, MUSIC_SKATER_DUDE_SPEED

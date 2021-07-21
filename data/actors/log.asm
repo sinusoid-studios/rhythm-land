@@ -5,7 +5,7 @@ INCLUDE "macros/actors.inc"
 SECTION "Skater Dude Log Actor Animation Data", ROMX
 
 xActorLogAnimation::
-    animation_def xActorLog
+    animation Log
 
 .loop
     cel log1, 2
