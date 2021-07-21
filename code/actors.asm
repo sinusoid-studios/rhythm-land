@@ -126,11 +126,11 @@ ActorsUpdate::
     ; Don't update the override animation during slo-mo
     ldh     a, [hCurrentGame]
     cp      a, ID_SKATER_DUDE
-    jr      nz, .updatePosition
+    jr      nz, .updateOverrideAnimation
     ldh     a, [hSloMoCountdown]
     and     a, SKATER_DUDE_SLO_MO_UPDATE_MASK
     jr      nz, .updatePosition
-    
+.updateOverrideAnimation
     ; Update actor's override animation
     ASSERT wActorCelOverrideTable == wActorCelTable + MAX_NUM_ACTORS
     ASSERT wActorCelOverrideCountdownTable == wActorCelCountdownTable + MAX_NUM_ACTORS
