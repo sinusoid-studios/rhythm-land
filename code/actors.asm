@@ -633,6 +633,7 @@ SECTION "Actor Tile Streaming", ROM0
 ; @param    hl  Pointer to 2nd byte of set tiles command
 ; @param    bc  Actor index
 ActorsSetTiles:
+    push    bc
     ; Check if the actor index is wrong (for override animations)
     ld      a, c
     cp      a, MAX_NUM_ACTORS
@@ -685,15 +686,12 @@ ActorsSetTiles:
     dec     b
     jr      nz, .copyLoop
     
-    ASSERT HIGH(MAX_NUM_ACTORS) == 0
-    ld      b, 0
-    
+    pop     bc
     ; Update cel number to skip the command (4 bytes)
     ld      hl, wActorCelTable
     add     hl, bc
     inc     [hl]    ; Command + HIGH(Tile pointer)
     inc     [hl]    ; LOW(Tile pointer) + length
-    
     ret
 
 SECTION "Actor Get Animation Table", ROM0
