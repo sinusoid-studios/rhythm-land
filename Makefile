@@ -12,10 +12,9 @@ OLDLIC := 0x33
 MBC := MBC5
 SRAMSIZE := 0
 
-INCDIRS = code include
 WARNINGS := all extra
 
-ASFLAGS  = -h $(addprefix -i ,$(INCDIRS)) -p $(PADVALUE) $(addprefix -W,$(WARNINGS))
+ASFLAGS  = -h -p $(PADVALUE) $(addprefix -W,$(WARNINGS))
 LDFLAGS  = -p $(PADVALUE) -d
 FIXFLAGS = -v -p $(PADVALUE) -i "$(MFRCODE)" -k "$(LICENSEE)" -l $(OLDLIC) -m $(MBC) -n $(VERSION) -r $(SRAMSIZE) -t "$(TITLE)" -j
 

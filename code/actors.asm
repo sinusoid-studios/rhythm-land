@@ -1,4 +1,4 @@
-INCLUDE "hardware.inc"
+INCLUDE "constants/hardware.inc"
 INCLUDE "constants/actors.inc"
 INCLUDE "constants/games.inc"
 INCLUDE "constants/games/skater-dude.inc"

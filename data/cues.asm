@@ -1,4 +1,4 @@
-INCLUDE "macros.inc"
+INCLUDE "macros/misc.inc"
 
 SECTION "Cue Subroutine Table", ROM0
 

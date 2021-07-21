@@ -1,4 +1,4 @@
-INCLUDE "hardware.inc"
+INCLUDE "constants/hardware.inc"
 INCLUDE "constants/title.inc"
 
 DEF CHANGE EQU (TITLE_SCROLL_END_POS - TITLE_SCROLL_START_POS) << 16

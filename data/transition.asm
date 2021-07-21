@@ -1,4 +1,4 @@
-INCLUDE "hardware.inc"
+INCLUDE "constants/hardware.inc"
 INCLUDE "constants/transition.inc"
 
 DEF CHANGE EQU (TRANSITION_END_POS - TRANSITION_START_POS) << 16

@@ -1,4 +1,4 @@
-INCLUDE "hardware.inc"
+INCLUDE "constants/hardware.inc"
 
 SECTION "Null Pointer", ROM0[$0000]
 

@@ -1,4 +1,4 @@
-INCLUDE "hardware.inc"
+INCLUDE "constants/hardware.inc"
 INCLUDE "constants/game-select.inc"
 
 SECTION "Currently Selected Game ID", HRAM

@@ -1,4 +1,4 @@
-INCLUDE "macros.inc"
+INCLUDE "macros/misc.inc"
 
 SECTION "Actor Subroutine Table", ROM0
 

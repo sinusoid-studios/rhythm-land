@@ -1,4 +1,4 @@
-INCLUDE "hardware.inc"
+INCLUDE "constants/hardware.inc"
 INCLUDE "constants/other-hardware.inc"
 
 SECTION "OAM Variables", HRAM

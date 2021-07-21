@@ -1,4 +1,4 @@
-INCLUDE "hardware.inc"
+INCLUDE "constants/hardware.inc"
 INCLUDE "constants/sfx.inc"
 
 SECTION UNION "Game Variables", HRAM

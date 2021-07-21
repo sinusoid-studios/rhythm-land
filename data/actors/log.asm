@@ -1,6 +1,6 @@
-INCLUDE "hardware.inc"
-INCLUDE "actors.inc"
+INCLUDE "constants/hardware.inc"
 INCLUDE "constants/actors.inc"
+INCLUDE "macros/actors.inc"
 
 SECTION "Skater Dude Log Actor Animation Data", ROMX
 
