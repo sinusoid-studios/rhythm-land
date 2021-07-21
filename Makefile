@@ -74,5 +74,9 @@ res/%.bg.2bpp res/%.bg.tilemap: gfx/%.bg.png
 
 # Don't include dependencies if cleaning
 ifneq ($(MAKECMDGOALS),clean)
--include $(patsubst %.asm,dep/%.mk,$(SRCS) $(ST_SRCS))
+ifneq ($(MAKECMDGOALS),soundtest)
+-include $(patsubst %.asm,dep/%.mk,$(SRCS))
+else
+-include $(patsubst %.asm,dep/%.mk,$(ST_SRCS))
+endif
 endif
