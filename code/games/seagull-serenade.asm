@@ -1,4 +1,6 @@
-INCLUDE "defines.inc"
+INCLUDE "hardware.inc"
+INCLUDE "constants/actors.inc"
+INCLUDE "constants/games/seagull-serenade.inc"
 
 SECTION "Seagull Serenade Game Setup", ROMX
 

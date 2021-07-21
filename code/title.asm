@@ -1,4 +1,7 @@
-INCLUDE "defines.inc"
+INCLUDE "hardware.inc"
+INCLUDE "constants/actors.inc"
+INCLUDE "constants/games.inc"
+INCLUDE "constants/title.inc"
 
 SECTION UNION "Game Variables", HRAM
 

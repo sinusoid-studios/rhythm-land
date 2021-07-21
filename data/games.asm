@@ -1,4 +1,4 @@
-INCLUDE "defines.inc"
+INCLUDE "macros.inc"
 
 SECTION "Game Table", ROM0
 

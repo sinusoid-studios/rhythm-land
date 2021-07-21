@@ -1,4 +1,7 @@
-INCLUDE "defines.inc"
+INCLUDE "hardware.inc"
+INCLUDE "macros.inc"
+INCLUDE "constants/actors.inc"
+INCLUDE "constants/games.inc"
 
 SECTION "Initialization", ROM0
 

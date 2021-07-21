@@ -1,4 +1,6 @@
-INCLUDE "defines.inc"
+INCLUDE "actors.inc"
+INCLUDE "constants/actors.inc"
+INCLUDE "constants/games/seagull-serenade.inc"
 
 SECTION "Seagull Serenade Seagull 2 Actor Animation Data", ROMX
 

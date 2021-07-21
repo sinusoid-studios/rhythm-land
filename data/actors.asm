@@ -1,4 +1,4 @@
-INCLUDE "defines.inc"
+INCLUDE "macros.inc"
 
 SECTION "Actor Subroutine Table", ROM0
 

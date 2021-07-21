@@ -1,3 +1,9 @@
+; Number of frames per tick in the theme
+DEF MUSIC_SKATER_DUDE_SPEED EQU 8
+
+; Music sync data values
+DEF SYNC_SKATER_DUDE_END EQU 1
+
 ; Y position of Skater Dude normally
 DEF SKATER_DUDE_Y EQU SCRN_Y * 1/2 + 5
 ; X position of Skater Dude (stays constant the entire game)

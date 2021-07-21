@@ -1,4 +1,5 @@
-INCLUDE "defines.inc"
+INCLUDE "actors.inc"
+INCLUDE "constants/actors.inc"
 
 SECTION "Title Screen Large Star 1 Actor Animation Data", ROMX
 

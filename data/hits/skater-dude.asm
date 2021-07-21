@@ -1,4 +1,7 @@
-INCLUDE "defines.inc"
+INCLUDE "hardware.inc"
+INCLUDE "hits.inc"
+INCLUDE "constants/hits.inc"
+INCLUDE "constants/games/skater-dude.inc"
 
 DEF MUSIC_SPEED EQU MUSIC_SKATER_DUDE_SPEED
 

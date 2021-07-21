@@ -1,3 +1,9 @@
+; Number of frames per tick in the theme
+DEF MUSIC_SEAGULL_SERENADE_SPEED EQU 13
+
+; Music sync data values
+DEF SYNC_SEAGULL_SERENADE_GROOVE EQU 1
+
 ; Seagull actor positions
 DEF SEAGULL_1_X EQU 54
 DEF SEAGULL_1_Y EQU 69

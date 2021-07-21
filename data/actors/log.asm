@@ -1,4 +1,6 @@
-INCLUDE "defines.inc"
+INCLUDE "hardware.inc"
+INCLUDE "actors.inc"
+INCLUDE "constants/actors.inc"
 
 SECTION "Skater Dude Log Actor Animation Data", ROMX
 

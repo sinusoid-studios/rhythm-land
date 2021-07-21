@@ -1,4 +1,7 @@
-INCLUDE "defines.inc"
+INCLUDE "hardware.inc"
+INCLUDE "actors.inc"
+INCLUDE "constants/actors.inc"
+INCLUDE "constants/games/skater-dude.inc"
 
 SECTION "Skater Dude Danger Alert Actor Animation Data", ROMX
 

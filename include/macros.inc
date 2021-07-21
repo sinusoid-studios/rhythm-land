@@ -10,6 +10,3 @@ MACRO lb
     ASSERT \3 >= -128 && \3 < 256, "The value \3 is not 8-bit!"
     ld      \1, (LOW(\2) << 8) | LOW(\3)
 ENDM
-
-INCLUDE "hits.inc"
-INCLUDE "actors.inc"

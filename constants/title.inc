@@ -1,3 +1,7 @@
+; Music sync data values
+DEF SYNC_TITLE_BEAT EQU 1
+DEF SYNC_TITLE_FLASH EQU 2
+
 ; Number of frames the title scroll lasts (1 beat, but the tempo is
 ; increasing at the beginning)
 DEF TITLE_SCROLL_DURATION EQU 10 + 10 + 10 + 9

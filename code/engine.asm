@@ -1,4 +1,6 @@
-INCLUDE "defines.inc"
+INCLUDE "hardware.inc"
+INCLUDE "constants/hits.inc"
+INCLUDE "constants/engine.inc"
 
 SECTION "Engine Variables", HRAM
 

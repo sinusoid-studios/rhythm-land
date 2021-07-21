@@ -1,4 +1,7 @@
-INCLUDE "defines.inc"
+INCLUDE "hardware.inc"
+INCLUDE "constants/actors.inc"
+INCLUDE "constants/games.inc"
+INCLUDE "constants/games/skater-dude.inc"
 
 SECTION "Actor Rendering Temporary Variables", HRAM
 

@@ -1,4 +1,6 @@
-INCLUDE "defines.inc"
+INCLUDE "hardware.inc"
+INCLUDE "constants/other-hardware.inc"
+INCLUDE "macros.inc"
 
 SECTION "VBlank Flag", HRAM
 

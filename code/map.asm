@@ -1,4 +1,4 @@
-INCLUDE "defines.inc"
+INCLUDE "hardware.inc"
 
 SECTION "Background Map Variables", HRAM
 

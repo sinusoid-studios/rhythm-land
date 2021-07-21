@@ -1,4 +1,7 @@
-INCLUDE "defines.inc"
+INCLUDE "hardware.inc"
+INCLUDE "constants/engine.inc"
+INCLUDE "constants/games.inc"
+INCLUDE "constants/game-select.inc"
 
 SECTION "Overall Rating Screen", ROM0
 

@@ -1,4 +1,4 @@
-INCLUDE "defines.inc"
+INCLUDE "hardware.inc"
 
 SECTION "Null Pointer", ROM0[$0000]
 

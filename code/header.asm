@@ -1,4 +1,4 @@
-INCLUDE "defines.inc"
+INCLUDE "constants/other-hardware.inc"
 
 SECTION "Entry Point", ROM0[$0100]
 
