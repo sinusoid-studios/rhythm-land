@@ -13,10 +13,10 @@ MACRO cel
     DB METASPRITE_\1, \2
 ENDM
 
-; Name an animation cel
+; Assign an animation cel's number to a constant and export it
 MACRO cel_def
-    DEF CEL_{ANIMATION_NAME}_\1 EQU (@ - {ANIMATION_TABLE}) / 2
-    EXPORT CEL_{ANIMATION_NAME}_\1
+    DEF CEL_{ANIMATION_NAME}_\2 EQU ((\1) - {ANIMATION_TABLE}) / 2
+    EXPORT CEL_{ANIMATION_NAME}_\2
 ENDM
 
 ; Jump to an animation cel

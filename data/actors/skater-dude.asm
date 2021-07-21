@@ -16,7 +16,6 @@ xActorSkaterDudeAnimation::
     goto_cel .skating
 
 .jumping
-    cel_def JUMPING
     ; Jump is 1 beat long in slo-mo
     cel jumping1, 1
     cel jumping2, 1
@@ -28,7 +27,6 @@ xActorSkaterDudeAnimation::
     override_end
 
 .falling
-    cel_def FALLING
     cel falling1, 4
     cel falling2, 4
     cel falling3, 4
@@ -42,6 +40,10 @@ xActorSkaterDudeAnimation::
     cel nothing, MUSIC_SKATER_DUDE_SPEED * 1
     cel falling8, MUSIC_SKATER_DUDE_SPEED * 1
     override_end
+
+    ; Cel constant definitions
+    cel_def .jumping, JUMPING
+    cel_def .falling, FALLING
 
 SECTION "Skater Dude Actor Meta-Sprite Data", ROMX
 

@@ -13,7 +13,7 @@ xActorSeagull1Animation::
     cel resting2, MUSIC_SEAGULL_SERENADE_SPEED * 2 - 5
     goto_cel .bobLoop
 
-    cel_def GROOVE
+.groove
     ; Resting tiles already loaded
 .grooveLoop
     cel resting1, MUSIC_SEAGULL_SERENADE_SPEED * 2 - 5
@@ -21,6 +21,9 @@ xActorSeagull1Animation::
     cel resting3, MUSIC_SEAGULL_SERENADE_SPEED * 2 - 5
     cel resting2, 5
     goto_cel .grooveLoop
+
+    ; Cel constant definitions
+    cel_def .groove, GROOVE
 
 xActorSeagull1Tiles:
 .resting
