@@ -59,12 +59,20 @@ SECTION "Hardware Register Mirrors", HRAM
 
 ; Mirrors of hardware registers, copied to the real things in the VBlank
 ; interrupt handler
+
+hLCDC::
+    DS 1
+
 hSCX::
     DS 1
 hSCY::
     DS 1
 
 hBGP::
+    DS 1
+hOBP0::
+    DS 1
+hOBP1::
     DS 1
 
 SECTION "Current Game ID", HRAM

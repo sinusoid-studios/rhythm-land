@@ -22,6 +22,17 @@ hSloMoCountdown::
 SECTION "Skater Dude Game Setup", ROMX
 
 xGameSetupSkaterDude::
+    ; Set palettes
+    ld      a, %11100100
+    ldh     [hBGP], a
+    ldh     [hOBP1], a      ; Black, Dark gray, Light gray
+    ld      a, %11010010    ; Black, Light gray, White
+    ldh     [hOBP0], a
+    
+    ; Set appropriate LCDC flags
+    ld      a, LCDCF_ON | LCDCF_BG8800 | LCDCF_BG9800 | LCDCF_BGON | LCDCF_OBJ16 | LCDCF_OBJON
+    ldh     [hLCDC], a
+    
     ASSERT SKATER_DUDE_STATE_IN == 0
     xor     a, a
     ldh     [hSkaterDudeState], a

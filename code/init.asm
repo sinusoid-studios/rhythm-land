@@ -1,6 +1,7 @@
 INCLUDE "constants/hardware.inc"
 INCLUDE "constants/actors.inc"
 INCLUDE "constants/games.inc"
+INCLUDE "constants/transition.inc"
 INCLUDE "macros/misc.inc"
 
 SECTION "Initialization", ROM0
@@ -28,6 +29,8 @@ Initialize::
     ldh     [hCurrentGame], a
     ; TODO: Use a player-reliant seed
     ldh     [hRandomNumber], a
+    ASSERT TRANSITION_STATE_OFF == 0
+    ldh     [hTransitionState], a
     
     ldh     [hNewKeys], a
     dec     a       ; a = $FF = all pressed
@@ -38,13 +41,10 @@ Initialize::
     ld      a, 1
     ldh     [hCurrentBank], a
     
-    ; Set initial palettes
-    ld      a, %11100100
-    ldh     [hBGP], a
-    ldh     [rBGP], a
-    ldh     [rOBP1], a      ; Black, Dark gray, Light gray
-    ld      a, %11010010
-    ldh     [rOBP0], a      ; Black, Light gray, White
+    ; Set initial palettes that the title screen (the first screen)
+    ; doesn't set up
+    ld      a, %11100100    ; Black, Dark gray, Light gray
+    ldh     [hOBP1], a
     
     ; Clear OAM
     ld      hl, _OAMRAM
@@ -117,8 +117,8 @@ Initialize::
     ; Enable interrupts
     ei
     
-    ; Turn on the LCD
-    ld      a, LCDCF_ON | LCDCF_BG8800 | LCDCF_BG9800 | LCDCF_BGON | LCDCF_WIN9C00 | LCDCF_OBJ16 | LCDCF_OBJON
+    ; Turn on the LCD (title screen setup set hLCDC)
+    ldh     a, [hLCDC]
     ldh     [rLCDC], a
     
     ; Jump to the title screen

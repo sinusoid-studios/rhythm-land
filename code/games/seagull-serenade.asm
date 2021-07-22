@@ -5,6 +5,16 @@ INCLUDE "constants/games/seagull-serenade.inc"
 SECTION "Seagull Serenade Game Setup", ROMX
 
 xGameSetupSeagullSerenade::
+    ; Set palettes
+    ld      a, %11100100
+    ldh     [hBGP], a
+    ld      a, %11010010    ; Black, Light gray, White
+    ldh     [hOBP0], a
+    
+    ; Set appropriate LCDC flags
+    ld      a, LCDCF_ON | LCDCF_BG8800 | LCDCF_BG9800 | LCDCF_BGON | LCDCF_OBJ16 | LCDCF_OBJON
+    ldh     [hLCDC], a
+    
     ; Load background tiles
     ASSERT BANK(xBackgroundTilesSeagullSerenade9000) == BANK(@)
     ld      de, xBackgroundTilesSeagullSerenade9000

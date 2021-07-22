@@ -1,5 +1,6 @@
 INCLUDE "constants/hardware.inc"
 INCLUDE "constants/other-hardware.inc"
+INCLUDE "constants/transition.inc"
 INCLUDE "macros/misc.inc"
 
 SECTION "VBlank Flag", HRAM
@@ -23,8 +24,20 @@ SECTION "VBlank Interrupt Handler", ROM0
 VBlankHandler:
     ldh     a, [hSCY]
     ldh     [rSCY], a
+    ; Allow the screen transition to override LCDC and palettes
+    ldh     a, [hTransitionState]
+    ASSERT TRANSITION_STATE_OFF == 0
+    and     a, a
+    jr      nz, .transition
+    ldh     a, [hLCDC]
+    ldh     [rLCDC], a
     ldh     a, [hBGP]
     ldh     [rBGP], a
+    ldh     a, [hOBP0]
+    ldh     [rOBP0], a
+    ldh     a, [hOBP1]
+    ldh     [rOBP1], a
+.transition
     
     push    bc
     

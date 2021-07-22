@@ -10,6 +10,14 @@ hEndDelay:
 SECTION "Test Game Setup", ROMX
 
 xGameSetupTest::
+    ; Set palettes
+    ld      a, %11100100
+    ldh     [hBGP], a
+    
+    ; Set appropriate LCDC flags
+    ld      a, LCDCF_ON | LCDCF_BG8800 | LCDCF_BG9800 | LCDCF_BGON
+    ldh     [hLCDC], a
+    
     ld      a, 60
     ldh     [hEndDelay], a
     

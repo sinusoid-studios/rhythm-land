@@ -3,6 +3,13 @@ INCLUDE "constants/other-hardware.inc"
 INCLUDE "constants/actors.inc"
 INCLUDE "constants/transition.inc"
 
+SECTION "Screen Transition Variables", HRAM
+
+; Current state of the screen transition
+; See constants/transition.inc for possible values
+hTransitionState::
+    DS 1
+
 SECTION "Screen Transition", ROM0
 
 ; Start a screen transition and wait for it to complete
@@ -12,16 +19,12 @@ Transition::
     ; Save next screen's game ID
     ldh     [hCurrentGame], a
     
-    ; Set initial music fade delay (use hScratch3 for it)
-    ld      a, TRANSITION_MUSIC_FADE_SPEED
-    ldh     [hScratch3], a
-    
-    ; Signal transition coming on
-    xor     a, a
-    ldh     [hScratch2], a
+    ; Signal transition coming in
+    ld      a, TRANSITION_STATE_IN
+    ldh     [hTransitionState], a
     
     ; Window always filling the screen vertically
-    ; a = 0
+    xor     a, a
     ldh     [rWY], a
     ; Hide the window initially
     ld      a, SCRN_X + 7
@@ -30,16 +33,22 @@ Transition::
     ; write to rWX
     ldh     [hScratch1], a
     
+    ; Set initial music fade delay (use hScratch2 for it)
+    ld      a, TRANSITION_MUSIC_FADE_SPEED
+    ldh     [hScratch2], a
+    
     ld      de, TransitionPosTable
 
 ; @param    de  Base pointer to the current position in the transition
 .animate
     ; Enable the window
-    ld      hl, rLCDC
-    set     LCDCB_WIN, [hl]
+    ldh     a, [hLCDC]
+    ASSERT LCDCF_WINON != 0 && LCDCF_WIN9C00 != 0
+    or      a, LCDCF_WINON | LCDCF_WIN9C00
+    ldh     [rLCDC], a
     
     ; Enable the HBlank (Mode 0) interrupt
-    ld      l, LOW(rSTAT)
+    ld      hl, rSTAT
     set     STATB_MODE00, [hl]
     
     ; hl used as pointer to current position for each block,
@@ -60,11 +69,12 @@ Transition::
     
     ; Advance the transition
     ; Get transition direction
-    ldh     a, [hScratch2]
-    and     a, a
-    jr      nz, .comingOff
+    ldh     a, [hTransitionState]
+    ASSERT TRANSITION_STATE_IN == 1
+    dec     a
+    jr      nz, .goingOut
     
-    ; Transition is coming on
+    ; Transition is coming in
     ASSERT HIGH(TransitionPosTable.end) == HIGH(TransitionPosTable)
     inc     e
     ; Check if this part of the transition is over
@@ -77,7 +87,7 @@ Transition::
     ldh     [hScratch1], a
     ldh     [rWX], a
     
-    ; This must also be called when the transition is coming off if it
+    ; This must also be called when the transition is going out if it
     ; cuts into that time
     ASSERT TRANSITION_MUSIC_FADE_SPEED * 8 <= TRANSITION_DURATION + TRANSITION_DELAY
     call    MusicFadeOut
@@ -131,16 +141,16 @@ Transition::
     dec     c
     jr      nz, .delayLoop
     
-    ; Start moving the transition off
-    ld      a, 1
-    ldh     [hScratch2], a
+    ; Start moving the transition out
+    ld      a, TRANSITION_STATE_OUT
+    ldh     [hTransitionState], a
     
     ; Animate this part in reverse
     ld      de, TransitionPosTable.end - 1
     jr      .animate
 
-.comingOff
-    ; Transition is coming off
+.goingOut
+    ; Transition is going out
     ASSERT HIGH(TransitionPosTable.end) == HIGH(TransitionPosTable)
     dec     e
     ; Check if this part of the transition is over
@@ -194,6 +204,11 @@ Transition::
     ld      hl, rSTAT
     res     STATB_MODE00, [hl]
     
+    ; Turn the transition off
+    ASSERT TRANSITION_STATE_OFF == 0
+    xor     a, a
+    ldh     [hTransitionState], a
+    
     ; Jump into the next screen's loop
     ldh     a, [hCurrentGame]
     ld      b, a
@@ -201,8 +216,10 @@ Transition::
     add     a, b    ; a * 3 (+Bank)
     add     a, LOW(GameTable)
     ld      l, a
-    ASSERT HIGH(GameTable.end - 1) == HIGH(GameTable)
-    ld      h, HIGH(GameTable)
+    ; ASSERT HIGH(GameTable.end - 1) != HIGH(GameTable)
+    adc     a, HIGH(GameTable)
+    sub     a, l
+    ld      h, a
     
     ld      a, [hli]
     ; Switching the bank to 0 in this case is benign but still triggers
@@ -223,7 +240,7 @@ SECTION "Music Fade Out", ROM0
 ASSERT TRANSITION_MUSIC_FADE_SPEED * 8 > TRANSITION_DURATION
 
 MusicFadeOut:
-    ldh     a, [hScratch3]
+    ldh     a, [hScratch2]
     dec     a
     jr      nz, .noDecrease
     ; Subtract 1 from volume on each terminal
@@ -250,5 +267,5 @@ MusicFadeOut:
     ASSERT LOW(-1) > TRANSITION_DURATION - TRANSITION_MUSIC_FADE_SPEED * 8
     xor     a, a
 .noDecrease
-    ldh     [hScratch3], a
+    ldh     [hScratch2], a
     ret
