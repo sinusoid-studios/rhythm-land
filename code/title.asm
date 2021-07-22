@@ -1,4 +1,5 @@
 INCLUDE "constants/hardware.inc"
+INCLUDE "constants/other-hardware.inc"
 INCLUDE "constants/actors.inc"
 INCLUDE "constants/games.inc"
 INCLUDE "constants/title.inc"
@@ -65,48 +66,49 @@ SECTION "Title Screen Large Star Actor Definitions", ROM0
 ActorStarDefinitions:
     ; Large Star 1
     DB ACTOR_LARGE_STAR_1
-    DB 27, -2
-    DB 0, 0
+    DB 20, -4
+    DB 0.4f, 0.7f
     ; Large Star 2
     DB ACTOR_LARGE_STAR_2
-    DB 113, 0
-    DB 0, 0
+    DB 113, -8
+    DB -0.1f, 0.7f
     ; Large Star 3
     DB ACTOR_LARGE_STAR_3
-    DB 8, 104
-    DB 0, 0
+    DB 8, 115
+    DB 0.35f, -0.7f
     ; Large Star 4
     DB ACTOR_LARGE_STAR_4
-    DB 129, 104
-    DB 0, 0
+    DB 129, 120
+    DB -0.15f, -0.6f
     ; Small Star 1
     DB ACTOR_SMALL_STAR_1
-    DB 8, 24
-    DB 0, 0
+    DB 8, 30
+    DB 0.3f, 0.3f
     ; Small Star 2
     DB ACTOR_SMALL_STAR_2
-    DB 56, 24
-    DB 0, 0
+    DB 56, 12
+    DB 0.2f, 0.4f
     ; Small Star 3
     DB ACTOR_SMALL_STAR_3
     DB 96, 8
-    DB 0, 0
+    DB -0.1f, 0.4f
     ; Small Star 4
     DB ACTOR_SMALL_STAR_4
-    DB 144, 32
-    DB 0, 0
+    DB 148, 32
+    DB -0.2f, 0.3f
     ; Small Star 5
     DB ACTOR_SMALL_STAR_5
-    DB 8, 88
-    DB 0, 0
+    DB 5, 92
+    DB 0.3f, -0.2f
     ; Small Star 6
     DB ACTOR_SMALL_STAR_6
-    DB 40, 128
-    DB 0, 0
+    DB 48, 128
+    DB 0.2f, -0.3f
     ; Small Star 7
     DB ACTOR_SMALL_STAR_7
-    DB 120, 136
-    DB 0, 0
+    DB 112, 123
+    DB -0.1f, -0.3f
+.end
 
 SECTION "Title Screen Background Tiles", ROM0
 
@@ -194,5 +196,33 @@ TitleScreen::
 SECTION "Title Screen Actor", ROMX
 
 xActorTitle::
-    ; TODO: Bounce
+    ; Check if it's time to bounce
+    ld      a, [wMusicSyncData]
+    ASSERT SYNC_TITLE_BEAT == 1
+    dec     a
+    ret     nz
+    
+    ; Bounce to the beat
+    ; Stars move inward -> bounce is just resetting the position
+    ASSERT HIGH(MAX_NUM_ACTORS * 5 + 1) == 0
+    ld      a, c
+    add     a, a    ; actor index * 2
+    add     a, a    ; actor index * 4
+    add     a, c    ; actor index * 5
+    inc     a       ; Skip actor type to get to actor position
+    add     a, LOW(ActorStarDefinitions)
+    ld      l, a
+    ASSERT HIGH(ActorStarDefinitions.end - 1) == HIGH(ActorStarDefinitions)
+    ld      h, HIGH(ActorStarDefinitions)
+    
+    ld      a, [hli]    ; a = X position
+    ld      e, [hl]     ; e = Y position
+    
+    ; Reset position
+    ld      hl, wActorXPosTable
+    add     hl, bc
+    ld      [hl], a
+    ld      hl, wActorYPosTable
+    add     hl, bc
+    ld      [hl], e
     ret
