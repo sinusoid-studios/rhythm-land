@@ -160,9 +160,10 @@ STATHandler:
 :
     ; Wait for mode 3, which comes before HBlank
     ldh     a, [rSTAT]
-    ; (%11 + 1) & %11 == 0
+    ASSERT (STATF_LCD + 1) & STAT_MODE_MASK == 0
     inc     a
     and     a, STAT_MODE_MASK
+    ; If in mode 3, a = 0
     jr      nz, :-
     
 :
