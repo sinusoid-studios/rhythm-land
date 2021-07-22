@@ -65,47 +65,47 @@ SECTION "Title Screen Large Star Actor Definitions", ROM0
 ActorStarDefinitions:
     ; Large Star 1
     DB ACTOR_LARGE_STAR_1
-    DB LARGE_STAR_1_X, LARGE_STAR_1_Y
+    DB 27, -2
     DB 0, 0
     ; Large Star 2
     DB ACTOR_LARGE_STAR_2
-    DB LARGE_STAR_2_X, LARGE_STAR_2_Y
+    DB 113, 0
     DB 0, 0
     ; Large Star 3
     DB ACTOR_LARGE_STAR_3
-    DB LARGE_STAR_3_X, LARGE_STAR_3_Y
+    DB 8, 104
     DB 0, 0
     ; Large Star 4
     DB ACTOR_LARGE_STAR_4
-    DB LARGE_STAR_4_X, LARGE_STAR_4_Y
+    DB 129, 104
     DB 0, 0
     ; Small Star 1
     DB ACTOR_SMALL_STAR_1
-    DB SMALL_STAR_1_X, SMALL_STAR_1_Y
+    DB 8, 24
     DB 0, 0
     ; Small Star 2
     DB ACTOR_SMALL_STAR_2
-    DB SMALL_STAR_2_X, SMALL_STAR_2_Y
+    DB 56, 24
     DB 0, 0
     ; Small Star 3
     DB ACTOR_SMALL_STAR_3
-    DB SMALL_STAR_3_X, SMALL_STAR_3_Y
+    DB 96, 8
     DB 0, 0
     ; Small Star 4
     DB ACTOR_SMALL_STAR_4
-    DB SMALL_STAR_4_X, SMALL_STAR_4_Y
+    DB 144, 32
     DB 0, 0
     ; Small Star 5
     DB ACTOR_SMALL_STAR_5
-    DB SMALL_STAR_5_X, SMALL_STAR_5_Y
+    DB 8, 88
     DB 0, 0
     ; Small Star 6
     DB ACTOR_SMALL_STAR_6
-    DB SMALL_STAR_6_X, SMALL_STAR_6_Y
+    DB 40, 128
     DB 0, 0
     ; Small Star 7
     DB ACTOR_SMALL_STAR_7
-    DB SMALL_STAR_7_X, SMALL_STAR_7_Y
+    DB 120, 136
     DB 0, 0
 
 SECTION "Title Screen Background Tiles", ROM0
