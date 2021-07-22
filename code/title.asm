@@ -16,9 +16,9 @@ SECTION "Title Screen Setup", ROM0
 
 SetupTitleScreen::
     ; Set palettes
-    ld      a, %11100100
+    ld      a, TITLE_BGP
     ldh     [hBGP], a
-    ld      a, %10010011    ; Dark gray, Light gray, White
+    ld      a, TITLE_OBP0
     ldh     [hOBP0], a
     
     ; Set appropriate LCDC flags
@@ -175,7 +175,7 @@ TitleScreen::
     ldh     [hFlashCountdown], a
     jr      nz, .checkSync
     ; Flash is over -> reset to normal palette
-    ld      a, %11100100
+    ld      a, TITLE_BGP
     ldh     [hBGP], a
 .checkSync
     ld      a, [wMusicSyncData]
@@ -186,7 +186,7 @@ TitleScreen::
     dec     a
     jr      nz, .noSyncData
     ; Flash
-    ld      a, %10010000    ; One shade lighter than normal
+    ld      a, TITLE_BGP << 2   ; One shade lighter than normal
     ldh     [hBGP], a
     ; Reset countdown to flash duration
     ld      a, TITLE_FLASH_DURATION

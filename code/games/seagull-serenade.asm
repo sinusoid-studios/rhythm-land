@@ -6,9 +6,9 @@ SECTION "Seagull Serenade Game Setup", ROMX
 
 xGameSetupSeagullSerenade::
     ; Set palettes
-    ld      a, %11100100
+    ld      a, SEAGULL_SERENADE_BGP
     ldh     [hBGP], a
-    ld      a, %11010010    ; Black, Light gray, White
+    ld      a, SEAGULL_SERENADE_OBP0
     ldh     [hOBP0], a
     
     ; Set appropriate LCDC flags

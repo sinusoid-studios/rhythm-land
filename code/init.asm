@@ -43,7 +43,7 @@ Initialize::
     
     ; Set initial palettes that the title screen (the first screen)
     ; doesn't set up
-    ld      a, %11100100    ; Black, Dark gray, Light gray
+    ld      a, %11_10_01_00 ; Black, Dark gray, Light gray
     ldh     [hOBP1], a
     
     ; Clear OAM

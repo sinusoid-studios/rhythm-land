@@ -1,5 +1,6 @@
 INCLUDE "constants/hardware.inc"
 INCLUDE "constants/sfx.inc"
+INCLUDE "constants/games/test.inc"
 
 SECTION UNION "Game Variables", HRAM
 
@@ -11,7 +12,7 @@ SECTION "Test Game Setup", ROMX
 
 xGameSetupTest::
     ; Set palettes
-    ld      a, %11100100
+    ld      a, TEST_BGP
     ldh     [hBGP], a
     
     ; Set appropriate LCDC flags

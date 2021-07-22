@@ -23,10 +23,11 @@ SECTION "Skater Dude Game Setup", ROMX
 
 xGameSetupSkaterDude::
     ; Set palettes
-    ld      a, %11100100
+    ld      a, SKATER_DUDE_BGP
     ldh     [hBGP], a
-    ldh     [hOBP1], a      ; Black, Dark gray, Light gray
-    ld      a, %11010010    ; Black, Light gray, White
+    ASSERT SKATER_DUDE_OBP1 & ~%11 == SKATER_DUDE_BGP & ~%11
+    ldh     [hOBP1], a
+    ld      a, SKATER_DUDE_OBP0
     ldh     [hOBP0], a
     
     ; Set appropriate LCDC flags

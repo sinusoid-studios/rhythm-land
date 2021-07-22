@@ -6,6 +6,11 @@ DEF MUSIC_SKATER_DUDE_SPEED EQU 8
 ; Music sync data values
 DEF SYNC_SKATER_DUDE_END EQU 1
 
+; Game palettes
+DEF SKATER_DUDE_BGP EQU %11_10_01_00
+DEF SKATER_DUDE_OBP0 EQU %11_01_00_00   ; Black, Light gray, White
+DEF SKATER_DUDE_OBP1 EQU %11_10_01_00   ; Black, Dark gray, Light gray
+
 ; Y position of Skater Dude normally
 DEF SKATER_DUDE_Y EQU SCRN_Y * 1/2 + 5
 ; X position of Skater Dude (stays constant the entire game)
