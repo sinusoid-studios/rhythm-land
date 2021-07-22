@@ -1,3 +1,5 @@
+INCLUDE "constants/other-hardware.inc"
+
 ; Number of frames per tick in the theme
 DEF MUSIC_SKATER_DUDE_SPEED EQU 8
 
@@ -15,8 +17,8 @@ DEF SKATER_DUDE_END_X EQU -24
 ; Number of pixels Skater Dude moves vertically when jumping
 DEF SKATER_DUDE_JUMP_HEIGHT EQU 32
 ; X speed of Skater Dude when skating on or off the screen
-DEF SKATER_DUDE_IN_SPEED EQU -DIV(1.0, 3.0) >> (16 - 3)
-DEF SKATER_DUDE_OUT_SPEED EQU -1.5 >> (16 - 3)
+DEF SKATER_DUDE_IN_SPEED EQU -DIV(1.0, 3.0)f
+DEF SKATER_DUDE_OUT_SPEED EQU -1.5f
 
 ; Skater Dude states, used at the beginning and end of the game
 RSRESET
