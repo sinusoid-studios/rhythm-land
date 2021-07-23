@@ -159,15 +159,6 @@ Music_SkaterDude::
 SECTION "Skater Dude Theme Instruments", ROMX
 
 INSTSkaterDude_CHNLOFF: DB $05, $00, $01, $80, $02
-INSTSkaterDude1_CHNL1:
-    DB $07, $0A, $00
-    DB $05, $F0, $01, $80
-    DB $00, $01, $0A, $00
-    DB $01, $80, $00, $01
-    DB $0A, $80, $05, $F2
-    DB $01, $80, $00, $01
-    DB $0A, $00, $00, $01
-    DB $0A, $40, $02
 INSTSkaterDude1_CHNL2:
     DB $07, $05, $20
     DB $0A, $FF, $00, $00
