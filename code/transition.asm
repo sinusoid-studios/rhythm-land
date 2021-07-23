@@ -10,6 +10,10 @@ SECTION "Screen Transition Variables", HRAM
 hTransitionState::
     DS 1
 
+; Current position in TransitionPosTable
+hTransitionIndex::
+    DS 1
+
 SECTION "Screen Transition", ROM0
 
 ; Start a screen transition and wait for it to complete
@@ -23,23 +27,21 @@ Transition::
     ld      a, TRANSITION_STATE_IN
     ldh     [hTransitionState], a
     
-    ; Window always filling the screen vertically
+    ; Reset transition position index
     xor     a, a
+    ldh     [hTransitionIndex], a
+    
+    ; Window always filling the screen vertically
+    ; a = 0
     ldh     [rWY], a
     ; Hide the window initially
     ld      a, SCRN_X + 7
     ldh     [rWX], a
-    ; Use hScratch1 for giving the HBlank interrupt handler the value to
-    ; write to rWX
-    ldh     [hScratch1], a
     
     ; Set initial music fade delay (use hScratch2 for it)
     ld      a, TRANSITION_MUSIC_FADE_SPEED
     ldh     [hScratch2], a
     
-    ld      de, TransitionPosTable
-
-; @param    de  Base pointer to the current position in the transition
 .animate
     ; Enable the window
     ldh     a, [hLCDC]
@@ -47,44 +49,30 @@ Transition::
     or      a, LCDCF_WINON | LCDCF_WIN9C00
     ldh     [rLCDC], a
     
-    ; Enable the HBlank (Mode 0) interrupt
-    ld      hl, rSTAT
-    set     STATB_MODE00, [hl]
-    
-    ; hl used as pointer to current position for each block,
-    ; recalculated for each block
-    ASSERT HIGH(TransitionPosTable.end) == HIGH(TransitionPosTable)
-    ld      h, d
-    ; The final position of the window, for when the pointer to the
-    ; current position is past the end of the table
-    ; Store it in a free register because there's no reason not to
-    ld      c, TRANSITION_END_POS
 .loop
-    halt
-    ldh     a, [hVBlankFlag]
-    and     a, a
-    jr      z, .nextScanline
-    xor     a, a
-    ldh     [hVBlankFlag], a
+    rst     WaitVBlank
     
     ; Advance the transition
     ; Get transition direction
     ldh     a, [hTransitionState]
     ASSERT TRANSITION_STATE_IN == 1
     dec     a
+    ldh     a, [hTransitionIndex]
     jr      nz, .goingOut
     
     ; Transition is coming in
-    ASSERT HIGH(TransitionPosTable.end) == HIGH(TransitionPosTable)
-    inc     e
+    inc     a
     ; Check if this part of the transition is over
-    ld      a, e
-    cp      a, LOW(TransitionPosTable.end)
+    cp      a, TransitionPosTable.end - TransitionPosTable
     jr      nc, .covered
     
+    ldh     [hTransitionIndex], a
     ; Set first block's position before LY 0
-    ld      a, [de]
-    ldh     [hScratch1], a
+    add     a, LOW(TransitionPosTable)
+    ld      l, a
+    ASSERT HIGH(TransitionPosTable.end - 1) == HIGH(TransitionPosTable)
+    ld      h, HIGH(TransitionPosTable)
+    ld      a, [hl]
     ldh     [rWX], a
     
     ; This must also be called when the transition is going out if it
@@ -97,9 +85,14 @@ Transition::
     ; The screen is now entirely covered, so setup for the next screen
     ; can be done!
     
-    ; Disable the HBlank (Mode 0) interrupt
-    ld      hl, rSTAT
-    res     STATB_MODE00, [hl]
+    ; Stop updating the window mid-frame and ensure the LYC interrupt is
+    ; for the sound update
+    xor     a, a
+    ldh     [rLYC], a
+    
+    ; Update transition state
+    ld      a, TRANSITION_STATE_MID
+    ldh     [hTransitionState], a
     
     ; Remove all sprites
     ; Set all actors to empty
@@ -134,11 +127,14 @@ Transition::
     rst     JP_HL
     
     ; Delay a little bit
-    ld      c, TRANSITION_DELAY
+    ld      a, TRANSITION_DELAY
+    ldh     [hScratch1], a
 .delayLoop
     rst     WaitVBlank
     call    MusicFadeOut
-    dec     c
+    ldh     a, [hScratch1]
+    dec     a
+    ldh     [hScratch1], a
     jr      nz, .delayLoop
     
     ; Start moving the transition out
@@ -146,63 +142,35 @@ Transition::
     ldh     [hTransitionState], a
     
     ; Animate this part in reverse
-    ld      de, TransitionPosTable.end - 1
+    ld      a, TransitionPosTable.end - TransitionPosTable - 1
+    ldh     [hTransitionIndex], a
     jr      .animate
 
 .goingOut
     ; Transition is going out
-    ASSERT HIGH(TransitionPosTable.end) == HIGH(TransitionPosTable)
-    dec     e
+    dec     a
     ; Check if this part of the transition is over
-    ld      a, e
-    ASSERT LOW(TransitionPosTable) == 0
-    inc     a
     jr      z, .finished
     
+    ldh     [hTransitionIndex], a
     ; Set first block's position before LY 0
-    ld      a, [de]
-    ldh     [hScratch1], a
+    add     a, LOW(TransitionPosTable)
+    ld      l, a
+    ASSERT HIGH(TransitionPosTable.end - 1) == HIGH(TransitionPosTable)
+    ld      h, HIGH(TransitionPosTable)
+    ld      a, [hl]
     ldh     [rWX], a
     jr      .loop
 
-.nextScanline
-    ; Only update position after every tile
-    ldh     a, [rLY]
-    ld      b, a
-    and     a, 7
-    ; Not at the start of a tile -> nothing to do
-    jr      nz, .loop
-    
-    ; Find the correct position to use based on current scanline
-    ld      a, b    ; b = LY
-    srl     a       ; a / 2
-    srl     a       ; a / 4
-    ASSERT TRANSITION_BLOCK_DIFFERENCE == 2
-    and     a, ~1   ; a / 8 * 2
-    ; Multiplied by 2 to give a slightly more significant delay between
-    ; blocks
-    add     a, e
-    ASSERT HIGH(TransitionPosTable.end - 1 + (SCRN_Y / 8 * 2)) == HIGH(TransitionPosTable)
-    cp      a, LOW(TransitionPosTable.end)
-    jr      nc, .end
-    
-    ld      l, a
-    ; Set position for HBlank interrupt handler to use
-    ld      a, [hl]
-    ldh     [hScratch1], a
-    jr      .loop
-
-.end
-    ; This block has gone through all of the points in the ease, use the
-    ; stick to the final position
-    ld      a, c
-    ldh     [hScratch1], a
-    jp      .loop
-
 .finished
-    ; Disable the HBlank (Mode 0) interrupt
-    ld      hl, rSTAT
-    res     STATB_MODE00, [hl]
+    ; Stop updating the window mid-frame and ensure the LYC interrupt is
+    ; for the sound update
+    ; a = 0
+    ldh     [rLYC], a
+    
+    ; Hide the window
+    ld      a, SCRN_X + 7
+    ldh     [rWX], a
     
     ; Turn the transition off
     ASSERT TRANSITION_STATE_OFF == 0
@@ -253,13 +221,7 @@ MusicFadeOut:
     jr      .noDecrease
 .musicOff
     ; Stop the music (master volume = 0 isn't silent)
-    push    bc
-    push    de
     call    Music_Pause
-    pop     de
-    pop     bc
-    ASSERT HIGH(TransitionPosTable.end) == HIGH(TransitionPosTable)
-    ld      h, d
     ; Reset master volume to max, excluding VIN signal
     ld      a, $FF ^ (AUDVOL_VIN_LEFT | AUDVOL_VIN_RIGHT)
     ldh     [rNR50], a

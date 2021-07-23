@@ -82,26 +82,17 @@ VBlankHandler:
     
     ; Bank was never changed, no need to restore
     
+    pop     bc
+    
     ldh     a, [hVBlankFlag]
     and     a, a
-    jr      z, .normalReturn
-    inc     a
     jr      z, .finished
     xor     a, a
     ldh     [hVBlankFlag], a
     ; Called from WaitVBlank -> return to caller of that function
-    pop     bc
+    ; af trashed (becomes return address)
     pop     af
-    jr      .return
-.normalReturn
-    ; a = 0
-    dec     a
-    ; Use -1 to make the flag non-zero but allow checking for it in
-    ; order to know when to ignore a non-zero VBlank flag value
-    ldh     [hVBlankFlag], a
 .finished
-    pop     bc
-.return
     pop     af
     ret         ; Interrupts already enabled
 
@@ -122,17 +113,81 @@ SECTION "STAT Interrupt Vector", ROM0[$0048]
 
 STATHandler:
     push    af
+    push    hl
     
+    ldh     a, [rLYC]
+    and     a, a
+    jr      z, .updateSound
+    
+    ; Need to set WX -> get current position
+    inc     a       ; LYC offset by -1
+    ; Divide by 8 to get block index
+    ASSERT TRANSITION_BLOCK_HEIGHT == 8
+    ; a will be a multiple of 8
+    rrca        ; a / 2
+    rrca        ; a / 4
+    ASSERT TRANSITION_BLOCK_DIFFERENCE == 2
+    ; Multiplied by 2 to give a slightly more significant delay between
+    ; blocks
+    ; a / 8 * 2 == a / 4 & ~1 but that AND isn't necessary since a will
+    ; be a multiple of 8 (8 & 1 == 0 already)
+    ASSERT LOW(TransitionPosTable) == 0
+    ld      l, a
+    ldh     a, [hTransitionIndex]
+    add     a, l
+    ; Check if this position is past the end of the table
+    ASSERT HIGH(TransitionPosTable.end + (SCRN_Y / 8 * 2) - 1) == HIGH(TransitionPosTable)
+    cp      a, LOW(TransitionPosTable.end)
+    jr      c, .posOk
+    ; Past the end of the table -> clamp to the end position
+    ld      l, TRANSITION_END_POS
+    jr      .waitHBlank
+.posOk
+    ld      l, a
+    ld      h, HIGH(TransitionPosTable)
+    ld      l, [hl]
+.waitHBlank
+    ; Wait for HBlank to set WX
     ldh     a, [rSTAT]
-    and     a, STATF_LYCF
-    jr      z, HBlankHandler
+    ASSERT STATF_HBL == 0
+    and     a, STAT_MODE_MASK
+    jr      nz, .waitHBlank
     
+    ld      a, l    ; l = WX value
+    ldh     [rWX], a
+    
+    ; Set up next interrupt
+    ldh     a, [rLYC]
+    add     a, TRANSITION_BLOCK_HEIGHT
+    cp      a, SCRN_Y - 1
+    jr      nc, .nextFrame
+    ldh     [rLYC], a
+    jr      InterruptReturn
+.nextFrame
+    xor     a, a
+    ldh     [rLYC], a
+    jr      InterruptReturn
+
+.updateSound
+    ; Check if currently transitioning
+    ldh     a, [hTransitionState]
+    ; Transition state bit 0:
+    ; 0 = off OR midway setup and delay
+    ; 1 = transitioning in OR transitioning out
+    ASSERT TRANSITION_STATE_IN & 1 == TRANSITION_STATE_OUT & 1
+    ASSERT TRANSITION_STATE_MID & 1 == TRANSITION_STATE_OFF & 1
+    ASSERT TRANSITION_STATE_IN & 1 != TRANSITION_STATE_OFF & 1
+    rra     ; Move bit 0 to carry
+    jr      nc, .noTransition
+    ; Set up next interrupt
+    ld      a, TRANSITION_BLOCK_HEIGHT - 1
+    ldh     [rLYC], a
+.noTransition
     ; Just updating sound, which is interruptable
     ei
     
     push    bc
     push    de
-    push    hl
     
     ; Clear any previous music sync data
     xor     a, a
@@ -149,28 +204,31 @@ STATHandler:
     ldh     [hCurrentBank], a
     ld      [rROMB0], a
     
-    pop     hl
     pop     de
     pop     bc
-    
+    ; Fall-through
+
+InterruptReturn:
+    pop     hl
     di
     ; Return at the start of HBlank for any code that waits for VRAM to
     ; become accessible, since this interrupt handler might be called
     ; while waiting
-:
+.waitMode3
     ; Wait for mode 3, which comes before HBlank
     ldh     a, [rSTAT]
     ASSERT (STATF_LCD + 1) & STAT_MODE_MASK == 0
     inc     a
     and     a, STAT_MODE_MASK
     ; If in mode 3, a = 0
-    jr      nz, :-
+    jr      nz, .waitMode3
     
-:
+.waitHBlank
     ; Wait for HBlank -> ensured the beginning of HBlank by above
     ldh     a, [rSTAT]
-    and     a, STAT_MODE_MASK   ; HBlank = Mode 0
-    jr      nz, :-
+    ASSERT STATF_HBL == 0
+    and     a, STAT_MODE_MASK
+    jr      nz, .waitHBlank
     
     ; This interrupt handler should return with at least 20 cycles left
     ; of accessible VRAM, which is what any VRAM accessibility-waiting
@@ -188,9 +246,3 @@ STATHandler:
     ; Not waiting for specifically the beginning of HBlank (i.e. just
     ; waiting for HBlank) would result in 20 - 7 (pop + reti) = only 13
     ; cycles!!!
-
-HBlankHandler:
-    ld      a, [hScratch1]
-    ldh     [rWX], a
-    pop     af
-    reti

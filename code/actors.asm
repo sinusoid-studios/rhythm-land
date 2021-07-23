@@ -175,8 +175,10 @@ ActorsUpdate::
     ldh     a, [hScratch1]  ; a = actor type
     add     a, LOW(ActorRoutineTable)
     ld      l, a
-    ASSERT HIGH(ActorRoutineTable.end - 1) == HIGH(ActorRoutineTable)
-    ld      h, HIGH(ActorRoutineTable)
+    ASSERT HIGH(ActorRoutineTable.end - 1) != HIGH(ActorRoutineTable)
+    adc     a, HIGH(ActorRoutineTable)
+    sub     a, l
+    ld      h, a
     
     ld      a, [hli]
     and     a, a
@@ -238,10 +240,8 @@ ActorsUpdate::
     ldh     a, [hScratch1]  ; a = actor type
     add     a, LOW(ActorMetaspriteTable)
     ld      l, a
-    ASSERT HIGH(ActorMetaspriteTable.end - 1) != HIGH(ActorMetaspriteTable)
-    adc     a, HIGH(ActorMetaspriteTable)
-    sub     a, l
-    ld      h, a
+    ASSERT HIGH(ActorMetaspriteTable.end - 1) == HIGH(ActorMetaspriteTable)
+    ld      h, HIGH(ActorMetaspriteTable)
     
     ; Point hl to actor's type's meta-sprite table
     ld      a, [hli]
