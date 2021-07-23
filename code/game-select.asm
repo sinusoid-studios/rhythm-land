@@ -1,5 +1,6 @@
 INCLUDE "constants/hardware.inc"
 INCLUDE "constants/game-select.inc"
+INCLUDE "constants/transition.inc"
 
 SECTION "Currently Selected Game ID", HRAM
 
@@ -58,10 +59,20 @@ SetupGameSelectScreen::
 SECTION "Game Select Screen Loop", ROM0
 
 GameSelectScreen::
+    rst     WaitVBlank
+    
+    ldh     a, [hTransitionState]
+    ASSERT TRANSITION_STATE_OFF == 0
+    and     a, a
+    jr      z, .noTransition
+    
+    call    TransitionUpdate
+    ; Transitioning -> don't take player input
+    jr      GameSelectScreen
+    
+.noTransition
     ld      hl, hCurrentSelection
     ld      de, vGameID
-.loop
-    rst     WaitVBlank
     
     ldh     a, [hNewKeys]
     ld      b, a        ; Save in the unmodified b register
@@ -78,33 +89,34 @@ GameSelectScreen::
     
     ld      a, b
     and     a, PADF_A | PADF_START
-    jr      z, .loop
+    jr      z, GameSelectScreen
 
     ; Jump to the selected game
     ld      a, [hl]
-    jp      Transition
+    call    TransitionStart
+    jr      GameSelectScreen
 
 .increment
     inc     [hl]
     call    UpdateGameID
-    jr      .loop
+    jr      GameSelectScreen
 .add16
     ld      a, [hl]
     add     a, 16
     ld      [hl], a
     call    UpdateGameID
-    jr      .loop
+    jr      GameSelectScreen
 
 .decrement
     dec     [hl]
     call    UpdateGameID
-    jr      .loop
+    jr      GameSelectScreen
 .sub16
     ld      a, [hl]
     sub     a, 16
     ld      [hl], a
     call    UpdateGameID
-    jr      .loop
+    jr      GameSelectScreen
 
 SECTION "Game Select Screen Game ID Update", ROM0
 

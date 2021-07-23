@@ -2,6 +2,7 @@ INCLUDE "constants/hardware.inc"
 INCLUDE "constants/engine.inc"
 INCLUDE "constants/games.inc"
 INCLUDE "constants/game-select.inc"
+INCLUDE "constants/transition.inc"
 
 SECTION "Overall Rating Screen", ROM0
 
@@ -86,12 +87,23 @@ RatingScreen::
 .wait
     rst     WaitVBlank
     
+    ldh     a, [hTransitionState]
+    ASSERT TRANSITION_STATE_OFF == 0
+    and     a, a
+    jr      z, .noTransition
+    
+    call    TransitionUpdate
+    ; Transitioning -> don't take player input
+    jr      .wait
+    
+.noTransition
     ldh     a, [hNewKeys]
     and     a, PADF_A | PADF_START
     jr      z, .wait
     
     ld      a, ID_GAME_SELECT
-    jp      Transition
+    call    TransitionStart
+    jr      .wait
 
 SECTION "Percentage Calculation", ROM0
 

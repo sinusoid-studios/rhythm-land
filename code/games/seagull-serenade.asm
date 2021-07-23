@@ -1,5 +1,6 @@
 INCLUDE "constants/hardware.inc"
 INCLUDE "constants/actors.inc"
+INCLUDE "constants/transition.inc"
 INCLUDE "constants/games/seagull-serenade.inc"
 
 SECTION "Seagull Serenade Game Setup", ROMX
@@ -73,17 +74,29 @@ xMapSeagullSerenade:
 SECTION "Seagull Serenade Game Loop", ROMX
 
 xGameSeagullSerenade::
+    rst     WaitVBlank
+    
+    ldh     a, [hTransitionState]
+    ASSERT TRANSITION_STATE_OFF == 0
+    and     a, a
+    jr      z, .noTransition
+    
+    call    TransitionUpdate
+    
+    ldh     a, [hTransitionState]
+    ASSERT TRANSITION_STATE_OFF == 0
+    and     a, a
+    jr      nz, xGameSeagullSerenade
+    
     ; Start music
     ld      c, BANK(Music_SeagullSerenade)
     ld      de, Music_SeagullSerenade
     call    Music_Play
-    
-.loop
-    rst     WaitVBlank
-    
+    jr      xGameSeagullSerenade
+
+.noTransition
     call    ActorsUpdate
-    
-    jr      .loop
+    jr      xGameSeagullSerenade
 
 SECTION "Seagull Serenade Seagull Actor", ROMX
 

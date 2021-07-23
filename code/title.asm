@@ -3,6 +3,7 @@ INCLUDE "constants/other-hardware.inc"
 INCLUDE "constants/actors.inc"
 INCLUDE "constants/games.inc"
 INCLUDE "constants/title.inc"
+INCLUDE "constants/transition.inc"
 
 SECTION UNION "Game Variables", HRAM
 
@@ -165,6 +166,11 @@ TitleScreen::
 .loop
     rst     WaitVBlank
     
+    ldh     a, [hTransitionState]
+    ASSERT TRANSITION_STATE_OFF == 0
+    and     a, a
+    call    nz, TransitionUpdate
+    
     call    ActorsUpdate
     
     ldh     a, [hFlashCountdown]
@@ -195,13 +201,20 @@ TitleScreen::
 .beat
     ; TODO: Fancy bouncing
 .noSyncData
+    ; Transitioning -> don't take player input
+    ldh     a, [hTransitionState]
+    ASSERT TRANSITION_STATE_OFF == 0
+    and     a, a
+    jr      nz, .loop
+    
     ldh     a, [hNewKeys]
     and     a, PADF_A | PADF_START
     jr      z, .loop
     
     ; Move to game select screen
     ld      a, ID_GAME_SELECT
-    jp      Transition
+    call    TransitionStart
+    jr      .loop
 
 SECTION "Title Screen Actor", ROMX
 

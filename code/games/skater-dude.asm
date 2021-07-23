@@ -2,6 +2,7 @@ INCLUDE "constants/hardware.inc"
 INCLUDE "constants/engine.inc"
 INCLUDE "constants/actors.inc"
 INCLUDE "constants/sfx.inc"
+INCLUDE "constants/transition.inc"
 INCLUDE "constants/games/skater-dude.inc"
 
 SECTION UNION "Game Variables", HRAM
@@ -130,14 +131,28 @@ xMapSkaterDude:
 SECTION "Skater Dude Game Loop", ROMX
 
 xGameSkaterDude::
+    rst     WaitVBlank
+    
+    ldh     a, [hTransitionState]
+    ASSERT TRANSITION_STATE_OFF == 0
+    and     a, a
+    jr      z, .noTransition
+    
+    call    TransitionUpdate
+    call    MapScrollLeft
+    
+    ldh     a, [hTransitionState]
+    ASSERT TRANSITION_STATE_OFF == 0
+    and     a, a
+    jr      nz, xGameSkaterDude
+    
     ; Start music
     ld      c, BANK(Music_SkaterDude)
     ld      de, Music_SkaterDude
     call    Music_Play
-    
-.loop
-    rst     WaitVBlank
-    
+    jr      xGameSkaterDude
+
+.noTransition
     call    EngineUpdate
     
     call    ActorsUpdate
@@ -153,9 +168,9 @@ xGameSkaterDude::
     ld      hl, hSloMoCountdown
     ld      a, [hl]
     and     a, a
-    jr      z, .loop
+    jr      z, xGameSkaterDude
     dec     [hl]
-    jr      .loop
+    jr      xGameSkaterDude
 
 SECTION "Skater Dude Danger Alert Cue", ROMX
 
