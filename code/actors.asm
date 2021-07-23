@@ -413,6 +413,10 @@ ActorsNew::
     push    hl
     push    de
     call    ActorsSetTiles
+    ; Update cel number to skip the command (4 bytes)
+    ld      hl, wActorCelTable
+    add     hl, bc
+    ld      [hl], 0 + 2 ; Cel number was set to 0 above
     pop     de
     pop     hl
     ; Skip over tile pointer + byte count + next meta-sprite number
@@ -565,6 +569,11 @@ ActorsUpdateAnimation:
     
     ; Stream a set of tiles to VRAM
     call    ActorsSetTiles
+    ; Update cel number to skip the command (4 bytes)
+    ld      hl, wActorCelTable
+    add     hl, bc
+    inc     [hl]    ; Command + HIGH(Tile pointer)
+    inc     [hl]    ; LOW(Tile pointer) + length
     jr      .advanceAnimation
 
 .overrideEnd
@@ -585,15 +594,10 @@ ActorsUpdateAnimation:
     inc     a
     ret     z
     
-    ; Set cel number
-    dec     a   ; Undo inc
-    ld      hl, wActorCelTable - MAX_NUM_ACTORS
-    add     hl, bc
-    ld      [hl], a
-    
     ; Copy tiles
     ; WARNING: This will break if the given reset cel does not point to
     ; a set tiles command!
+    dec     a   ; Undo inc
     add     a, a    ; a * 2 (Meta-sprite + Duration)
     inc     a       ; Skip set tiles command byte
     add     a, e
@@ -695,11 +699,6 @@ ActorsSetTiles:
     jr      nz, .copyLoop
     
     pop     bc
-    ; Update cel number to skip the command (4 bytes)
-    ld      hl, wActorCelTable
-    add     hl, bc
-    inc     [hl]    ; Command + HIGH(Tile pointer)
-    inc     [hl]    ; LOW(Tile pointer) + length
     ret
 
 SECTION "Actor Get Animation Table", ROM0
@@ -792,6 +791,11 @@ ActorsSetCel::
     ; First copy tiles
     push    hl
     call    ActorsSetTiles
+    ; Update cel number to skip the command (4 bytes)
+    ld      hl, wActorCelTable
+    add     hl, bc
+    inc     [hl]    ; Command + HIGH(Tile pointer)
+    inc     [hl]    ; LOW(Tile pointer) + length
     pop     hl
     ; Skip over tile pointer + byte count + next meta-sprite number
     ld      a, l
