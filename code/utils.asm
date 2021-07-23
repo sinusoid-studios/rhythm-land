@@ -83,7 +83,7 @@ SECTION "LCDMemcopyMap", ROM0
 ; @param    hl  Pointer to destination
 LCDMemcopyMap::
     ld      c, SCRN_Y_B
-.rowLoop
+.rowLoop::
     DEF UNROLL = 2
     ASSERT UNROLL * (2 + 2 + 1) <= 16
     ASSERT SCRN_X_B % UNROLL == 0

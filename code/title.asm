@@ -7,8 +7,6 @@ INCLUDE "constants/transition.inc"
 
 SECTION UNION "Game Variables", HRAM
 
-; Current position in the title screen scroll table
-hScrollIndex:
 ; Number of frames left in a flash
 hFlashCountdown:
     DS 1
@@ -26,12 +24,14 @@ SetupTitleScreen::
     ld      a, LCDCF_ON | LCDCF_BG8800 | LCDCF_BG9800 | LCDCF_BGON | LCDCF_OBJ16 | LCDCF_OBJON
     ldh     [hLCDC], a
     
-    ; Start below the screen and scroll up
+    ; Reset flash countdown
     xor     a, a
-    ldh     [hScrollIndex], a
+    ldh     [hFlashCountdown], a
+    
+    ; Start below the screen and scroll up
     ; a = 0
     ldh     [hSCX], a
-    ld      a, LOW(-SCRN_Y)
+    ld      a, TITLE_SCROLL_START_POS
     ldh     [hSCY], a
     
     ; Load background tiles
@@ -55,6 +55,12 @@ SetupTitleScreen::
     ld      de, MapTitle
     ld      hl, _SCRN0
     call    LCDMemcopyMap
+    
+    ; Copy "press start" to window
+    ld      de, MapWindowTitle
+    ld      hl, _SCRN1
+    ld      c, MAP_TITLE_PRESS_START_HEIGHT
+    call    LCDMemcopyMap.rowLoop
     
     ; Create star actors
     ld      de, ActorStarDefinitions
@@ -142,7 +148,12 @@ SpriteTilesTitle:
 SECTION "Title Screen Background Map", ROM0
 
 MapTitle:
-    INCBIN "res/title/background.bg.tilemap"
+    INCBIN "res/title/background.bg.tilemap", 0, 20 * 18
+
+SECTION "Title Screen Window Map", ROM0
+
+MapWindowTitle:
+    INCBIN "res/title/background.bg.tilemap", 20 * 18
 
 SECTION "Title Screen Loop", ROM0
 
@@ -157,12 +168,35 @@ TitleScreen::
     rst     WaitVBlank
     ; Move to the next scroll position
     ld      a, [hli]
+    ldh     [hSCY], a
     ASSERT TITLE_SCROLL_END_POS == 0
     and     a, a
-    ldh     [hSCY], a
-    jr      z, .loop
+    jr      z, .scrollWindow
     jr      .scrollLoop
+
+.scrollWindow
+    ; Reset window position to below the screen
+    ld      a, 0 + 7
+    ldh     [rWX], a
+    ld      a, TITLE_WINDOW_SCROLL_START_POS
+    ldh     [rWY], a
     
+    ; Enable the window
+    ldh     a, [hLCDC]
+    ASSERT LCDCF_WINON != 0 && LCDCF_WIN9C00 != 0
+    or      a, LCDCF_WINON | LCDCF_WIN9C00
+    ldh     [hLCDC], a
+    
+    ld      hl, TitleWindowScrollPosTable
+.windowScrollLoop
+    rst     WaitVBlank
+    ; Move to the next scroll position
+    ld      a, [hli]
+    ldh     [rWY], a
+    cp      a, TITLE_WINDOW_SCROLL_END_POS
+    jr      z, .loop
+    jr      .windowScrollLoop
+
 .loop
     rst     WaitVBlank
     
@@ -192,7 +226,7 @@ TitleScreen::
     dec     a
     jr      nz, .noSyncData
     ; Flash
-    ld      a, TITLE_BGP << 2   ; One shade lighter than normal
+    ld      a, LOW(TITLE_BGP << 2)  ; One shade lighter than normal
     ldh     [hBGP], a
     ; Reset countdown to flash duration
     ld      a, TITLE_FLASH_DURATION
@@ -235,8 +269,10 @@ xActorTitle::
     inc     a       ; Skip actor type to get to actor position
     add     a, LOW(ActorStarDefinitions)
     ld      l, a
-    ASSERT HIGH(ActorStarDefinitions.end - 1) == HIGH(ActorStarDefinitions)
-    ld      h, HIGH(ActorStarDefinitions)
+    ASSERT HIGH(ActorStarDefinitions.end - 1) != HIGH(ActorStarDefinitions)
+    adc     a, HIGH(ActorStarDefinitions)
+    sub     a, l
+    ld      h, a
     
     ld      a, [hli]    ; a = X position
     ld      e, [hl]     ; e = Y position
