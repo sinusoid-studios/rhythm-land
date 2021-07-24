@@ -299,8 +299,9 @@ DisplaySync:
 
 	; right digit
 	inc	e
-	ld	l,b
+	ld	a,b
 	and	$0F
+	ld	l,a
 	ld	a,[hl]
 	ld	[de],a
 	ret
