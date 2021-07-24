@@ -485,6 +485,20 @@ xJumpPositionTable:
 SECTION "Skater Dude Obstacle Actor", ROMX
 
 xActorObstacle::
+    ld      hl, wActorXSpeedTable
+    add     hl, bc
+    ; Check for slo-mo
+    ldh     a, [hSloMoCountdown]
+    and     a, a
+    jr      z, .noSloMo
+    ; In slo-mo -> move slowly
+    ld      [hl], OBSTACLE_SLO_MO_SPEED
+    ; Z still unset
+    DB      $CA     ; jp z, a16 to consume the next 2 bytes
+.noSloMo
+    ; Not in slo-mo -> move at the regular speed
+    ld      [hl], OBSTACLE_SPEED
+    
     ; Check if the obstacle has gone off-screen
     ld      hl, wActorXPosTable
     add     hl, bc

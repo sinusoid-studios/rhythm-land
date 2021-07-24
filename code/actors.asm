@@ -149,10 +149,6 @@ ActorsUpdate::
     pop     bc
     
 .updatePosition
-    ldh     a, [hCurrentGame]
-    cp      a, ID_SKATER_DUDE
-    jp      z, .maybeSloMo
-.noSloMo
     ; Update the actor's position
     ; X position
     call    ActorsAddSpeedToPos
@@ -300,53 +296,6 @@ ActorsUpdate::
     inc     a
     ldh     [hNextOAMSlot], a
     jr      .metaspriteLoop
-
-.maybeSloMo
-    ldh     a, [hSloMoCountdown]
-    and     a, a
-    jp      z, .noSloMo
-    
-    ; Divide speeds
-    ASSERT SKATER_DUDE_SLO_MO_DIVIDE == 4
-    ld      hl, wActorXSpeedTable
-    add     hl, bc
-    ld      a, [hl]
-    ldh     [hScratch2], a
-    sra     a       ; speed / 2
-    sra     a       ; speed / 4
-    ld      [hl], a
-    ld      hl, wActorYSpeedTable
-    add     hl, bc
-    ld      a, [hl]
-    ldh     [hScratch3], a
-    sra     a       ; speed / 2
-    sra     a       ; speed / 4
-    ld      [hl], a
-    
-    ; Update the actor's position
-    ; X position
-    call    ActorsAddSpeedToPos
-    ; Y position
-    ASSERT wActorYSpeedTable == wActorXSpeedTable + MAX_NUM_ACTORS
-    ASSERT wActorYSpeedAccTable == wActorXSpeedAccTable + MAX_NUM_ACTORS
-    push    bc
-    ASSERT HIGH(MAX_NUM_ACTORS * 2) == HIGH(MAX_NUM_ACTORS)
-    ld      a, c
-    add     a, MAX_NUM_ACTORS
-    ld      c, a
-    call    ActorsAddSpeedToPos
-    pop     bc
-    
-    ld      hl, wActorXSpeedTable
-    add     hl, bc
-    ldh     a, [hScratch2]
-    ld      [hl], a
-    ld      hl, wActorYSpeedTable
-    add     hl, bc
-    ldh     a, [hScratch3]
-    ld      [hl], a
-    
-    jp      .skipPositionUpdate
 
 SECTION "Actor Creation", ROM0
 
