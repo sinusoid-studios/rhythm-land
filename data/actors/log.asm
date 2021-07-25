@@ -23,29 +23,29 @@ xActorLogMetasprites::
     metasprite .log4
 
 .log1
-    DB 16, 0, $B8, OAMF_PAL1
-    DB 8, 8, $BA, OAMF_PAL1
-    DB 8, 16, $BC, OAMF_PAL1
-    DB 24, 8, $D0, OAMF_PAL1
-    DB METASPRITE_END
-
-.log2
-    DB 16, 0, $BE, OAMF_PAL1
-    DB 8, 8, $C0, OAMF_PAL1
-    DB 8, 16, $C2, OAMF_PAL1
+    DB 16, 0, $BA, OAMF_PAL1
+    DB 8, 8, $BC, OAMF_PAL1
+    DB 8, 16, $BE, OAMF_PAL1
     DB 24, 8, $D2, OAMF_PAL1
     DB METASPRITE_END
 
-.log3
-    DB 16, 0, $C4, OAMF_PAL1
-    DB 8, 8, $C6, OAMF_PAL1
-    DB 8, 16, $C8, OAMF_PAL1
+.log2
+    DB 16, 0, $C0, OAMF_PAL1
+    DB 8, 8, $C2, OAMF_PAL1
+    DB 8, 16, $C4, OAMF_PAL1
     DB 24, 8, $D4, OAMF_PAL1
     DB METASPRITE_END
 
-.log4
-    DB 16, 0, $CA, OAMF_PAL1
-    DB 8, 8, $CC, OAMF_PAL1
-    DB 8, 16, $CE, OAMF_PAL1
+.log3
+    DB 16, 0, $C6, OAMF_PAL1
+    DB 8, 8, $C8, OAMF_PAL1
+    DB 8, 16, $CA, OAMF_PAL1
     DB 24, 8, $D6, OAMF_PAL1
+    DB METASPRITE_END
+
+.log4
+    DB 16, 0, $CC, OAMF_PAL1
+    DB 8, 8, $CE, OAMF_PAL1
+    DB 8, 16, $D0, OAMF_PAL1
+    DB 24, 8, $D8, OAMF_PAL1
     DB METASPRITE_END

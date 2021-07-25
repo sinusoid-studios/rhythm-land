@@ -113,7 +113,7 @@ xSpriteTilesSkaterDude:
     INCBIN "res/skater-dude/skater-dude.obj.2bpp", 16 * 2
     INCBIN "res/skater-dude/skateboard.obj.2bpp", 16 * 2
     INCBIN "res/skater-dude/danger-alert.obj.2bpp"
-    INCBIN "res/skater-dude/car.obj.2bpp", 16 * 2
+    INCBIN "res/skater-dude/car.obj.2bpp"
     INCBIN "res/skater-dude/log.obj.2bpp", 16 * 2
     INCBIN "res/skater-dude/oil-barrel.obj.2bpp", 16 * 2
 .end
@@ -316,8 +316,10 @@ xActorSkaterDude::
     add     a, a    ; a * 2 (Position, Duration)
     add     a, LOW(xJumpPositionTable)
     ld      l, a
-    ASSERT HIGH(xJumpPositionTable.end - 1) == HIGH(xJumpPositionTable)
-    ld      h, HIGH(xJumpPositionTable)
+    ASSERT HIGH(xJumpPositionTable.end - 1) != HIGH(xJumpPositionTable)
+    adc     a, HIGH(xJumpPositionTable)
+    sub     a, l
+    ld      h, a
     ; Get the new Y position
     ld      a, [hli]    ; a = Y position
     ; 0 signals the end of the table
