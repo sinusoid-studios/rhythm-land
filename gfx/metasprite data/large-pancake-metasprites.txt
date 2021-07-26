@@ -1,0 +1,141 @@
+ metasprite .bPancakeFalling1
+    metasprite .bPancakeFalling2
+    metasprite .bPancakeFalling3
+    metasprite .bPancakeVeryUndercooked
+    metasprite .bPancakeUndercooked
+    metasprite .bPancakePerfect
+    metasprite .bPancakeOvercooked
+    metasprite .bPancakeVeryOvercooked
+    metasprite .bPancakeFlip1Undercooked
+    metasprite .bPancakeFlip1Perfect
+    metasprite .bPancakeFlip1Overcooked
+    metasprite .bPancakeFlip2Undercooked
+    metasprite .bPancakeFlip2Perfect
+    metasprite .bPancakeFlip2Overcooked
+    metasprite .bPancakeFlip3Undercooked
+    metasprite .bPancakeFlip3Perfect
+    metasprite .bPancakeFlip3Overcooked
+
+.bPancakeFalling1
+    DB 0, 0, $00, 0
+    DB 0, 8, $02, 0
+    DB METASPRITE_END
+.bPancakeFalling2
+    DB 0, 0, $04, 0
+    DB 0, 8, $06, 0
+    DB 0, 16, $08, 0
+    DB METASPRITE_END
+.bPancakeFalling3
+    DB 16, 0, $0A, 0
+    DB 16, 8, $0C, 0
+    DB 16, 16, $0E, 0
+    DB 16, 24, $10, 0
+    DB 0, 9, $12, 0
+    DB 0, 17, $14, 0
+    DB METASPRITE_END
+.bPancakeVeryUndercooked
+    DB 16, 0, $16, 0
+    DB 16, 8, $18, 0
+    DB 16, 16, $1A, 0
+    DB 16, 24, $1C, 0
+    DB 0, 9, $1E, 0
+    DB 0, 17, $14, 0
+    DB METASPRITE_END
+.bPancakeUndercooked
+    DB 16, 0, $20, 0
+    DB 16, 8, $22, 0
+    DB 16, 16, $24, 0
+    DB 12, 21, $26, 0
+    DB 0, 5, $12, 0
+    DB 0, 13, $14, 0
+    DB METASPRITE_END
+.bPancakePerfect
+    DB 16, 0, $28, 0
+    DB 16, 8, $2A, 0
+    DB 16, 16, $2C, 0
+    DB 16, 24, $2E, 0
+    DB 0, 8, $12, 0
+    DB 0, 16, $14, 0
+    DB METASPRITE_END
+.bPancakeOvercooked
+    DB 16, 0, $30, 0
+    DB 16, 8, $32, 0
+    DB 16, 16, $34, 0
+    DB 16, 24, $36, 0
+    DB 0, 8, $12, 0
+    DB 0, 16, $14, 0
+    DB METASPRITE_END
+.bPancakeVeryOvercooked
+    DB 16, 0, $38, 0
+    DB 16, 8, $3A, 0
+    DB 16, 16, $3C, 0
+    DB 16, 24, $3E, 0
+    DB 0, 8, $40, 0
+    DB 0, 16, $42, 0
+    DB METASPRITE_END
+.bPancakeFlip1Undercooked
+    DB 0, 0, $44, 0
+    DB 0, 8, $46, 0
+    DB 0, 16, $48, 0
+    DB 0, 24, $4A, 0
+    DB 12, 0, $4C, 0
+    DB 12, 8, $4E, 0
+    DB 12, 16, $50, 0
+    DB 12, 24, $52, 0
+    DB METASPRITE_END
+.bPancakeFlip1Perfect
+    DB 16, 0, $54, 0
+    DB 16, 8, $56, 0
+    DB 16, 16, $58, 0
+    DB 16, 24, $5A, 0
+    DB 4, 0, $5C, 0
+    DB 4, 8, $5E, 0
+    DB 4, 16, $60, 0
+    DB 4, 24, $62, 0
+    DB METASPRITE_END
+.bPancakeFlip1Overcooked
+    DB 16, 0, $64, 0
+    DB 16, 8, $66, 0
+    DB 16, 16, $68, 0
+    DB 20, 24, $6A, 0
+    DB 4, 0, $6C, 0
+    DB 4, 8, $6E, 0
+    DB 4, 16, $70, 0
+    DB 4, 24, $72, 0
+    DB METASPRITE_END
+.bPancakeFlip2Undercooked
+    DB 0, 0, $74, 0
+    DB 0, 8, $76, 0
+    DB 0, 16, $78, 0
+    DB 0, 24, $7A, 0
+    DB METASPRITE_END
+.bPancakeFlip2Perfect
+    DB 0, 0, $7C, 0
+    DB 0, 8, $7E, 0
+    DB 0, 16, $80, 0
+    DB 0, 24, $82, 0
+    DB METASPRITE_END
+.bPancakeFlip2Overcooked
+    DB 0, 0, $84, 0
+    DB 0, 8, $86, 0
+    DB 0, 16, $88, 0
+    DB 0, 24, $8A, 0
+    DB METASPRITE_END
+.bPancakeFlip3Undercooked
+    DB 0, 0, $8C, 0
+    DB 0, 8, $8E, 0
+    DB 0, 16, $90, 0
+    DB -1, 24, $92, 0
+    DB METASPRITE_END
+.bPancakeFlip3Perfect
+    DB 0, 0, $94, 0
+    DB 0, 8, $96, 0
+    DB 0, 16, $98, 0
+    DB 0, 24, $9A, 0
+    DB METASPRITE_END
+.bPancakeFlip3Overcooked
+    DB 0, 0, $9C, 0
+    DB 0, 8, $9E, 0
+    DB 0, 16, $A0, 0
+    DB 0, 24, $A2, 0
+    DB METASPRITE_END
