@@ -23,6 +23,7 @@
 ; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 ; SOFTWARE.
 
+INCLUDE "constants/hardware.inc"
 INCLUDE "constants/vwf.inc"
 INCLUDE "macros/misc.inc"
 
