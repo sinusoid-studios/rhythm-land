@@ -1,0 +1,90 @@
+  metasprite .bigExplosionCel1
+    metasprite .bigExplosionCel2
+    metasprite .bigExplosionCel3
+    metasprite .bigExplosionCel4
+    metasprite .bigExplosionCel5
+    metasprite .bigExplosionCel6
+    metasprite .bigExplosionCel7
+    metasprite .bigExplosionCel8
+    metasprite .bigExplosionCel9
+
+.bigExplosionCel1
+    DB 9, 15, $00, 0
+    DB 9, 23, $02, 0
+    DB 9, 31, $04, 0
+    DB METASPRITE_END
+.bigExplosionCel2
+    DB 9, 11, $06, 0
+    DB 9, 19, $08, 0
+    DB 9, 27, $0A, 0
+    DB 10, 19, $0C, 0
+    DB METASPRITE_END
+.bigExplosionCel3
+    DB 0, 8, $0E, 0
+    DB 0, 16, $10, 0
+    DB 0, 24, $12, 0
+    DB 8, 32, $14, 0
+    DB 16, 8, $16, 0
+    DB 16, 16, $18, 0
+    DB 16, 24, $1A, 0
+    DB METASPRITE_END
+.bigExplosionCel4
+    DB 0, 8, $1C, 0
+    DB 0, 16, $1E, 0
+    DB 0, 24, $20, 0
+    DB 0, 32, $22, 0
+    DB 16, 8, $24, 0
+    DB 16, 16, $26, 0
+    DB 16, 24, $28, 0
+    DB 16, 32, $2A, 0
+    DB METASPRITE_END
+.bigExplosionCel5
+    DB 0, 8, $2C, 0
+    DB 0, 16, $2E, 0
+    DB 0, 24, $30, 0
+    DB 0, 32, $32, 0
+    DB 16, 8, $34, 0
+    DB 16, 16, $36, 0
+    DB 16, 24, $38, 0
+    DB 16, 32, $3A, 0
+    DB METASPRITE_END
+.bigExplosionCel6
+    DB 0, 8, $3C, 0
+    DB 0, 16, $3E, 0
+    DB 0, 24, $40, 0
+    DB 0, 32, $42, 0
+    DB 16, 8, $44, 0
+    DB 16, 16, $46, 0
+    DB 16, 24, $48, 0
+    DB 16, 32, $4A, 0
+    DB METASPRITE_END
+.bigExplosionCel7
+    DB 0, 8, $4C, 0
+    DB 0, 16, $4E, 0
+    DB 0, 24, $50, 0
+    DB 0, 32, $52, 0
+    DB 16, 8, $54, 0
+    DB 16, 16, $56, 0
+    DB 16, 24, $58, 0
+    DB 16, 32, $5A, 0
+    DB METASPRITE_END
+.bigExplosionCel8
+    DB 0, 8, $5C, 0
+    DB 0, 16, $5E, 0
+    DB 0, 24, $60, 0
+    DB 0, 32, $62, 0
+    DB 16, 8, $64, 0
+    DB 16, 16, $66, 0
+    DB 16, 24, $68, 0
+    DB 16, 32, $6A, 0
+    DB METASPRITE_END
+.bigExplosionCel9
+    DB 0, 8, $6C, 0
+    DB 0, 16, $6E, 0
+    DB 0, 24, $70, 0
+    DB 0, 32, $72, 0
+    DB 16, 8, $74, 0
+    DB 16, 16, $76, 0
+    DB 16, 24, $78, 0
+    DB 16, 32, $7A, 0
+    DB METASPRITE_END
