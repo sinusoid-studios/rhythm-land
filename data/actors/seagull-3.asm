@@ -48,22 +48,22 @@ xActorSeagull3Metasprites::
     metasprite .resting4
 
 .resting1
-    DB 0, -1, $10, 0
-    DB 0, 7, $12, 0
-    DB 0, 15, $14, 0
+    DB 0, -1, $20, 0
+    DB 0, 7, $22, 0
+    DB 0, 15, $24, 0
     DB METASPRITE_END
 .resting2
-    DB -1, 0, $10, 0
-    DB -1, 8, $12, 0
-    DB -1, 16, $14, 0
+    DB -1, 0, $20, 0
+    DB -1, 8, $22, 0
+    DB -1, 16, $24, 0
     DB METASPRITE_END
 .resting3
-    DB 0, 1, $10, 0
-    DB 0, 9, $12, 0
-    DB 0, 17, $14, 0
+    DB 0, 1, $20, 0
+    DB 0, 9, $22, 0
+    DB 0, 17, $24, 0
     DB METASPRITE_END
 .resting4
-    DB 0, 0, $10, 0
-    DB 0, 8, $12, 0
-    DB 0, 16, $14, 0
+    DB 0, 0, $20, 0
+    DB 0, 8, $22, 0
+    DB 0, 16, $24, 0
     DB METASPRITE_END

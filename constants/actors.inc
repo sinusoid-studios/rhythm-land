@@ -2,7 +2,7 @@
 DEF MAX_NUM_ACTORS EQU 11
 
 ; Number of tiles to give each actor for tile streaming
-DEF NUM_ACTOR_RESERVED_TILES EQU 8
+DEF NUM_ACTOR_RESERVED_TILES EQU 16
 
 ; Actor types
 RSRESET

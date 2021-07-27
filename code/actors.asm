@@ -621,12 +621,15 @@ ActorsSetTiles:
     swap    a       ; actor num * 16
     ASSERT MAX_NUM_ACTORS & ~$0F == 0
     ; No need to clear low nibble (already 0)
-    ld      h, HIGH($8000 >> 3)
+    ASSERT HIGH(MAX_NUM_ACTORS * 16 * 2) != 0
+    ; High byte won't be 0 after the next x2 -> move to hl
+    ld      h, HIGH($8000 >> 4)
     ld      l, a
-    ASSERT NUM_ACTOR_RESERVED_TILES == 8
+    ASSERT NUM_ACTOR_RESERVED_TILES == 16
     add     hl, hl  ; actor num * 2
     add     hl, hl  ; actor num * 4
     add     hl, hl  ; actor num * 8
+    add     hl, hl  ; actor num * 16
     
     ; Copy the tiles
     ; de = source
