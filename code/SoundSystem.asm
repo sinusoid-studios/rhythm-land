@@ -1,7 +1,7 @@
 
-INCLUDE	"SoundSystemNotes.inc"
-INCLUDE	"SoundSystem.def"
-INCLUDE	"SoundSystem.inc"
+INCLUDE	"constants/SoundSystemNotes.inc"
+INCLUDE	"constants/SoundSystem.def"
+INCLUDE	"constants/SoundSystem.inc"
 ; tabs=8,hard
 
 ;***************************************************************************************************************************

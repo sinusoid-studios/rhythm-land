@@ -1,7 +1,7 @@
 
 INCLUDE	"constants/hardware.inc"
-INCLUDE	"code/SoundSystem/SoundSystem.inc"
-INCLUDE	"code/SoundSystem/SoundSystemNotes.inc"
+INCLUDE	"constants/SoundSystem.inc"
+INCLUDE	"constants/SoundSystemNotes.inc"
 
 INCLUDE	"data.asm"
 
