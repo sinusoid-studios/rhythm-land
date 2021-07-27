@@ -42,3 +42,14 @@ from the original to work better with Rhythm Land, and
 configuration specifically for Rhythm Land.
 
 [soundsystem]: https://github.com/BlitterObjectBob/GBSoundSystem/tree/a8468d766b1f32fa31ab206f291bc71d3c5b133e
+
+### gb-vwf
+Files:
+- [code/vwf.asm](/code/vwf.asm)
+- [tools/make_font.py](/tools/make_font.py)
+
+The files listed above are from Eldred Habert's [gb-vwf text
+engine][gb-vwf]. It is licensed under the MIT License, a copy of which
+can be found in [LICENSE.gb-vwf](/LICENSE.gb-vwf).
+
+[gb-vwf]: https://github.com/ISSOtm/gb-vwf/tree/08c9305b1a2455b30e8441198fa42581f39ea880

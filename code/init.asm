@@ -98,6 +98,15 @@ Initialize::
     ld      c, MAX_NUM_ACTORS * 2
     rst     MemsetSmall
     
+    ; Initialize text engine
+    ; a = 0
+    ld      [wTextCurPixel], a
+    ld      [wTextCharset], a
+    ; a = 0
+    ld      c, $10 * 2
+    ld      hl, wTextTileBuffer
+    rst     MemsetSmall
+    
     ; Starting with the title screen -> set it up
     call    SetupTitleScreen
     

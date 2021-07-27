@@ -316,10 +316,8 @@ xActorSkaterDude::
     add     a, a    ; a * 2 (Position, Duration)
     add     a, LOW(xJumpPositionTable)
     ld      l, a
-    ASSERT HIGH(xJumpPositionTable.end - 1) != HIGH(xJumpPositionTable)
-    adc     a, HIGH(xJumpPositionTable)
-    sub     a, l
-    ld      h, a
+    ASSERT HIGH(xJumpPositionTable.end - 1) == HIGH(xJumpPositionTable)
+    ld      h, HIGH(xJumpPositionTable)
     ; Get the new Y position
     ld      a, [hli]    ; a = Y position
     ; 0 signals the end of the table

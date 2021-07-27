@@ -1,5 +1,11 @@
 .SUFFIXES:
 
+ifeq ($(OS),Windows_NT)
+PYTHON := py -3
+else
+PYTHON := python3
+endif
+
 # Project configuration
 PADVALUE := 0xFF
 
@@ -71,6 +77,11 @@ res/%.obj.2bpp: gfx/%.obj.png res/%.obj.pal.json
 res/%.bg.2bpp res/%.bg.tilemap: gfx/%.bg.png
 	@mkdir -p $(@D)
 	rgbgfx $(GFXFLAGS) -o res/$*.bg.2bpp -t res/$*.bg.tilemap $<
+
+# Font data generation
+res/%.vwf: gfx/%.png
+	@mkdir -p $(@D)
+	$(PYTHON) tools/make_font.py $< $@
 
 # Don't include dependencies if cleaning
 ifneq ($(MAKECMDGOALS),clean)
