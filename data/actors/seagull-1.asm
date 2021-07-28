@@ -50,6 +50,13 @@ xActorSeagull1Metasprites::
     metasprite .resting2
     metasprite .resting3
     metasprite .resting4
+    metasprite .hSquawkCel3
+    metasprite .hSquawkCel4
+    metasprite .mSquawkCel3
+    metasprite .mSquawkCel4
+    metasprite .lSquawkCel3
+    metasprite .lSquawkCel4
+    metasprite .missedNote
 
 .resting1
     DB 0, -1, $00, 0
@@ -69,5 +76,45 @@ xActorSeagull1Metasprites::
 .resting4
     DB 0, 0, $00, 0
     DB 0, 8, $02, 0
+    DB 0, 16, $04, 0
+    DB METASPRITE_END
+
+.hSquawkCel3
+    DB 0, 0, $06, 0
+    DB 0, 8, $08, 0
+    DB 0, 16, $0A, 0
+    DB METASPRITE_END
+.hSquawkCel4
+    DB 16, 0, $1A, 0
+    DB 16, 8, $1C, 0
+    DB 10, 16, $1E, 0
+    DB 0, 12, $20, 0
+    DB METASPRITE_END
+
+.mSquawkCel3
+    DB 0, 0, $0C, 0
+    DB 0, 8, $0E, 0
+    DB 0, 16, $10, 0
+    DB METASPRITE_END
+.mSquawkCel4
+    DB 0, 0, $22, 0
+    DB 0, 8, $24, 0
+    DB 0, 16, $26, 0
+    DB METASPRITE_END
+
+.lSquawkCel3
+    DB 0, 0, $14, 0
+    DB 0, 8, $16, 0
+    DB 0, 16, $18, 0
+    DB METASPRITE_END
+.lSquawkCel4
+    DB 0, 0, $28, 0
+    DB 0, 8, $2A, 0
+    DB 3, 16, $2C, 0
+    DB METASPRITE_END
+
+.missedNote
+    DB 0, 0, $2E, 0
+    DB 0, 8, $30, 0
     DB 0, 16, $04, 0
     DB METASPRITE_END
