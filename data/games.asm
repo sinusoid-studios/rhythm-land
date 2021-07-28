@@ -9,6 +9,7 @@ GameTable::
     full_pointer xGameTest
     full_pointer xGameSkaterDude
     full_pointer xGameSeagullSerenade
+    full_pointer xGameBartender
 .end::
 
 SECTION "Game Setup Routine Table", ROM0
@@ -20,4 +21,5 @@ GameSetupTable::
     full_pointer xGameSetupTest
     full_pointer xGameSetupSkaterDude
     full_pointer xGameSetupSeagullSerenade
+    full_pointer xGameSetupBartender
 .end::
