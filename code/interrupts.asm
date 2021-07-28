@@ -17,7 +17,7 @@ SECTION "VBlank Interrupt Vector", ROM0[$0040]
     jp      VBlankHandler
     
     ; Ensure no space is wasted
-    ASSERT @ - $0040 == 8
+    ASSERT @ == $0048
 
 SECTION "VBlank Interrupt Handler", ROM0
 
@@ -174,9 +174,8 @@ STATHandler:
     ; Transition state bit 0:
     ; 0 = off OR midway setup and delay
     ; 1 = transitioning in OR transitioning out
-    ASSERT TRANSITION_STATE_IN & 1 == TRANSITION_STATE_OUT & 1
-    ASSERT TRANSITION_STATE_MID & 1 == TRANSITION_STATE_OFF & 1
-    ASSERT TRANSITION_STATE_IN & 1 != TRANSITION_STATE_OFF & 1
+    ASSERT TRANSITION_STATE_IN & 1 == 1 && TRANSITION_STATE_OUT & 1 == 1
+    ASSERT TRANSITION_STATE_MID & 1 == 0 && TRANSITION_STATE_OFF & 1 == 0
     rra     ; Move bit 0 to carry
     jr      nc, .noTransition
     ; Set up next interrupt
