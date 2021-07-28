@@ -44,17 +44,17 @@ xGameSetupSkaterDude::
     ldh     [hSloMoCountdown], a
     
     ; Load background tiles
-    ASSERT BANK(xBackgroundTilesSkaterDude) == BANK(@)
-    ld      de, xBackgroundTilesSkaterDude
+    ASSERT BANK(xBackgroundTiles) == BANK(@)
+    ld      de, xBackgroundTiles
     ld      hl, $9000
-    ld      bc, xBackgroundTilesSkaterDude.end - xBackgroundTilesSkaterDude
+    ld      bc, xBackgroundTiles.end - xBackgroundTiles
     rst     LCDMemcopy
     
     ; Load sprite tiles
-    ASSERT BANK(xSpriteTilesSkaterDude) == BANK(@)
-    ASSERT xSpriteTilesSkaterDude == xBackgroundTilesSkaterDude.end
+    ASSERT BANK(xSpriteTiles) == BANK(@)
+    ASSERT xSpriteTiles == xBackgroundTiles.end
     ld      hl, $8000
-    ld      bc, xSpriteTilesSkaterDude.end - xSpriteTilesSkaterDude
+    ld      bc, xSpriteTiles.end - xSpriteTiles
     rst     LCDMemcopy
     
     ; Set up the background map
@@ -65,12 +65,12 @@ xGameSetupSkaterDude::
     ld      [hl], MAP_SKATER_DUDE_HEIGHT
     ASSERT hMapBank == hMapHeight + 1
     inc     l
-    ld      [hl], BANK(xMapSkaterDude)
+    ld      [hl], BANK(xMap)
     ASSERT hMapPointer == hMapBank + 1
     inc     l
-    ld      [hl], LOW(xMapSkaterDude)
+    ld      [hl], LOW(xMap)
     inc     l
-    ld      [hl], HIGH(xMapSkaterDude)
+    ld      [hl], HIGH(xMap)
     ; Set initial map position
     ASSERT hMapXPos == hMapPointer + 2
     inc     l
@@ -103,11 +103,11 @@ xGameSetupSkaterDude::
     ld      de, Inst_SkaterDude
     jp      Music_PrepareInst
 
-xBackgroundTilesSkaterDude:
+xBackgroundTiles:
     INCBIN "res/skater-dude/background.bg.2bpp"
 .end
 
-xSpriteTilesSkaterDude:
+xSpriteTiles:
     ; Remove the first 2 tiles which are blank on purpose to get rid of
     ; any blank objects in the image
     INCBIN "res/skater-dude/skater-dude.obj.2bpp", 16 * 2
@@ -125,7 +125,7 @@ xActorSkaterDudeDefinition:
 
 SECTION "Skater Dude Game Background Map", ROMX
 
-xMapSkaterDude:
+xMap:
     INCBIN "res/skater-dude/background.bg.tilemap"
 
 SECTION "Skater Dude Game Loop", ROMX

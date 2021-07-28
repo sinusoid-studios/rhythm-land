@@ -17,21 +17,21 @@ xGameSetupSeagullSerenade::
     ldh     [hLCDC], a
     
     ; Load background tiles
-    ASSERT BANK(xBackgroundTilesSeagullSerenade9000) == BANK(@)
-    ld      de, xBackgroundTilesSeagullSerenade9000
+    ASSERT BANK(xBackgroundTiles9000) == BANK(@)
+    ld      de, xBackgroundTiles9000
     ld      hl, $9000
-    ld      bc, xBackgroundTilesSeagullSerenade9000.end - xBackgroundTilesSeagullSerenade9000
+    ld      bc, xBackgroundTiles9000.end - xBackgroundTiles9000
     rst     LCDMemcopy
-    ASSERT BANK(xBackgroundTilesSeagullSerenade8800) == BANK(@)
-    ASSERT xBackgroundTilesSeagullSerenade8800 == xBackgroundTilesSeagullSerenade9000.end
-    ; de = xBackgroundTilesSeagullSerenade8800
+    ASSERT BANK(xBackgroundTiles8800) == BANK(@)
+    ASSERT xBackgroundTiles8800 == xBackgroundTiles9000.end
+    ; de = xBackgroundTiles8800
     ld      hl, $8800
-    ld      bc, xBackgroundTilesSeagullSerenade8800.end - xBackgroundTilesSeagullSerenade8800
+    ld      bc, xBackgroundTiles8800.end - xBackgroundTiles8800
     rst     LCDMemcopy
     
     ; Load background map
-    ASSERT BANK(xMapSeagullSerenade) == BANK(@)
-    ld      de, xMapSeagullSerenade
+    ASSERT BANK(xMap) == BANK(@)
+    ld      de, xMap
     ld      hl, _SCRN0
     call    LCDMemcopyMap
     
@@ -61,14 +61,14 @@ xActorSeagullDefinitions:
     DB SEAGULL_3_X, SEAGULL_3_Y
     DB 0, 0
 
-xBackgroundTilesSeagullSerenade9000:
+xBackgroundTiles9000:
     INCBIN "res/seagull-serenade/background.bg.2bpp", 0, 128 * 16
 .end
-xBackgroundTilesSeagullSerenade8800:
+xBackgroundTiles8800:
     INCBIN "res/seagull-serenade/background.bg.2bpp", 128 * 16
 .end
 
-xMapSeagullSerenade:
+xMap:
     INCBIN "res/seagull-serenade/background.bg.tilemap"
 
 SECTION "Seagull Serenade Game Loop", ROMX
