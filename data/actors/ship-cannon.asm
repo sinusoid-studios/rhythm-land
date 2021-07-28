@@ -1,7 +1,12 @@
 INCLUDE "constants/actors.inc"
 INCLUDE "macros/actors.inc"
 
-SECTION "Battleship Ship Cannon Meta-Sprite Data", ROMX
+SECTION "Battleship Ship Cannon Actor Animation Data", ROMX
+
+xActorShipCannonAnimation::
+    animation ShipCannon
+
+SECTION "Battleship Ship Cannon Actor Meta-Sprite Data", ROMX
 	
 xActorShipCannonMetasprites::
 	metasprite .cannonNorth

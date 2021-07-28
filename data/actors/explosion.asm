@@ -1,6 +1,11 @@
 INCLUDE "constants/actors.inc"
 INCLUDE "macros/actors.inc"
 
+SECTION "Battleship Explosion Actor Animation Data", ROMX
+
+xActorExplosionAnimation::
+    animation Explosion
+
 SECTION "Battleship Explosion Actor Meta-Sprite Data", ROMX
 
 xActorExplosionMetasprites::
