@@ -59,62 +59,62 @@ xActorSeagull1Metasprites::
     metasprite .missedNote
 
 .resting1
-    DB 0, -1, $00, 0
-    DB 0, 7, $02, 0
-    DB 0, 15, $04, 0
+    obj 0, -1, $00, 0
+    obj 0, 7, $02, 0
+    obj 0, 15, $04, 0
     DB METASPRITE_END
 .resting2
-    DB -1, 0, $00, 0
-    DB -1, 8, $02, 0
-    DB -1, 16, $04, 0
+    obj -1, 0, $00, 0
+    obj -1, 8, $02, 0
+    obj -1, 16, $04, 0
     DB METASPRITE_END
 .resting3
-    DB 0, 1, $00, 0
-    DB 0, 9, $02, 0
-    DB 0, 17, $04, 0
+    obj 0, 1, $00, 0
+    obj 0, 9, $02, 0
+    obj 0, 17, $04, 0
     DB METASPRITE_END
 .resting4
-    DB 0, 0, $00, 0
-    DB 0, 8, $02, 0
-    DB 0, 16, $04, 0
+    obj 0, 0, $00, 0
+    obj 0, 8, $02, 0
+    obj 0, 16, $04, 0
     DB METASPRITE_END
 
 .hSquawkCel3
-    DB 0, -3, $06, 0
-    DB 0, 5, $08, 0
-    DB 0, 13, $0A, 0
+    obj 0, -3, $06, 0
+    obj 0, 5, $08, 0
+    obj 0, 13, $0A, 0
     DB METASPRITE_END
 .hSquawkCel4
-    DB 1, -4, $1A, 0
-    DB 1, 4, $1C, 0
-    DB -5, 12, $1E, 0
-    DB -15, 8, $20, 0
+    obj 1, -4, $1A, 0
+    obj 1, 4, $1C, 0
+    obj -5, 12, $1E, 0
+    obj -15, 8, $20, 0
     DB METASPRITE_END
 
 .mSquawkCel3
-    DB -1, 1, $0C, 0
-    DB -1, 9, $0E, 0
-    DB -1, 17, $10, 0
+    obj -1, 1, $0C, 0
+    obj -1, 9, $0E, 0
+    obj -1, 17, $10, 0
     DB METASPRITE_END
 .mSquawkCel4
-    DB -2, 1, $22, 0
-    DB -2, 9, $24, 0
-    DB -2, 17, $26, 0
+    obj -2, 1, $22, 0
+    obj -2, 9, $24, 0
+    obj -2, 17, $26, 0
     DB METASPRITE_END
 
 .lSquawkCel3
-    DB 1, 3, $14, 0
-    DB 1, 11, $16, 0
-    DB 1, 19, $18, 0
+    obj 1, 3, $14, 0
+    obj 1, 11, $16, 0
+    obj 1, 19, $18, 0
     DB METASPRITE_END
 .lSquawkCel4
-    DB 1, 4, $28, 0
-    DB 1, 12, $2A, 0
-    DB 4, 20, $2C, 0
+    obj 1, 4, $28, 0
+    obj 1, 12, $2A, 0
+    obj 4, 20, $2C, 0
     DB METASPRITE_END
 
 .missedNote
-    DB 0, 0, $2E, 0
-    DB 0, 8, $30, 0
-    DB 0, 16, $04, 0
+    obj 0, 0, $2E, 0
+    obj 0, 8, $30, 0
+    obj 0, 16, $04, 0
     DB METASPRITE_END

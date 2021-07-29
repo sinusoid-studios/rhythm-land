@@ -21,7 +21,7 @@ xActorDangerAlertMetasprites::
     metasprite .hidden
 
 .visible
-    DB 0, 0, $98, OAMF_PAL1
-    DB 0, 8, $9A, OAMF_PAL1
+    obj 0, 0, $98, OAMF_PAL1
+    obj 0, 8, $9A, OAMF_PAL1
 .hidden
     DB METASPRITE_END

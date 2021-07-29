@@ -17,26 +17,26 @@ xActorExplosionMetasprites::
     metasprite .explosionCel6
 
 .explosionCel1
-    DB 0, 0, $00, 0
-    DB 0, 8, $02, 0
+    obj 0, 0, $00, 0
+    obj 0, 8, $02, 0
     DB METASPRITE_END
 .explosionCel2
-    DB 0, 0, $04, 0
-    DB 0, 8, $06, 0
+    obj 0, 0, $04, 0
+    obj 0, 8, $06, 0
     DB METASPRITE_END
 .explosionCel3
-    DB 0, 0, $08, 0
-    DB 0, 8, $0A, 0
+    obj 0, 0, $08, 0
+    obj 0, 8, $0A, 0
     DB METASPRITE_END
 .explosionCel4
-    DB 0, 0, $0C, 0
-    DB 0, 8, $0E, 0
+    obj 0, 0, $0C, 0
+    obj 0, 8, $0E, 0
     DB METASPRITE_END
 .explosionCel5
-    DB 0, 0, $10, 0
-    DB 0, 8, $12, 0
+    obj 0, 0, $10, 0
+    obj 0, 8, $12, 0
     DB METASPRITE_END
 .explosionCel6
-    DB 0, 0, $14, 0
-    DB 0, 8, $16, 0
+    obj 0, 0, $14, 0
+    obj 0, 8, $16, 0
     DB METASPRITE_END

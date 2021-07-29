@@ -23,33 +23,33 @@ xActorOilBarrelMetasprites::
     metasprite .oilBarrel4
 
 .oilBarrel1
-    DB 8, 0, $DA, OAMF_PAL1
-    DB 8, 8, $DC, OAMF_PAL1
-    DB 8, 16, $DE, OAMF_PAL1
-    DB 24, 0, $EC, OAMF_PAL1
-    DB 24, 8, $EE, OAMF_PAL1
+    obj 8, 0, $DA, OAMF_PAL1
+    obj 8, 8, $DC, OAMF_PAL1
+    obj 8, 16, $DE, OAMF_PAL1
+    obj 24, 0, $EC, OAMF_PAL1
+    obj 24, 8, $EE, OAMF_PAL1
     DB METASPRITE_END
 
 .oilBarrel2
-    DB 8, 0, $E0, OAMF_PAL1
-    DB 8, 8, $E2, OAMF_PAL1
-    DB 8, 16, $E4, OAMF_PAL1
-    DB 24, 0, $F0, OAMF_PAL1
-    DB 24, 8, $EE, OAMF_PAL1
+    obj 8, 0, $E0, OAMF_PAL1
+    obj 8, 8, $E2, OAMF_PAL1
+    obj 8, 16, $E4, OAMF_PAL1
+    obj 24, 0, $F0, OAMF_PAL1
+    obj 24, 8, $EE, OAMF_PAL1
     DB METASPRITE_END
 
 .oilBarrel3
-    DB 8, 0, $E6, OAMF_PAL1
-    DB 8, 8, $E8, OAMF_PAL1
-    DB 8, 16, $E4, OAMF_PAL1
-    DB 24, 0, $F2, OAMF_PAL1
-    DB 24, 8, $EE, OAMF_PAL1
+    obj 8, 0, $E6, OAMF_PAL1
+    obj 8, 8, $E8, OAMF_PAL1
+    obj 8, 16, $E4, OAMF_PAL1
+    obj 24, 0, $F2, OAMF_PAL1
+    obj 24, 8, $EE, OAMF_PAL1
     DB METASPRITE_END
 
 .oilBarrel4
-    DB 8, 0, $E0, OAMF_PAL1
-    DB 8, 8, $EA, OAMF_PAL1
-    DB 8, 16, $DE, OAMF_PAL1
-    DB 24, 0, $F4, OAMF_PAL1
-    DB 24, 8, $EE, OAMF_PAL1
+    obj 8, 0, $E0, OAMF_PAL1
+    obj 8, 8, $EA, OAMF_PAL1
+    obj 8, 16, $DE, OAMF_PAL1
+    obj 24, 0, $F4, OAMF_PAL1
+    obj 24, 8, $EE, OAMF_PAL1
     DB METASPRITE_END

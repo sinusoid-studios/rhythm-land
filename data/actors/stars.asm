@@ -14,11 +14,11 @@ xActorLargeStar1Metasprites::
     metasprite .largeStar1
 
 .largeStar1
-    DB 0, 0, $00, 0
-    DB 0, 8, $02, 0
-    DB 16, 0, $1A, 0
-    DB 16, 8, $1C, 0
-    DB 16, 16, $1E, 0
+    obj 0, 0, $00, 0
+    obj 0, 8, $02, 0
+    obj 16, 0, $1A, 0
+    obj 16, 8, $1C, 0
+    obj 16, 16, $1E, 0
     DB METASPRITE_END
 
 SECTION "Title Screen Large Star 2 Actor Animation Data", ROMX
@@ -34,12 +34,12 @@ xActorLargeStar2Metasprites::
     metasprite .largeStar2
 
 .largeStar2
-    DB 0, 0, $04, 0
-    DB 0, 8, $06, 0
-    DB 0, 16, $08, 0
-    DB 16, 0, $20, 0
-    DB 16, 8, $22, 0
-    DB 16, 16, $24, 0
+    obj 0, 0, $04, 0
+    obj 0, 8, $06, 0
+    obj 0, 16, $08, 0
+    obj 16, 0, $20, 0
+    obj 16, 8, $22, 0
+    obj 16, 16, $24, 0
     DB METASPRITE_END
 
 SECTION "Title Screen Large Star 3 Actor Animation Data", ROMX
@@ -55,13 +55,13 @@ xActorLargeStar3Metasprites::
     metasprite .largeStar3
 
 .largeStar3
-    DB 0, 0, $0A, 0
-    DB 0, 8, $0C, 0
-    DB 0, 16, $0E, 0
-    DB 0, 24, $10, 0
-    DB 16, 0, $26, 0
-    DB 16, 8, $28, 0
-    DB 16, 16, $2A, 0
+    obj 0, 0, $0A, 0
+    obj 0, 8, $0C, 0
+    obj 0, 16, $0E, 0
+    obj 0, 24, $10, 0
+    obj 16, 0, $26, 0
+    obj 16, 8, $28, 0
+    obj 16, 16, $2A, 0
     DB METASPRITE_END
 
 SECTION "Title Screen Large Star 4 Actor Animation Data", ROMX
@@ -77,13 +77,13 @@ xActorLargeStar4Metasprites::
     metasprite .largeStar4
 
 .largeStar4
-    DB 0, 0, $12, 0
-    DB 0, 8, $14, 0
-    DB 0, 16, $16, 0
-    DB 0, 24, $18, 0
-    DB 16, 0, $2C, 0
-    DB 16, 8, $2E, 0
-    DB 16, 16, $30, 0
+    obj 0, 0, $12, 0
+    obj 0, 8, $14, 0
+    obj 0, 16, $16, 0
+    obj 0, 24, $18, 0
+    obj 16, 0, $2C, 0
+    obj 16, 8, $2E, 0
+    obj 16, 16, $30, 0
     DB METASPRITE_END
 
 SECTION "Title Screen Small Star 1 Actor Animation Data", ROMX
@@ -99,7 +99,7 @@ xActorSmallStar1Metasprites::
     metasprite .smallStar1
 
 .smallStar1
-    DB 0, 0, $32, 0
+    obj 0, 0, $32, 0
     DB METASPRITE_END
 
 SECTION "Title Screen Small Star 2 Actor Animation Data", ROMX
@@ -115,7 +115,7 @@ xActorSmallStar2Metasprites::
     metasprite .smallStar2
 
 .smallStar2
-    DB 0, 0, $34, 0
+    obj 0, 0, $34, 0
     DB METASPRITE_END
 
 SECTION "Title Screen Small Star 3 Actor Animation Data", ROMX
@@ -131,7 +131,7 @@ xActorSmallStar3Metasprites::
     metasprite .smallStar3
 
 .smallStar3
-    DB 0, 0, $36, 0
+    obj 0, 0, $36, 0
     DB METASPRITE_END
 
 SECTION "Title Screen Small Star 4 Actor Animation Data", ROMX
@@ -147,7 +147,7 @@ xActorSmallStar4Metasprites::
     metasprite .smallStar4
 
 .smallStar4
-    DB 0, 0, $38, 0
+    obj 0, 0, $38, 0
     DB METASPRITE_END
 
 SECTION "Title Screen Small Star 5 Actor Animation Data", ROMX
@@ -163,7 +163,7 @@ xActorSmallStar5Metasprites::
     metasprite .smallStar5
 
 .smallStar5
-    DB 0, 0, $3A, 0
+    obj 0, 0, $3A, 0
     DB METASPRITE_END
 
 SECTION "Title Screen Small Star 6 Actor Animation Data", ROMX
@@ -179,7 +179,7 @@ xActorSmallStar6Metasprites::
     metasprite .smallStar6
 
 .smallStar6
-    DB 0, 0, $3C, 0
+    obj 0, 0, $3C, 0
     DB METASPRITE_END
 
 SECTION "Title Screen Small Star 7 Actor Animation Data", ROMX
@@ -195,5 +195,5 @@ xActorSmallStar7Metasprites::
     metasprite .smallStar7
 
 .smallStar7
-    DB 0, 0, $3E, 0
+    obj 0, 0, $3E, 0
     DB METASPRITE_END

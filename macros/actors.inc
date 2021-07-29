@@ -43,6 +43,11 @@ ENDM
 
 ; Meta-sprites
 
+; Define an object, for use in meta-sprite "draw lists"
+MACRO obj
+    DB \1, \2, \3, \4
+ENDM
+
 ; Define a meta-sprite
 MACRO metasprite
     ; Remove period in meta-sprite name
