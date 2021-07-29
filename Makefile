@@ -24,9 +24,9 @@ ASFLAGS  = -h -p $(PADVALUE) $(addprefix -W,$(WARNINGS))
 LDFLAGS  = -p $(PADVALUE) -d
 FIXFLAGS = -v -p $(PADVALUE) -i "$(MFRCODE)" -k "$(LICENSEE)" -l $(OLDLIC) -m $(MBC) -n $(VERSION) -r $(SRAMSIZE) -t "$(TITLE)" -j
 
-PALFLAGS = -R
-TILEFLAGS = -B 2 -R -T 256
-GFXFLAGS = -u
+PALFLAGS := -R
+TILEFLAGS := -B 2 -R -T 256
+GFXFLAGS := -u
 res/skater-dude/background.bg.2bpp: GFXFLAGS += -h
 
 SRCS := $(wildcard code/*.asm) $(wildcard code/**/*.asm) $(wildcard data/*.asm) $(wildcard data/**/*.asm)
