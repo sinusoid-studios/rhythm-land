@@ -1,5 +1,5 @@
-INCLUDE "macros/misc.inc"
 INCLUDE "constants/charmap.inc"
+INCLUDE "macros/misc.inc"
 
 SECTION "Music Name Table", ROM0
 
