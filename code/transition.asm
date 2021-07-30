@@ -18,6 +18,10 @@ hTransitionIndex::
 hMusicFadeCountdown::
     DS 1
 
+; Game ID of the screen to transition to
+hTransitionNextGame::
+    DS 1
+
 SECTION "Screen Transition Initialization", ROM0
 
 ; Start a screen transition
@@ -25,7 +29,7 @@ SECTION "Screen Transition Initialization", ROM0
 ; @param    a   Game ID of the next screen
 TransitionStart::
     ; Save next screen's game ID
-    ldh     [hCurrentGame], a
+    ldh     [hTransitionNextGame], a
     
     ; Signal transition coming in
     ld      a, TRANSITION_STATE_IN
@@ -111,7 +115,7 @@ TransitionUpdate::
     call    HideAllObjects
     
     ; Get next screen's game ID
-    ldh     a, [hCurrentGame]
+    ldh     a, [hTransitionNextGame]
     ld      b, a
     add     a, a    ; a * 2 (Pointer)
     add     a, b    ; a * 3 (+Bank)
@@ -153,16 +157,16 @@ TransitionUpdate::
     ldh     [hTransitionIndex], a
     
     ; Jump into the next screen's loop
-    ldh     a, [hCurrentGame]
+    ldh     a, [hTransitionNextGame]
+    ; Switch to the next screen
+    ldh     [hCurrentGame], a
     ld      b, a
     add     a, a    ; a * 2 (Pointer)
     add     a, b    ; a * 3 (+Bank)
     add     a, LOW(GameTable)
     ld      l, a
-    ; ASSERT HIGH(GameTable.end - 1) != HIGH(GameTable)
-    adc     a, HIGH(GameTable)
-    sub     a, l
-    ld      h, a
+    ASSERT HIGH(GameTable.end - 1) == HIGH(GameTable)
+    ld      h, HIGH(GameTable)
     
     ld      a, [hli]
     ; Switching the bank to 0 in this case is benign but still triggers
