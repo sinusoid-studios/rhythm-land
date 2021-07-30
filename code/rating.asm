@@ -1,12 +1,33 @@
 INCLUDE "constants/hardware.inc"
-INCLUDE "constants/engine.inc"
+INCLUDE "constants/rating.inc"
 INCLUDE "constants/games.inc"
-INCLUDE "constants/game-select.inc"
 INCLUDE "constants/transition.inc"
 
 SECTION "Overall Rating Screen", ROM0
 
 RatingScreen::
+    ; Set up text engine for rating text
+    ld      a, RATING_TEXT_LINE_LENGTH * 8 + 1
+    ld      [wTextLineLength], a
+    ; Each entry is 1 line
+    ld      a, RATING_TEXT_NUM_LINES
+    ld      [wTextNbLines], a
+    ld      [wTextRemainingLines], a
+    ld      [wNewlinesUntilFull], a
+    xor     a, a
+    ld      [wTextStackSize], a
+    ld      [wTextFlags], a
+    ld      a, RATING_TEXT_LETTER_DELAY
+    ld      [wTextLetterDelay], a
+    ; Set up text tiles
+    ld      a, RATING_TEXT_TILES_START
+    ld      [wTextCurTile], a
+    ld      [wWrapTileID], a
+    ld      a, RATING_TEXT_LAST_TILE
+    ld      [wLastTextTile], a
+    ld      a, HIGH(vRatingTextTiles) & $F0
+    ld      [wTextTileBlock], a
+    
     ; Next hit number after the last is the total number of hits in the
     ; current game
     ldh     a, [hNextHitNumber]
@@ -45,45 +66,82 @@ RatingScreen::
     inc     a
     add     a, b
     
-    ld      hl, vGameID + (3 * SCRN_VX_B)
-    
     ; Score is negative -> go straight to Bad
     bit     7, a
-    jr      nz, .bad
+    ld      b, RATING_BAD
+    jr      nz, .getText
     
     ; Numerator must be less than denominator, but that's fine since
     ; it'll be 100 anyway
     cp      a, c
-    jr      nc, .perfect
+    ld      b, RATING_PERFECT
+    jr      nc, .getText
     
     ld      b, a
     ; b = numerator, c = denominator
     call    CalcPercentDigit
     ; a = tens digit
     
+    ld      b, RATING_BAD
     cp      a, RATING_OK_MIN
-    jr      c, .bad
-    cp      a, RATING_GREAT_MIN
-    jr      c, .ok
+    jr      c, .getText
     
-    ; Great
-    ld      a, $E
-    jr      .draw
+    ASSERT RATING_OK == RATING_BAD + 1
+    inc     b
+    cp      a, RATING_GREAT_MIN
+    jr      c, .getText
+    
+    ASSERT RATING_GREAT == RATING_OK + 1
+    inc     b
 
-.ok
-    ld      a, $0
-    jr      .draw
+; @param    b   Rating type ID
+.getText
+    ; Find current game's part of the rating text table
+    ldh     a, [hCurrentGame]
+    sub     a, ID_GAMES_START
+    ASSERT NUM_RATING_TYPES == 4
+    add     a, a    ; game ID * 2
+    add     a, a    ; game ID * 4
+    ld      c, a
+    add     a, a    ; game ID * NUM_RATING_TYPES + game ID * 2 (Pointer)
+    add     a, c    ; game ID * NUM_RATING_TYPES + game ID * 3 (+Bank)
+    ASSERT HIGH((NUM_GAMES - 1) * 12) == 0
+    ld      c, a
+    
+    ; Find pointer to text for this type of rating
+    ld      a, b
+    add     a, a    ; rating type * 2 (Pointer)
+    add     a, b    ; rating type * 3 (+Bank)
+    add     a, c    ; c = game offset
+    add     a, LOW(RatingTextTable)
+    ld      l, a
+    ASSERT HIGH(RatingTextTable.end - 1) == HIGH(RatingTextTable)
+    ld      h, HIGH(RatingTextTable)
+    
+    ; Get pointer to text
+    ld      b, [hl] ; b = bank number
+    ASSERT HIGH(RatingTextTable.end - 1) == HIGH(RatingTextTable)
+    inc     l
+    ld      a, [hli]
+    ld      h, [hl]
+    ld      l, a
+    ; hl = pointer to text
+    ld      a, TEXT_NEW_STR
+    call    PrintVWFText
+    ld      hl, vRatingText
+    call    SetPenPosition
+.loop
+    rst     WaitVBlank
+    
+    call    PrintVWFChar
+    call    DrawVWFChars
+    
+    ; Text engine sets the high byte of the source pointer to $FF when
+    ; the end command (terminator) is reached
+    ld      a, [wTextSrcPtr + 1]
+    inc     a   ; ($FF + 1) & $FF == 0
+    jr      nz, .loop
 
-.bad
-    ld      a, $B
-    jr      .draw
-
-.perfect
-    ld      a, $FF
-    ; Fall-through
-
-.draw
-    call    LCDDrawHex
 .wait
     rst     WaitVBlank
     
@@ -110,7 +168,7 @@ SECTION "Percentage Calculation", ROM0
 ; Original code copyright 2018 Damian Yerrick
 ; Taken from Libbet and the Magic Floor
 ; <https://github.com/pinobatch/libbet>
-; Modified slightly in this file
+; Formatting modified in this file
 
 ; Calculates one digit of converting a fraction to a percentage
 ; @param    b   Numerator, less than c
