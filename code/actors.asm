@@ -194,14 +194,14 @@ ActorsUpdate::
     ld      hl, wActorYPosTable
     add     hl, bc
     ld      a, [hl]
-    add     a, 16
+    ; Y position offset (+16) already applied in meta-sprite data
     ldh     [hActorYPos], a
     
     ; Save actor's X position for use in meta-sprites
     ld      hl, wActorXPosTable
     add     hl, bc
     ld      a, [hl]
-    add     a, 8
+    ; X position offset (+8) already applied in meta-sprite data
     ldh     [hActorXPos], a
     
     ; Use actor's override animation cel if an animation override is in

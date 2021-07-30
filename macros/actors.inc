@@ -45,7 +45,8 @@ ENDM
 
 ; Define an object, for use in meta-sprite "draw lists"
 MACRO obj
-    DB \1, \2, \3, \4
+    ; Apply object position offset so the actor renderer doesn't have to
+    DB \1 + 16, \2 + 8, \3, \4
 ENDM
 
 ; Define a meta-sprite
