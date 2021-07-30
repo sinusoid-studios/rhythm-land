@@ -63,10 +63,10 @@ RatingScreen::
     
     cp      a, RATING_OK_MIN
     jr      c, .bad
-    cp      a, RATING_EXCELLENT_MIN
+    cp      a, RATING_GREAT_MIN
     jr      c, .ok
     
-    ; Excellent
+    ; Great
     ld      a, $E
     jr      .draw
 

@@ -24,5 +24,6 @@ DEF HIT_PERFECT RB 1
 ; Percentage score 0-59 -> Bad
 ; Percentage score 60-79 -> OK
 DEF RATING_OK_MIN EQU 6
-; Percentage score 80-100 -> Excellent
-DEF RATING_EXCELLENT_MIN EQU 8
+; Percentage score 80-99 -> Great
+DEF RATING_GREAT_MIN EQU 8
+; Percentage score 100 -> Perfect
