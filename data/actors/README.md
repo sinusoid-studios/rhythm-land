@@ -280,13 +280,14 @@ xActor<name>Metasprites::
     ...
 
 .sample
-    DB <y>, <x>, <tile>, <attrs>
+    obj <y>, <x>, <tile>, <attrs>
     ...
     DB METASPRITE_END
 ```
 
 Each object in a meta-sprite is 4 bytes large, containing data in the
-same order as in OAM.
+same order as in OAM. The `obj` macro automatically adjusts for the
+hardware object position offset so the actor renderer doesn't have to.
 
 The `METASPRITE_END` special value tells the actor renderer that there
 are no more objects.
@@ -297,7 +298,7 @@ xActorSampleMetasprites::
     metasprite .sample
 
 .sample
-    DB 0, 8, $00, OAMF_PAL1
+    obj 0, 8, $00, OAMF_PAL1
     DB METASPRITE_END
 ```
 This meta-sprite consists of a single object using tile $00. It is
