@@ -2,6 +2,7 @@ INCLUDE "constants/hardware.inc"
 INCLUDE "constants/engine.inc"
 INCLUDE "constants/actors.inc"
 INCLUDE "constants/sfx.inc"
+INCLUDE "constants/games.inc"
 INCLUDE "constants/transition.inc"
 INCLUDE "constants/games/skater-dude.inc"
 
@@ -163,13 +164,18 @@ xGameSkaterDude::
     ; If the game is over, go to the overall rating screen
     ldh     a, [hSkaterDudeState]
     cp      a, SKATER_DUDE_STATE_END
-    jp      z, RatingScreen
+    jr      z, .finished
     
     ld      hl, hSloMoCountdown
     ld      a, [hl]
     and     a, a
     jr      z, xGameSkaterDude
     dec     [hl]
+    jr      xGameSkaterDude
+
+.finished
+    ld      a, ID_RATING_SCREEN
+    call    TransitionStart
     jr      xGameSkaterDude
 
 SECTION "Skater Dude Danger Alert Cue", ROMX

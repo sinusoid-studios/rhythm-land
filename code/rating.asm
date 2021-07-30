@@ -3,9 +3,9 @@ INCLUDE "constants/rating.inc"
 INCLUDE "constants/games.inc"
 INCLUDE "constants/transition.inc"
 
-SECTION "Overall Rating Screen", ROM0
+SECTION "Overall Rating Screen Setup", ROM0
 
-RatingScreen::
+SetupRatingScreen::
     ; Set up text engine for rating text
     ld      a, RATING_TEXT_LINE_LENGTH * 8 + 1
     ld      [wTextLineLength], a
@@ -129,9 +129,17 @@ RatingScreen::
     ld      a, TEXT_NEW_STR
     call    PrintVWFText
     ld      hl, vRatingText
-    call    SetPenPosition
-.loop
+    jp      SetPenPosition
+
+SECTION "Overall Rating Screen", ROM0
+
+RatingScreen::
     rst     WaitVBlank
+    
+    ldh     a, [hTransitionState]
+    ASSERT TRANSITION_STATE_OFF == 0
+    and     a, a
+    call    nz, TransitionUpdate
     
     call    PrintVWFChar
     call    DrawVWFChars
@@ -140,7 +148,7 @@ RatingScreen::
     ; the end command (terminator) is reached
     ld      a, [wTextSrcPtr + 1]
     inc     a   ; ($FF + 1) & $FF == 0
-    jr      nz, .loop
+    jr      nz, RatingScreen
 
 .wait
     rst     WaitVBlank
