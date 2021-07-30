@@ -101,8 +101,10 @@ SetupMuseum::
     add     a, c
     add     a, LOW(MusicNameTable)
     ld      l, a
-    ASSERT HIGH(MusicNameTable.end - 1) == HIGH(MusicNameTable)
-    ld      h, HIGH(MusicNameTable)
+    ASSERT HIGH(MusicNameTable.end - 1) != HIGH(MusicNameTable)
+    adc     a, HIGH(MusicNameTable)
+    sub     a, l
+    ld      h, a
     
     ld      a, [hli]
     ld      b, a    ; b = bank number

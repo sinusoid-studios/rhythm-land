@@ -7,10 +7,6 @@ INCLUDE "macros/misc.inc"
 SECTION "Overall Rating Screen Setup", ROM0
 
 SetupRatingScreen::
-    ; Set palettes
-    ld      a, RATING_SCREEN_BGP
-    ldh     [hBGP], a
-    
     ; Set appropriate LCDC flags
     ld      a, LCDCF_ON | LCDCF_BG8800 | LCDCF_BG9800 | LCDCF_BGON
     ldh     [hLCDC], a
@@ -168,25 +164,16 @@ SetupRatingScreen::
 SECTION "Overall Rating Screen", ROM0
 
 RatingScreen::
-    ; Wait for transition to finish first
-    rst     WaitVBlank
-    
-    ; Check if currently transitioning to another screen
-    ldh     a, [hTransitionState]
+    ; Force the transition to end
     ASSERT TRANSITION_STATE_OFF == 0
-    and     a, a
-    jr      z, RatingScreen
+    xor     a, a
+    ldh     [hTransitionState], a
+    ; Set palettes
+    ; Background colour is black, which is the colour of the window in
+    ; the transition
+    ld      a, RATING_SCREEN_BGP
+    ldh     [hBGP], a
     
-    ; Currently transition -> advance transition
-    call    TransitionUpdate
-    
-    ; Check if the transition has just ended
-    ldh     a, [hTransitionState]
-    ASSERT TRANSITION_STATE_OFF == 0
-    and     a, a
-    jr      nz, RatingScreen
-    
-    ; Transition has just ended -> give feedback
 .feedbackLoop
     rst     WaitVBlank
     
