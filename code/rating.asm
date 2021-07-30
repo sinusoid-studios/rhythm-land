@@ -2,10 +2,44 @@ INCLUDE "constants/hardware.inc"
 INCLUDE "constants/rating.inc"
 INCLUDE "constants/games.inc"
 INCLUDE "constants/transition.inc"
+INCLUDE "macros/misc.inc"
 
 SECTION "Overall Rating Screen Setup", ROM0
 
 SetupRatingScreen::
+    ; Set palettes
+    ld      a, RATING_SCREEN_BGP
+    ldh     [hBGP], a
+    
+    ; Set appropriate LCDC flags
+    ld      a, LCDCF_ON | LCDCF_BG8800 | LCDCF_BG9800 | LCDCF_BGON
+    ldh     [hLCDC], a
+    
+    ; Reset scroll
+    xor     a, a
+    ldh     [hSCX], a
+    ldh     [hSCY], a
+    
+    ; Clear a tile
+    ld      hl, $9000
+    lb      bc, 0, 16
+    call    LCDMemsetSmall
+    ; Clear the background map
+    ld      hl, _SCRN0
+    lb      de, SCRN_Y_B, LOW(SCRN_VX_B - SCRN_X_B)
+.loop
+    ; b = 0
+    ld      c, SCRN_X_B
+    call    LCDMemsetSmall
+    dec     d
+    jr      z, .doneClearing
+    ld      a, d
+    ld      d, HIGH(SCRN_VX_B - SCRN_X_B)
+    add     hl, de  ; e = LOW(SCRN_VX_B - SCRN_X_B)
+    ld      d, a
+    jr      .loop
+.doneClearing
+    
     ; Set up text engine for rating text
     ld      a, RATING_TEXT_LINE_LENGTH * 8 + 1
     ld      [wTextLineLength], a

@@ -76,6 +76,23 @@ WaitVBlank::
     halt
     jr      .loop
 
+SECTION "LCDMemsetSmall", ROM0
+
+; Fill an arbitrary number of bytes with the same value, even if the LCD
+; is on
+; @param    b   Value to fill with
+; @param    hl  Pointer to destination
+; @param    c   Number of bytes to fill
+LCDMemsetSmall::
+    ldh     a, [rSTAT]
+    and     a, STATF_BUSY
+    jr      nz, LCDMemsetSmall
+    ld      a, b
+    ld      [hli], a
+    dec     c
+    jr      nz, LCDMemsetSmall
+    ret
+
 SECTION "LCDMemcopyMap", ROM0
 
 ; Copy a 20x18 tilemap to the background map, even if the LCD is on
