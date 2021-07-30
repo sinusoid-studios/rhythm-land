@@ -168,12 +168,27 @@ SetupRatingScreen::
 SECTION "Overall Rating Screen", ROM0
 
 RatingScreen::
+    ; Wait for transition to finish first
     rst     WaitVBlank
     
+    ; Check if currently transitioning to another screen
     ldh     a, [hTransitionState]
     ASSERT TRANSITION_STATE_OFF == 0
     and     a, a
-    call    nz, TransitionUpdate
+    jr      z, RatingScreen
+    
+    ; Currently transition -> advance transition
+    call    TransitionUpdate
+    
+    ; Check if the transition has just ended
+    ldh     a, [hTransitionState]
+    ASSERT TRANSITION_STATE_OFF == 0
+    and     a, a
+    jr      nz, RatingScreen
+    
+    ; Transition has just ended -> give feedback
+.feedbackLoop
+    rst     WaitVBlank
     
     call    PrintVWFChar
     call    DrawVWFChars
@@ -182,9 +197,10 @@ RatingScreen::
     ; the end command (terminator) is reached
     ld      a, [wTextSrcPtr + 1]
     inc     a   ; ($FF + 1) & $FF == 0
-    jr      nz, RatingScreen
+    jr      nz, .feedbackLoop
 
 .wait
+    ; Text is finished, wait for player input
     rst     WaitVBlank
     
     ldh     a, [hTransitionState]
