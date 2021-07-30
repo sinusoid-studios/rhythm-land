@@ -23,7 +23,7 @@ xActorSeagull1Animation::
     goto_cel .grooveLoop
 
     ; Cel constant definitions
-    cel_def .groove, GROOVE
+    def_cel .groove, GROOVE
 
 xActorSeagull1Tiles:
 .resting

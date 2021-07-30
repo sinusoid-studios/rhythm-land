@@ -24,8 +24,8 @@ macros to work without specifying full label names, i.e.
 `cel metasprite` rather than `cel xActor<name>Metasprites.metasprite`.
 
 An animation name for cel constants can also be specified through
-`<const_name>` and will be used with the [`cel_def` macro](#cel_def) for
-giving certain cels names. If the `cel_def` macro is never used, it's
+`<const_name>` and will be used with the [`def_cel` macro](#def_cel) for
+giving certain cels names. If the `def_cel` macro is never used, it's
 unnecessary to specify `<const_name>` since it's the only thing that
 uses it.
 
@@ -223,7 +223,7 @@ This will load 5 tiles from `xActorSampleTiles.sample`, which points to
 the converted graphics data originally from the image at
 `gfx/sample-game/sample/sample.obj.png`.
 
-### `cel_def`
+### `def_cel`
 This macro just creates and exports a constant with a value of the cel
 number of a specific cel. Useful for setting an actor's cel in code,
 such as in its actor update routine.
@@ -232,7 +232,7 @@ The constants follow the format `CEL_<const_name>_<cel_name>`.
 
 #### Usage
 ```assembly
-    cel_def <cel>, <cel_name>
+    def_cel <cel>, <cel_name>
 ```
 
 `<cel>` should be a local label pointing to the target cel in the
@@ -248,7 +248,7 @@ xActorBearAnimation::
 .sleep
     cel sleep, ANIMATION_DURATION_FOREVER
     
-    cel_def .sleep, SLEEP
+    def_cel .sleep, SLEEP
 ```
 This would create and export a constant named `CEL_BEAR_SLEEP` with a
 value of 0, since the cel that `.sleep` references is the first cel

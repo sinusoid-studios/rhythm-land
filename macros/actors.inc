@@ -14,7 +14,7 @@ MACRO cel
 ENDM
 
 ; Assign an animation cel's number to a constant and export it
-MACRO cel_def
+MACRO def_cel
     DEF CEL_{ACTOR_NAME}_\2 EQU ((\1) - {ANIMATION_TABLE}) / 2
     EXPORT CEL_{ACTOR_NAME}_\2
 ENDM

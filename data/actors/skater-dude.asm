@@ -42,8 +42,8 @@ xActorSkaterDudeAnimation::
     override_end
 
     ; Cel constant definitions
-    cel_def .jumping, JUMPING
-    cel_def .falling, FALLING
+    def_cel .jumping, JUMPING
+    def_cel .falling, FALLING
 
 SECTION "Skater Dude Actor Meta-Sprite Data", ROMX
 
