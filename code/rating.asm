@@ -1,4 +1,5 @@
 INCLUDE "constants/hardware.inc"
+INCLUDE "constants/other-hardware.inc"
 INCLUDE "constants/rating.inc"
 INCLUDE "constants/games.inc"
 INCLUDE "constants/transition.inc"
@@ -7,30 +8,30 @@ INCLUDE "macros/misc.inc"
 SECTION "Overall Rating Screen Setup", ROM0
 
 SetupRatingScreen::
-    ; Set appropriate LCDC flags
-    ld      a, LCDCF_ON | LCDCF_BG8800 | LCDCF_BG9800 | LCDCF_BGON
-    ldh     [hLCDC], a
-    
     ; Reset scroll
     xor     a, a
     ldh     [hSCX], a
     ldh     [hSCY], a
     
+    ; Cover the rating graphic temporarily with the window
+    ld      a, 0 + 7
+    ldh     [rWX], a
+    ld      a, RATING_GRAPHIC_Y * 8
+    ldh     [rWY], a
+    
+    ; Set appropriate LCDC flags
+    ld      a, LCDCF_ON | LCDCF_BG8800 | LCDCF_BG9800 | LCDCF_BGON | LCDCF_WIN9C00 | LCDCF_WINON
+    ldh     [hLCDC], a
+    
     ; Clear the background map
     ld      hl, _SCRN0
-    lb      de, SCRN_Y_B, LOW(SCRN_VX_B - SCRN_X_B)
-    ld      b, 0
-.loop
-    ld      c, SCRN_X_B
-    call    LCDMemsetSmall
-    dec     d
-    jr      z, .doneClearing
-    ld      a, d
-    ld      d, HIGH(SCRN_VX_B - SCRN_X_B)
-    add     hl, de  ; e = LOW(SCRN_VX_B - SCRN_X_B)
-    ld      d, a
-    jr      .loop
-.doneClearing
+    lb      bc, 0, SCRN_Y_B
+    call    LCDMemsetMap
+    ; Clear the visible part of the window map
+    ld      hl, _SCRN1
+    ; b = 0
+    ld      c, SCRN_Y_B - RATING_GRAPHIC_Y
+    call    LCDMemsetMap
     
     ; Set up text engine for rating text
     ld      a, RATING_TEXT_LINE_LENGTH * 8 + 1
@@ -238,8 +239,12 @@ RatingScreen::
     inc     a   ; ($FF + 1) & $FF == 0
     jr      nz, .feedbackLoop
 
+    ; Text is finished -> uncover rating graphic
+    ld      hl, hLCDC
+    res     LCDCB_WIN, [hl]
+    
+    ; Wait for player input
 .wait
-    ; Text is finished, wait for player input
     rst     WaitVBlank
     
     ldh     a, [hTransitionState]

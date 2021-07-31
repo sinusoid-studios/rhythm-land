@@ -129,6 +129,40 @@ LCDMemcopyMap::
     jr      nz, .rowLoop
     ret
 
+SECTION "LCDMemsetMap", ROM0
+
+; Fill an arbitrary number of rows on a tilemap with the same value,
+; even if the LCD is on
+; @param    hl  Pointer to destination
+; @param    b   Value to fill with
+; @param    c   Number of rows to clear
+LCDMemsetMap::
+    ld      e, LOW(SCRN_VX_B - SCRN_X_B)
+.rowLoop
+    DEF UNROLL = 5
+    ASSERT (UNROLL * 2) + 1 <= 16
+    ASSERT SCRN_X_B % UNROLL == 0
+    ld      d, SCRN_X_B / UNROLL
+.tileLoop
+    ldh     a, [rSTAT]
+    and     a, STATF_BUSY
+    jr      nz, .tileLoop
+    
+    ld      a, b        ; 1 cycle
+    REPT UNROLL
+    ld      [hli], a    ; 2 cycles
+    ENDR
+    dec     d
+    jr      nz, .tileLoop
+    
+    ; Move to the next row
+    ASSERT HIGH(SCRN_VX_B - SCRN_X_B) == 0
+    ; d = 0
+    add     hl, de  ; e = LOW(SCRN_VX_B - SCRN_X_B)
+    dec     c
+    jr      nz, .rowLoop
+    ret
+
 SECTION "Random Number", ROM0
 
 ; @return   a   Random-ish number
