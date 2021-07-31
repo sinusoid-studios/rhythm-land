@@ -217,7 +217,7 @@ xCueObstacle::
     add     a, LOW(xObstacleDefinitions)
     ld      e, a
     ASSERT HIGH(xObstacleDefinitions.end - 1) == HIGH(xObstacleDefinitions)
-    ld      h, HIGH(xObstacleDefinitions)
+    ld      d, HIGH(xObstacleDefinitions)
     jp      ActorsNew
 
 xObstacleDefinitions:
