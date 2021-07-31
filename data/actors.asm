@@ -29,9 +29,9 @@ SECTION "Actor Animation Table", ROM0
 ActorAnimationTable::
     full_pointer xActorSkaterDudeAnimation  ; ACTOR_SKATER_DUDE
     full_pointer xActorDangerAlertAnimation ; ACTOR_DANGER_ALERT
-    full_pointer xActorCarAnimation ; ACTOR_CAR
-    full_pointer xActorLogAnimation ; ACTOR_LOG
-    full_pointer xActorOilBarrelAnimation   ; ACTOR_OIL_BARREL
+    full_pointer xActorObstacleAnimation    ; ACTOR_CAR
+    full_pointer xActorObstacleAnimation    ; ACTOR_LOG
+    full_pointer xActorObstacleAnimation    ; ACTOR_OIL_BARREL
     full_pointer xActorLargeStar1Animation  ; ACTOR_LARGE_STAR_1
     full_pointer xActorLargeStar2Animation  ; ACTOR_LARGE_STAR_2
     full_pointer xActorLargeStar3Animation  ; ACTOR_LARGE_STAR_3
