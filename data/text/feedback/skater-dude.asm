@@ -1,33 +1,27 @@
-INCLUDE "constants/charmap.inc"
+INCLUDE "macros/feedback.inc"
 
 SECTION "Skater Dude Game Bad Rating Text", ROMX
 
 xTextBadSkaterDude::
-    DB "Sheesh, that kid really shouldn't put himself in such danger.\n\n"
-    DB TEXT_DELAY, 40
-    DB "Ridiculously irresponsible.<END>"
+    feedback "Sheesh, that kid really shouldn't put himself in such danger."
+    feedback_last "Ridiculously irresponsible."
 
 SECTION "Skater Dude Game OK Rating Text", ROMX
 
 xTextOKSkaterDude::
-    DB "Hmm.\n\n"
-    DB TEXT_DELAY, 40
-    DB "That looked really dangerous, but he had some cool tricks there.\n\n"
-    DB TEXT_DELAY, 40
-    DB "It was... OK.<END>"
+    feedback "Hmm."
+    feedback "That looked really dangerous, but he had some cool tricks there."
+    feedback_last "It was... OK."
 
 SECTION "Skater Dude Game Great Rating Text", ROMX
 
 xTextGreatSkaterDude::
-    DB "Huh, that dude knows his stuff!\n\n"
-    DB TEXT_DELAY, 40
-    DB "Those tricks were really cool!<END>"
+    feedback "Huh, that dude knows his stuff!"
+    feedback_last "Those tricks were really cool!"
 
 SECTION "Skater Dude Game Perfect Rating Text", ROMX
 
 xTextPerfectSkaterDude::
-    DB "Woah, that dude was super cool!\n\n"
-    DB TEXT_DELAY, 40
-    DB "Unfazed by the heavy traffic!\n\n"
-    DB TEXT_DELAY, 40
-    DB "Those were some crazy gnarly tricks!<END>"
+    feedback "Woah, that dude was super cool!"
+    feedback "Unfazed by the heavy traffic!"
+    feedback_last "Those were some crazy gnarly tricks!"

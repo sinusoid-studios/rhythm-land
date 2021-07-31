@@ -1,35 +1,28 @@
-INCLUDE "constants/charmap.inc"
+INCLUDE "macros/feedback.inc"
 
 SECTION "Seagull Serenade Game Bad Rating Text", ROMX
 
 xTextBadSeagullSerenade::
-    DB "My ears hurt a bit after that.\n\n"
-    DB TEXT_DELAY, 40
-    DB "Quite an embarrassing performance.<END>"
+    feedback "My ears hurt a bit after that."
+    feedback_last "Quite an embarrassing performance."
 
 SECTION "Seagull Serenade Game OK Rating Text", ROMX
 
 xTextOKSeagullSerenade::
-    DB  "There were a few parts I liked.\n\n"
-    DB TEXT_DELAY, 40
-    DB  "Lots of room for improvement.\n\n"
-    DB TEXT_DELAY, 40
-    DB  "Pretty average overall.<END>"
+    feedback  "There were a few parts I liked."
+    feedback  "Lots of room for improvement."
+    feedback_last  "Pretty average overall."
 
 SECTION "Seagull Serenade Game Great Rating Text", ROMX
 
 xTextGreatSeagullSerenade::
-    DB "How melodious!\n\n"
-    DB TEXT_DELAY, 40
-    DB "And all while staying in tune, that takes skill.\n\n"
-    DB TEXT_DELAY, 40
-    DB "I'm impressed with that performance!<END>"
+    feedback "How melodious!"
+    feedback "And all while staying in tune, that takes skill."
+    feedback_last "I'm impressed with that performance!"
 
 SECTION "Seagull Serenade Game Perfect Rating Text", ROMX
 
 xTextPerfectSeagullSerenade::
-    DB "Outstanding!\n\n"
-    DB TEXT_DELAY, 40
-    DB "That may be one of the best songs I've ever heard!\n\n"
-    DB TEXT_DELAY, 40
-    DB "A fantastic showing. Encore!<END>"
+    feedback "Outstanding!"
+    feedback "That may be one of the best songs I've ever heard!"
+    feedback_last "A fantastic showing. Encore!"
