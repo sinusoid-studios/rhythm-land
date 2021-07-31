@@ -216,10 +216,8 @@ xCueObstacle::
     ASSERT BANK(xObstacleDefinitions) == BANK(@)
     add     a, LOW(xObstacleDefinitions)
     ld      e, a
-    ASSERT HIGH(xObstacleDefinitions.end - 1) != HIGH(xObstacleDefinitions)
-    adc     a, HIGH(xObstacleDefinitions)
-    sub     a, e
-    ld      d, a
+    ASSERT HIGH(xObstacleDefinitions.end - 1) == HIGH(xObstacleDefinitions)
+    ld      h, HIGH(xObstacleDefinitions)
     jp      ActorsNew
 
 xObstacleDefinitions:

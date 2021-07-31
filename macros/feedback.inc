@@ -6,9 +6,10 @@ MACRO feedback
 ENDM
 
 ; The last "line" of feedback, which isn't followed by any more text and
-; thus doesn't need the newlines. Also includes the text terminator
-; value.
+; thus doesn't need the newlines. Gets a longer delay before showing the
+; rating graphic. Also includes the text terminator value.
 MACRO feedback_last
     DB \1
+    DB TEXT_DELAY, 80
     DB TEXT_END
 ENDM
