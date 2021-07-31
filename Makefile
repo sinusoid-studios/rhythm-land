@@ -29,7 +29,7 @@ TILEFLAGS := -B 2 -R -T 256
 GFXFLAGS := -u
 res/skater-dude/background.bg.2bpp: GFXFLAGS += -h
 
-SRCS := $(wildcard code/*.asm) $(wildcard code/**/*.asm) $(wildcard data/*.asm) $(wildcard data/**/*.asm)
+SRCS := $(wildcard code/*.asm) $(wildcard code/*/*.asm) $(wildcard data/*.asm) $(wildcard data/*/*.asm) $(wildcard data/*/*/*.asm)
 ST_SRCS := code/SoundSystem.asm $(wildcard data/music/*.asm) data/sfx.asm soundtest/soundtest.asm
 
 game: bin/rhythm-land.gb
