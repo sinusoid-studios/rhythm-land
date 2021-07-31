@@ -8,6 +8,11 @@ INCLUDE "macros/misc.inc"
 SECTION "Overall Rating Screen Setup", ROM0
 
 SetupRatingScreen::
+    ; Make the screen black for now
+    ld      a, %11_11_11_11
+    ldh     [hBGP], a
+    ldh     [rBGP], a
+    
     ; Reset scroll
     xor     a, a
     ldh     [hSCX], a
@@ -222,8 +227,6 @@ RatingScreen::
     xor     a, a
     ldh     [hTransitionState], a
     ; Set palettes
-    ; Background colour is black, which is the colour of the window in
-    ; the transition
     ld      a, RATING_SCREEN_BGP
     ldh     [hBGP], a
     
