@@ -1,7 +1,7 @@
 ; One "line" of feedback, separated from the next with a blank line and
 ; a bit of delay.
 MACRO feedback
-    DB \1, "\n\n"
+    DB \#, "\n\n"
     DB TEXT_DELAY, 40
 ENDM
 
@@ -9,7 +9,7 @@ ENDM
 ; thus doesn't need the newlines. Gets a longer delay before showing the
 ; rating graphic. Also includes the text terminator value.
 MACRO feedback_last
-    DB \1
+    DB \#
     DB TEXT_DELAY, 80
     DB TEXT_END
 ENDM
