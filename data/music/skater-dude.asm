@@ -267,7 +267,7 @@ INSTSkaterDude11_CHNL0:
     DB $FC, $80, $00, $01
     DB $0A, $80, $00, $03
     DB $0B, $18, $05, $41
-    DB $01, $80, $02
+    DB $04, $FC, $80, $02
 INSTSkaterDude12_CHNL0:
     DB $07, $0B, $08
     DB $0A, $00, $05, $E0
