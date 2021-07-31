@@ -41,7 +41,8 @@ xGameSetupSkaterDude::
     ldh     [hSkaterDudeState], a
     
     ; Initially no slo-mo
-    ; a = 0
+    ASSERT SKATER_DUDE_NO_SLO_MO == 0 - 1
+    dec     a
     ldh     [hSloMoCountdown], a
     
     ; Load background tiles
@@ -158,7 +159,8 @@ xGameSkaterDude::
     
     call    ActorsUpdate
     ldh     a, [hSloMoCountdown]
-    and     a, a
+    ASSERT SKATER_DUDE_NO_SLO_MO == -1
+    inc     a
     call    z, MapScrollLeft
     
     ; If the game is over, go to the overall rating screen
@@ -168,7 +170,8 @@ xGameSkaterDude::
     
     ld      hl, hSloMoCountdown
     ld      a, [hl]
-    and     a, a
+    ASSERT SKATER_DUDE_NO_SLO_MO == -1
+    inc     a
     jr      z, xGameSkaterDude
     dec     [hl]
     jr      xGameSkaterDude
@@ -293,7 +296,8 @@ xActorSkaterDude::
     ; If not currently in slo-mo, the countdown works a little
     ; differently
     ldh     a, [hSloMoCountdown]
-    and     a, a
+    ASSERT SKATER_DUDE_NO_SLO_MO == -1
+    inc     a
     jr      nz, .sloMo
     
     ; In not in slo-mo, subtract the denominator of slo-mo speed instead
@@ -409,7 +413,7 @@ xActorSkaterDude::
     ld      c, e
     
     ; End slo-mo
-    xor     a, a
+    ld      a, SKATER_DUDE_NO_SLO_MO
     ldh     [hSloMoCountdown], a
     
     ; "Stop" moving
@@ -493,18 +497,31 @@ SECTION "Skater Dude Obstacle Actor", ROMX
 xActorObstacle::
     ld      hl, wActorXSpeedTable
     add     hl, bc
-    ; Check for slo-mo
+    ; Check if slo-mo status has changed
     ldh     a, [hSloMoCountdown]
-    and     a, a
+    ASSERT SKATER_DUDE_NO_SLO_MO == -1
+    inc     a
     jr      z, .noSloMo
+    ; Check if slo-mo just started
+    ; Add 1 to compensate for the inc
+    cp      a, SKATER_DUDE_SLO_MO_DURATION + 1
+    jr      c, .noChange
+    
     ; In slo-mo -> move slowly
     ld      [hl], OBSTACLE_SLO_MO_SPEED
-    ; Z still unset
-    DB      $CA     ; jp z, a16 to consume the next 2 bytes
-.noSloMo
-    ; Not in slo-mo -> move at the regular speed
-    ld      [hl], OBSTACLE_SPEED
     
+    ; Use slower animation
+    ld      a, CEL_OBSTACLE_SLO_MO
+    call    ActorsSetAnimationOverride
+    jr      .noChange
+.noSloMo
+    ; No longer in slo-mo -> move at the regular speed
+    ld      [hl], OBSTACLE_SPEED
+    ; Return to the fast animation
+    ld      hl, wActorCelOverrideTable
+    add     hl, bc
+    ld      [hl], ANIMATION_OVERRIDE_NONE
+.noChange
     ; Check if the obstacle has gone off-screen
     ld      hl, wActorXPosTable
     add     hl, bc

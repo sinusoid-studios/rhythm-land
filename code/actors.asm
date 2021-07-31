@@ -131,6 +131,9 @@ ActorsUpdate::
     cp      a, ID_SKATER_DUDE
     jr      nz, .updateOverrideAnimation
     ldh     a, [hSloMoCountdown]
+    ; No slo-mo is non-zero in the update bits, adjust for that
+    ASSERT SKATER_DUDE_NO_SLO_MO + 1 & SKATER_DUDE_SLO_MO_UPDATE_MASK == 0
+    inc     a
     and     a, SKATER_DUDE_SLO_MO_UPDATE_MASK
     jr      nz, .updatePosition
 .updateOverrideAnimation
@@ -778,7 +781,7 @@ ActorsSetCel::
 
 SECTION "Actor Set Animation Override Cel", ROM0
 
-; Set an actor's animation override cel and set the override cel \
+; Set an actor's animation override cel and set the override cel
 ; countdown to its starting value
 ; @param    a           Cel number
 ; @param    bc          Actor index

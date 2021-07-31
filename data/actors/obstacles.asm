@@ -1,11 +1,12 @@
 INCLUDE "constants/hardware.inc"
+INCLUDE "constants/games/skater-dude.inc"
 INCLUDE "constants/actors.inc"
 INCLUDE "macros/actors.inc"
 
 SECTION "Skater Dude Obstacle Actors Animation Data", ROMX
 
 xActorObstacleAnimation::
-    animation Obstacle
+    animation Obstacle, OBSTACLE
 
     ; All obstacles have an animation like this
     ; (4 cels, looping, 2 frames each)
@@ -15,6 +16,16 @@ xActorObstacleAnimation::
     DB 2, 2
     DB 3, 2
     goto_cel .loop
+
+.sloMoLoop
+    DB 0, 12 / SKATER_DUDE_SLO_MO_DIVIDE
+    DB 1, 12 / SKATER_DUDE_SLO_MO_DIVIDE
+    DB 2, 12 / SKATER_DUDE_SLO_MO_DIVIDE
+    DB 3, 12 / SKATER_DUDE_SLO_MO_DIVIDE
+    goto_cel .sloMoLoop
+
+    ; Cel constant definitions
+    def_cel .sloMoLoop, SLO_MO
 
 SECTION "Skater Dude Car Actor Meta-Sprite Data", ROMX
 
