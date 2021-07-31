@@ -1,3 +1,4 @@
+INCLUDE "constants/charmap.inc"
 INCLUDE "macros/feedback.inc"
 
 SECTION "Skater Dude Game Bad Rating Text", ROMX
@@ -11,7 +12,8 @@ SECTION "Skater Dude Game OK Rating Text", ROMX
 xTextOKSkaterDude::
     feedback "Hmm."
     feedback "That looked really dangerous, but he had some cool tricks there."
-    feedback_last "It was... OK."
+    feedback_last "It was.<DELAY>",6,".<DELAY>",6,"."
+    ; "OK" appears next, in the rating graphic
 
 SECTION "Skater Dude Game Great Rating Text", ROMX
 
