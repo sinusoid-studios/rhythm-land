@@ -165,8 +165,10 @@ TransitionUpdate::
     add     a, b    ; a * 3 (+Bank)
     add     a, LOW(GameTable)
     ld      l, a
-    ASSERT HIGH(GameTable.end - 1) == HIGH(GameTable)
-    ld      h, HIGH(GameTable)
+    ASSERT HIGH(GameTable.end - 1) != HIGH(GameTable)
+    adc     a, HIGH(GameTable)
+    sub     a, l
+    ld      h, a
     
     ld      a, [hli]
     ; Switching the bank to 0 in this case is benign but still triggers

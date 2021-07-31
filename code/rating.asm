@@ -16,15 +16,11 @@ SetupRatingScreen::
     ldh     [hSCX], a
     ldh     [hSCY], a
     
-    ; Clear a tile
-    ld      hl, $9000
-    lb      bc, 0, 16
-    call    LCDMemsetSmall
     ; Clear the background map
     ld      hl, _SCRN0
     lb      de, SCRN_Y_B, LOW(SCRN_VX_B - SCRN_X_B)
+    ld      b, 0
 .loop
-    ; b = 0
     ld      c, SCRN_X_B
     call    LCDMemsetSmall
     dec     d
@@ -99,13 +95,13 @@ SetupRatingScreen::
     ; Score is negative -> go straight to Bad
     bit     7, a
     ld      b, RATING_BAD
-    jr      nz, .getText
+    jr      nz, .gotRating
     
     ; Numerator must be less than denominator, but that's fine since
     ; it'll be 100 anyway
     cp      a, c
     ld      b, RATING_PERFECT
-    jr      nc, .getText
+    jr      nc, .gotRating
     
     ld      b, a
     ; b = numerator, c = denominator
@@ -114,18 +110,73 @@ SetupRatingScreen::
     
     ld      b, RATING_BAD
     cp      a, RATING_OK_MIN
-    jr      c, .getText
+    jr      c, .gotRating
     
     ASSERT RATING_OK == RATING_BAD + 1
     inc     b
     cp      a, RATING_GREAT_MIN
-    jr      c, .getText
+    jr      c, .gotRating
     
     ASSERT RATING_GREAT == RATING_OK + 1
     inc     b
 
 ; @param    b   Rating type ID
-.getText
+.gotRating
+    ; Save rating type ID: it gets overwritten for memcopies
+    ld      a, b
+    ldh     [hScratch1], a
+    
+    ; Load appropriate background tiles
+    ; Find pointer to tile data
+    ; a = rating type
+    add     a, a    ; rating type * 2 (Pointer)
+    add     a, a    ; rating type * 4 (Length)
+    add     a, b    ; rating type * 5 (+Bank)
+    add     a, LOW(RatingTilesTable)
+    ld      l, a
+    ASSERT HIGH(RatingTilesTable.end - 1) == HIGH(RatingTilesTable)
+    ld      h, HIGH(RatingTilesTable)
+    
+    ; Get pointer to tile data
+    ld      a, [hli]
+    ldh     [hCurrentBank], a
+    ld      [rROMB0], a
+    ld      a, [hli]
+    ld      e, a
+    ld      a, [hli]
+    ld      d, a
+    ; Get size of tile data
+    ld      a, [hli]
+    ld      c, a
+    ld      b, [hl]
+    ; Copy to VRAM
+    ld      hl, $9000
+    rst     LCDMemcopy
+    
+    ; Load appropriate background map
+    ; Find pointer to map data
+    ldh     a, [hScratch1]
+    ld      b, a
+    add     a, a    ; rating type * 2 (Pointer)
+    add     a, b    ; rating type * 3 (+Bank)
+    add     a, LOW(RatingMapTable)
+    ld      l, a
+    ASSERT HIGH(RatingMapTable.end - 1) == HIGH(RatingMapTable)
+    ld      h, HIGH(RatingMapTable)
+    
+    ; Get pointer to map data
+    ld      a, [hli]
+    ldh     [hCurrentBank], a
+    ld      [rROMB0], a
+    ld      a, [hli]
+    ld      e, a
+    ld      d, [hl]
+    ; Copy to VRAM
+    ld      hl, vRatingGraphic
+    ld      c, RATING_GRAPHIC_HEIGHT
+    call    LCDMemcopyMap.rowLoop
+    
+    ; Set up feedback text for this rating
     ; Find current game's part of the rating text table
     ldh     a, [hCurrentGame]
     sub     a, ID_GAMES_START
@@ -139,7 +190,8 @@ SetupRatingScreen::
     ld      c, a
     
     ; Find pointer to text for this type of rating
-    ld      a, b
+    ldh     a, [hScratch1]
+    ld      b, a
     add     a, a    ; rating type * 2 (Pointer)
     add     a, b    ; rating type * 3 (+Bank)
     add     a, c    ; c = game offset
