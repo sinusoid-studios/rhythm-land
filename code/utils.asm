@@ -95,12 +95,12 @@ LCDMemsetSmall::
 
 SECTION "LCDMemcopyMap", ROM0
 
-; Copy a 20x18 tilemap to the background map, even if the LCD is on
+; Copy an arbitrary number of rows to the background map, even if the
+; LCD is on
 ; @param    de  Pointer to map data
 ; @param    hl  Pointer to destination
+; @param    c   Number of rows to copy
 LCDMemcopyMap::
-    ld      c, SCRN_Y_B
-.rowLoop::
     DEF UNROLL = 2
     ASSERT UNROLL * (2 + 2 + 1) <= 16
     ASSERT SCRN_X_B % UNROLL == 0
@@ -126,7 +126,7 @@ LCDMemcopyMap::
     add     hl, bc
     ld      c, a
     dec     c
-    jr      nz, .rowLoop
+    jr      nz, LCDMemcopyMap
     ret
 
 SECTION "LCDMemsetMap", ROM0

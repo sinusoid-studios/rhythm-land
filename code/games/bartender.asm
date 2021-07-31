@@ -34,6 +34,7 @@ xGameSetupBartender::
     ASSERT BANK(xMap) == BANK(@)
     ld      de, xMap
     ld      hl, _SCRN0
+    ld      c, SCRN_Y_B
     jp      LCDMemcopyMap
 
 xBackgroundTiles9000:

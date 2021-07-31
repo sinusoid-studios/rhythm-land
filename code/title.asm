@@ -54,13 +54,14 @@ SetupTitleScreen::
     ; Load background map
     ld      de, MapTitle
     ld      hl, _SCRN0
+    ld      c, SCRN_Y_B
     call    LCDMemcopyMap
     
     ; Copy "press start" to window
     ld      de, MapWindowTitle
     ld      hl, _SCRN1
     ld      c, MAP_TITLE_PRESS_START_HEIGHT
-    call    LCDMemcopyMap.rowLoop
+    call    LCDMemcopyMap
     
     ; Create star actors
     ld      de, ActorStarDefinitions

@@ -175,7 +175,7 @@ SetupRatingScreen::
     ; Copy to VRAM
     ld      hl, vRatingGraphic
     ld      c, RATING_GRAPHIC_HEIGHT
-    call    LCDMemcopyMap.rowLoop
+    call    LCDMemcopyMap
     
     ; Set up feedback text for this rating
     ; Find current game's part of the rating text table

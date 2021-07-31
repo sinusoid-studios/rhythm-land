@@ -33,6 +33,7 @@ xGameSetupSeagullSerenade::
     ASSERT BANK(xMap) == BANK(@)
     ld      de, xMap
     ld      hl, _SCRN0
+    ld      c, SCRN_Y_B
     call    LCDMemcopyMap
     
     ; Create seagull actors
