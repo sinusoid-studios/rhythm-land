@@ -24,8 +24,8 @@ xActorSeagull2Animation::
 xActorSeagull2Tiles:
 .resting
     INCBIN "res/seagull-serenade/seagull-2/resting.obj.2bpp"
-.angry
-    INCBIN "res/seagull-serenade/seagull-2/angry.obj.2bpp"
+.missedNote
+    INCBIN "res/seagull-serenade/seagull-2/missed-note.obj.2bpp"
 .high1
     INCBIN "res/seagull-serenade/seagull-2/high-1.obj.2bpp"
 .high2
