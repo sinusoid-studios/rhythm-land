@@ -46,71 +46,71 @@ xActorSeagull3Metasprites::
     metasprite .resting2
     metasprite .resting3
     metasprite .resting4
-    metasprite .hSquawkCel3
-    metasprite .hSquawkCel4
-    metasprite .mSquawkCel3
-    metasprite .mSquawkCel4
-    metasprite .lSquawkCel3
-    metasprite .lSquawkCel4
-    metasprite .missedNote
+    metasprite .high1
+    metasprite .high2
+    metasprite .mid1
+    metasprite .mid2
+    metasprite .low1
+    metasprite .low2
 
 .resting1
-    obj 0, -1, $20, 0
-    obj 0, 7, $22, 0
-    obj 0, 15, $24, 0
+; Also used for missed note (data happens to be identical)
+    obj 0, -1, $00, 0
+    obj 0, 7, $02, 0
+    obj 0, 15, $04, 0
     DB METASPRITE_END
 .resting2
-    obj -1, 0, $20, 0
-    obj -1, 8, $22, 0
-    obj -1, 16, $24, 0
+    obj -1, 0, $00, 0
+    obj -1, 8, $02, 0
+    obj -1, 16, $04, 0
     DB METASPRITE_END
 .resting3
-    obj 0, 1, $20, 0
-    obj 0, 9, $22, 0
-    obj 0, 17, $24, 0
+    obj 0, 1, $00, 0
+    obj 0, 9, $02, 0
+    obj 0, 17, $04, 0
     DB METASPRITE_END
 .resting4
-    obj 0, 0, $20, 0
-    obj 0, 8, $22, 0
-    obj 0, 16, $24, 0
+    obj 0, 0, $00, 0
+    obj 0, 8, $02, 0
+    obj 0, 16, $04, 0
     DB METASPRITE_END
 
-.hSquawkCel3
-    obj 63, 126, $06, 0
-    obj 63, 134, $08, 0
-    obj 63, 142, $0A, 0
+.high1
+    obj 1, 1, $00, 0
+    obj 1, 9, $02, 0
+    obj 1, 17, $04, 0
     DB METASPRITE_END
-.hSquawkCel4
-    obj 62, 129, $16, 0
-    obj 64, 137, $18, 0
-    obj 63, 145, $1A, 0
-    DB METASPRITE_END
-
-.mSquawkCel3
-    obj 64, 123, $0C, 0
-    obj 64, 131, $0E, 0
-    obj 64, 139, $04, 0
-    DB METASPRITE_END
-.mSquawkCel4
-    obj 64, 125, $1C, 0
-    obj 64, 133, $1E, 0
-    obj 64, 141, $20, 0
+.high2
+    obj -1, 5, $00, 0
+    obj 1, 13, $02, 0
+    obj 0, 21, $04, 0
     DB METASPRITE_END
 
-.lSquawkCel3
-    obj 67, 122, $10, 0
-    obj 65, 130, $12, 0
-    obj 64, 137, $14, 0
+.mid1
+    obj 0, 0, $00, 0
+    obj 0, 8, $02, 0
+    obj 0, 16, $04, 0
     DB METASPRITE_END
-.lSquawkCel4
-    obj 68, 121, $22, 0
-    obj 63, 129, $24, 0
-    obj 63, 137, $26, 0
-    obj 79, 129, $28, 0
+.mid2
+    obj 0, 1, $00, 0
+    obj 0, 9, $02, 0
+    obj 0, 17, $04, 0
+    DB METASPRITE_END
+
+.low1
+    obj 3, -3, $00, 0
+    obj 1, 5, $02, 0
+    obj 0, 12, $04, 0
+    DB METASPRITE_END
+.low2
+    obj 6, -3, $00, 0
+    obj 1, 5, $02, 0
+    obj 1, 13, $04, 0
+    obj 17, 5, $06, 0
     DB METASPRITE_END
 
 .missedNote
-    obj 64, 124, $2A, 0
-    obj 64, 132, $2C, 0
-    obj 64, 140, $2E, 0
+    obj 0, -6, $00, 0
+    obj 0, 2, $02, 0
+    obj 0, 10, $04, 0
     DB METASPRITE_END
