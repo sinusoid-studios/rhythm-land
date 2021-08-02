@@ -1,5 +1,6 @@
 INCLUDE "constants/hardware.inc"
 INCLUDE "constants/actors.inc"
+INCLUDE "constants/engine.inc"
 INCLUDE "constants/transition.inc"
 INCLUDE "constants/games/seagull-serenade.inc"
 
@@ -108,8 +109,52 @@ SECTION "Seagull Serenade Seagull Actor", ROMX
 xActorSeagull::
     ; Check for sync actions
     ld      a, [wMusicSyncData]
-    ASSERT SYNC_SEAGULL_SERENADE_GROOVE == 1
+    ASSERT SYNC_NONE == -1
+    inc     a
+    ret     z
+    
+    ; Add 1 to compensate for inc
+    cp      a, SYNC_SEAGULL_SERENADE_GROOVE + 1
+    jr      z, .groove
+    
+    ; Squawk
+    dec     a       ; Undo inc
+    ; Check if this is meant for this seagull
+    ld      d, a    ; Save for checking type of squawk
+    and     a, 1    ; a = 0 or 1
+    cp      a, c    ; c = actor index (0 or 1)
+    ret     nz
+    
+    ; Squawk the right squawk
+    ld      a, d    ; d = sync data
+    srl     a       ; a = 0-2
+    ; 0 = low
+    ; 1 = mid
+    ; 2 = high
+    jr      z, .low
     dec     a
+    jr      z, .mid
+    ; High
+    ld      a, CEL_SEAGULL_HIGH
+    jp      ActorsSetAnimationOverride
+.low
+    ld      a, CEL_SEAGULL_LOW
+    jp      ActorsSetAnimationOverride
+.mid
+    ld      a, CEL_SEAGULL_MID
+    jp      ActorsSetAnimationOverride
+
+.groove
+    ; Stop bobbing and start to really get in the groove
+    ld      a, CEL_SEAGULL_GROOVE
+    jp      ActorsSetCel
+
+SECTION "Seagull Serenade Seagull Player Actor", ROMX
+
+xActorSeagullPlayer::
+    ; Check for sync actions
+    ld      a, [wMusicSyncData]
+    cp      a, SYNC_SEAGULL_SERENADE_GROOVE
     ret     nz
     
     ; Stop bobbing and start to really get in the groove
