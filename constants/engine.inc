@@ -18,3 +18,8 @@ RSRESET
 DEF HIT_BAD RB 1
 DEF HIT_OK RB 1
 DEF HIT_PERFECT RB 1
+
+; Music sync data
+
+; Default "no sync data" value is 0, but 0 is useful
+DEF SYNC_NONE EQU -1

@@ -268,6 +268,10 @@ EngineUpdate::
 .updateCues
     ; Check for any cues
     ld      a, [wMusicSyncData]
+    ASSERT SYNC_NONE == -1
+    inc     a
+    jr      z, BankedReturn
+    dec     a       ; Undo inc
     ld      b, a    ; Save for multiplying by 3
     add     a, a    ; Bit 7 set = cue
     jr      nc, BankedReturn

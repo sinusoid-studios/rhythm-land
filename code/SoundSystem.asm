@@ -1080,10 +1080,11 @@ Music_Play::
 	ld	[wMusicNextFrame],a
 
 	; clear misc variables
-	xor	a
+	ld	a,-1
 	ld	[wMusicSyncData],a
 
 	; clear effects
+	xor	a,a
 	ld	hl,wChannelMusicEffect1
 	ld	[hl+],a
 	ld	[hl+],a

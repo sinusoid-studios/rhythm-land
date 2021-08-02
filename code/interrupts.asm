@@ -1,5 +1,6 @@
 INCLUDE "constants/hardware.inc"
 INCLUDE "constants/other-hardware.inc"
+INCLUDE "constants/engine.inc"
 INCLUDE "constants/transition.inc"
 INCLUDE "macros/misc.inc"
 
@@ -189,7 +190,7 @@ STATHandler:
     push    de
     
     ; Clear any previous music sync data
-    xor     a, a
+    ld      a, SYNC_NONE
     ld      [wMusicSyncData], a
     
     ; Save current bank to restore when finished
