@@ -14,7 +14,8 @@ xActorSeagull1Animation::
     goto_cel .bobLoop
 
 .groove
-    ; Resting tiles already loaded
+    ; Only used when ending an override animation
+    set_tiles resting, 6
 .grooveLoop
     cel resting1, MUSIC_SEAGULL_SERENADE_SPEED * 2 - 5
     cel resting2, 5
@@ -22,8 +23,49 @@ xActorSeagull1Animation::
     cel resting2, 5
     goto_cel .grooveLoop
 
+.high
+    cel resting2, 3
+    cel resting1, 3
+    set_tiles high1, 6
+    cel high1, 3
+    set_tiles high2, 8
+    cel high2, MUSIC_SEAGULL_SERENADE_SPEED * 2 - 3 * 4
+    set_tiles high1, 6
+    cel high1, 3
+    override_end .groove
+
+.mid
+    cel resting1, 3
+    cel resting2, 3
+    set_tiles mid1, 6
+    cel mid1, 3
+    set_tiles mid2, 6
+    cel mid2, MUSIC_SEAGULL_SERENADE_SPEED * 2 - 3 * 4
+    set_tiles mid1, 6
+    cel mid1, 3
+    override_end .groove
+
+.low
+    cel resting2, 3
+    cel resting3, 3
+    set_tiles low1, 6
+    cel low1, 3
+    set_tiles low2, 6
+    cel low2, MUSIC_SEAGULL_SERENADE_SPEED * 2 - 3 * 4
+    set_tiles low1, 6
+    cel low1, 3
+    override_end .groove
+
+.missedNote
+    set_tiles missedNote, 6
+    cel resting1, ANIMATION_DURATION_FOREVER
+
     ; Cel constant definitions
-    def_cel .groove, GROOVE
+    def_cel .grooveLoop, GROOVE
+    def_cel .high, HIGH
+    def_cel .mid, MID
+    def_cel .low, LOW
+    def_cel .missedNote, MISSED_NOTE
 
 xActorSeagull1Tiles:
 .resting
