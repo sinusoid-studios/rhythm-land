@@ -36,6 +36,10 @@ xGameSetupSeagullSerenade::
     ld      c, SCRN_Y_B
     call    LCDMemcopyMap
     
+    ; Enable tile streaming
+    ; a = 1
+    ldh     [hTileStreamingEnable], a
+    
     ; Create seagull actors
     ld      de, xActorSeagullDefinitions
     ASSERT NUM_SEAGULLS == 3

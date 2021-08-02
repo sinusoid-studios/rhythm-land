@@ -88,6 +88,10 @@ xGameSetupSkaterDude::
     ; Draw the initial visible map
     call    MapDraw
     
+    ; No tile streaming in this game
+    xor     a, a
+    ldh     [hTileStreamingEnable], a
+    
     ; Create the Skater Dude actor
     ASSERT BANK(xActorSkaterDudeDefinition) == BANK(@)
     ld      de, xActorSkaterDudeDefinition

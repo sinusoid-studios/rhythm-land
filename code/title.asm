@@ -63,6 +63,10 @@ SetupTitleScreen::
     ld      c, MAP_TITLE_PRESS_START_HEIGHT
     call    LCDMemcopyMap
     
+    ; No tile streaming on this screen
+    xor     a, a
+    ldh     [hTileStreamingEnable], a
+    
     ; Create star actors
     ld      de, ActorStarDefinitions
     ld      a, NUM_STARS
