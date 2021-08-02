@@ -37,8 +37,15 @@ ENDM
 ; Copy tiles to VRAM
 MACRO set_tiles
     DB ANIMATION_SET_TILES
-    DW {TILE_TABLE}.\1
-    DB (\2) * 16 / 2
+    IF _NARG > 1
+        ; Local part of label and tile count given
+        DW {TILE_TABLE}.\1
+        DB (\2) * 16 / 2
+    ELSE
+        ; No local part of label -> use global part only
+        DW {TILE_TABLE}
+        DB (\1) * 16 / 2
+    ENDC
 ENDM
 
 ; Meta-sprites

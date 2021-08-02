@@ -183,21 +183,23 @@ continuing the walk animation. The label `.walk`, which points to the
 macro.
 
 ### "Set Tiles" Command
-The `set_tiles` macro allows for using just the local part of tile data
-labels rather than the entire thing, as well as specifying number of
-tiles rather than half the number of bytes.
+The `set_tiles` macro allows for specifying a number of tiles rather
+than half the number of bytes the tiles take up. It can also take the
+local part of a label to tile data in the [tile table](#tile-tables).
 
 #### Usage
 ```assembly
-    set_tiles <tiles>, <count>
+    set_tiles [<tiles>,] <count>
 ```
 
 `<tiles>` is the local part of a label pointing to the [tile
 data](#tile-tables) to copy to the actor's reserved tile space in VRAM.
+If not specified, no local part of the label is used, resulting in the
+first tiles in the tile table to be used.
 
-**WARNING**: The tile data that `<tiles>` points to must be in the same
-ROM bank as the animation table. Ensuring this is true can be done by
-simply placing the [tile table](#tile-tables) in the same section.
+**WARNING**: The tile data must be in the same ROM bank as the animation
+table. Ensuring this is true can be done by simply placing the [tile
+table](#tile-tables) in the same section.
 
 `<count>` is the number of tiles to copy.
 
@@ -350,6 +352,13 @@ Tile tables are only used in actors who need to stream their tiles.
 Otherwise, the game's setup routine should preload all tiles for actors
 to use.
 
+Ideally, tile tables wouldn't be tables and tile data would be scattered
+throughout various sections, but as of the making of Rhythm Land, it is
+impossible to ensure that those sections end up in the same ROM bank.
+The ROM bank number for each set of tiles can be stored along with the
+pointer, or a "tile set number" used in a table similar to how
+meta-sprites are located, but this increases code complexity.
+
 The naming convention for tile tables is `xActor<name>Tiles`, where
 `<name>` is the name of the actor in PascalCase. For example, [Seagull
 1's tile table][seagull-1-tiles] is called `xActorSeagull1Tiles`.
@@ -371,7 +380,8 @@ xActor<name>Tiles::
 ### Labels
 The local labels used in the tile table (`sample1` and `sample2` in the
 snippet above) can be referenced in the [`set_tiles`
-macro](#set-tiles-command).
+macro](#set-tiles-command). The first tiles will be used if no local
+label part is specified.
 
 [skater-dude-animation]: https://github.com/sinusoid-studios/rhythm-land/blob/08414669c10f9b38c66d27a0f8df6f34e9529eb7/data/actors/skater-dude.asm#L8
 [skater-dude-metasprites]: https://github.com/sinusoid-studios/rhythm-land/blob/08414669c10f9b38c66d27a0f8df6f34e9529eb7/data/actors/skater-dude.asm#L50
