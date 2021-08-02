@@ -203,11 +203,12 @@ table](#tile-tables) in the same section.
 
 `<count>` is the number of tiles to copy.
 
-**WARNING**: There are only 8 reserved tiles for each actor. If an actor
-that uses tile streaming has a meta-sprite that needs more, the
+**WARNING**: There are only 16 reserved tiles for each actor. If an
+actor that has a meta-sprite that needs more, the
 `NUM_ACTOR_RESERVED_TILES` constant in
-[constants/actors.inc](/constants/actors.inc) needs to be changed and
-the reserved tile pointer calculation in `ActorsSetTiles` in
+[constants/actors.inc](/constants/actors.inc) needs to be changed, and
+the reserved tile pointer calculation in `ActorsSetTiles` and per-actor
+tile number adjustment in `ActorsUpdate` in
 [code/actors.asm](/code/actors.asm) updated to reflect the new value.
 
 #### Example
@@ -271,9 +272,10 @@ xActor<name>Metasprites::
 
 ### Meta-Sprites
 Meta-sprites are groups of objects used to create a large sprite. A
-meta-sprite definition contains this group of objects, with the only
-twist being that the object's position is relative to the actor's
-position.
+meta-sprite definition contains this group of objects, with a couple
+twists: the object's position is relative to the actor's position, and
+if the game uses tile streaming, the tile number is relative to the
+actor's reserved tile area.
 
 #### Usage
 ```assembly
@@ -303,9 +305,10 @@ xActorSampleMetasprites::
     obj 0, 8, $00, OAMF_PAL1
     DB METASPRITE_END
 ```
-This meta-sprite consists of a single object using tile $00. It is
-placed at (8, 0) relative to the actor's position. It also uses OBP1
-(the second object palette).
+This meta-sprite consists of a single object using tile $00. If the
+actor uses tile streaming, it will use the first tile in its reserved
+tile area. The object is placed at (8, 0) relative to the actor's
+position. It also uses OBP1 (the second object palette).
 
 ### `metasprite`
 The `metasprite` macro assigns the meta-sprite number to a constant for

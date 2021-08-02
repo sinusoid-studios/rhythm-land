@@ -10,6 +10,15 @@ hActorYPos:
 hActorXPos:
     DS 1
 
+SECTION "Per-Game Actor Tile Streaming Enable", HRAM
+
+; Whether or not the current game's actors use tile streaming
+; 0 to disable tile streaming (the game and its actors must handle tiles
+; themselves), non-zero to enable tile streaming (actors' tile numbers
+; adjusted automatically)
+hTileStreamingEnable::
+    DS 1
+
 SECTION "Actor Type Table", WRAM0
 
 ; Type of actor, ACTOR_EMPTY for empty
@@ -264,11 +273,28 @@ ActorsUpdate::
     ld      e, a
     ld      d, HIGH(wShadowOAM)
     
+    push    bc
+    ldh     a, [hTileStreamingEnable]
+    and     a, a
+    jr      z, .noTileStreaming
+    
+    ; Get first tile number of this actor's reserved tiles
+    ASSERT HIGH(MAX_NUM_ACTORS) == 0
+    ; Can just use c since b is always 0
+    ASSERT NUM_ACTOR_RESERVED_TILES == 16
+    swap    c       ; actor num * 16
+    ASSERT MAX_NUM_ACTORS & ~$0F == 0
+    ; No need to clear low nibble (already 0)
+    ; Carry cleared from swap
+    DB      $38     ; jr c, e8 to consume the next byte
+.noTileStreaming
+    ; a = 0
+    ld      c, a
 .metaspriteLoop
     ; Check for end-of-data special value
     ld      a, [hl]
     cp      a, METASPRITE_END
-    jp      z, .next
+    jr      z, .metaspriteEnd
     
     ; Y position
     ldh     a, [hActorYPos]
@@ -286,6 +312,7 @@ ActorsUpdate::
     
     ; Tile number
     ld      a, [hli]
+    add     a, c    ; c = reserved actor tiles start OR 0
     ld      [de], a
     inc     e
     
@@ -299,6 +326,12 @@ ActorsUpdate::
     inc     a
     ldh     [hNextOAMSlot], a
     jr      .metaspriteLoop
+
+.metaspriteEnd
+    ; Get back the actor index
+    pop     bc
+    ; Move to next actor
+    jp      .next
 
 SECTION "Actor Creation", ROM0
 

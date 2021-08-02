@@ -203,13 +203,15 @@ SetupRatingScreen::
     add     a, c    ; c = game offset
     add     a, LOW(RatingTextTable)
     ld      l, a
-    ASSERT HIGH(RatingTextTable.end - 1) == HIGH(RatingTextTable)
-    ld      h, HIGH(RatingTextTable)
+    ASSERT HIGH(RatingTextTable.end - 1) != HIGH(RatingTextTable)
+    adc     a, HIGH(RatingTextTable)
+    sub     a, l
+    ld      h, a
     
     ; Get pointer to text
-    ld      b, [hl] ; b = bank number
-    ASSERT HIGH(RatingTextTable.end - 1) == HIGH(RatingTextTable)
-    inc     l
+    ASSERT HIGH(RatingTextTable.end - 1) != HIGH(RatingTextTable)
+    ld      a, [hli]
+    ld      b, a    ; b = bank number
     ld      a, [hli]
     ld      h, [hl]
     ld      l, a
