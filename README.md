@@ -5,7 +5,7 @@ Made for [GB Compo 21](https://itch.io/jam/gbcompo21)
 
 ## Building
 Requirements:
-- [RGBDS][rgbds] v0.5.0 or later
+- [RGBDS][rgbds] v0.5.1 or later
 - [SuperFamiconv][superfamiconv] `f4b4254` or later
 - [Python 3][python3] and [Pillow][pillow]
 - [GNU Make][make]
