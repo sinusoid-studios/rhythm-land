@@ -7,7 +7,6 @@ GameTable::
     full_pointer GameSelectScreen
     full_pointer Museum
     full_pointer RatingScreen
-    full_pointer xGameTest
     full_pointer xGameSkaterDude
     full_pointer xGameSeagullSerenade
     full_pointer xGameBartender
@@ -20,7 +19,6 @@ GameSetupTable::
     full_pointer SetupGameSelectScreen
     full_pointer SetupMuseum
     full_pointer SetupRatingScreen
-    full_pointer xGameSetupTest
     full_pointer xGameSetupSkaterDude
     full_pointer xGameSetupSeagullSerenade
     full_pointer xGameSetupBartender
