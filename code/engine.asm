@@ -382,11 +382,10 @@ SetNextHit:
 .skip
     ; Get next hit delay
     ld      a, [hli]
-    ASSERT HITS_END == -1
-    inc     a       ; a = -1
+    ASSERT HITS_END == 0
+    and     a, a
     jr      z, .hitsEnd
     
-    dec     a       ; Undo inc
     ; Set hit timing
     ldh     [hNextHit.low], a
     ld      a, [hli]

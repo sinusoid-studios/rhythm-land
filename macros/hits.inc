@@ -7,7 +7,7 @@ ENDM
 
 ; An entry to a game's hit table, in frames
 MACRO fhit
-    DEF FRAMES = \1
+    DEF FRAMES = (\1) - 1
     IF FIRST_HIT == 1
         ; 1-frame delay between a PLAYINST command and an instrument update
         REDEF FRAMES = FRAMES + 1
