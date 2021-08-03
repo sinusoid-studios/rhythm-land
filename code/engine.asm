@@ -38,7 +38,7 @@ hLastHit::
     DS 1
 
 ; The type of rating the last hit the player made got
-; See constants/game.inc for possible values
+; See constants/engine.inc for possible values
 hLastHitRating::
     DS 1
 
@@ -115,18 +115,18 @@ EngineUpdate::
     ; Check if this game uses release hits
     ldh     a, [hGameHitKeys]
     bit     HITB_RELEASE, a
-    jr      z, .noHit
+    jp      z, .noHit
     
     ldh     a, [hReleasedKeys]
     and     a, a
-    jr      z, .noHit
+    jp      z, .noHit
 .hit
     ; Check if these keys are hit keys in this game
     ld      b, a
     ldh     a, [hGameHitKeys]
     and     a, b
     ; These keys do nothing in this game; ignore
-    jr      z, .noHit
+    jp      z, .noHit
     
     ; Player pressed keys: Give rating based on how on-time it was
     ld      hl, hLastHit.high
@@ -135,77 +135,118 @@ EngineUpdate::
     
     ; If the high byte of counter is non-zero, just count it as 2 Bads
     ld      b, %11  ; 2 bits set -> increment by 2
-    ld      a, [hli]
+    
+    ld      a, [hld]
     and     a, a
-    jr      z, .notReallyBad
-    ld      l, LOW(hNextHit.high)
-    ld      a, [hl]
-    ld      l, LOW(hHitBadCount)
+    ldh     a, [hNextHit.high]
+    jr      z, .lastNotReallyBad
+    ; Really far from the last hit, how's the next hit?
     ; High byte is always 1 higher than it really is (for using Z with `dec`)
     dec     a
+    ld      l, LOW(hHitBadCount)
     jr      nz, .countLoop
     
-.notReallyBad
-    ; The player is actually competent -> check how much so
-    ld      l, LOW(hLastHit.low)
-    ld      a, [hl]
-    ; Check if the next hit is closer (player is early)
+    ; Next hit is closer than the last (player is early)
+    ASSERT hNextHitKeys == hLastHitKeys - 1
+    dec     e
+    ; de = hNextHitKeys
+    ldh     a, [hNextHit.low]
+    ld      c, a
+    ; c = on-timeness
+    ldh     a, [hNextHitNumber]
+    ; a = hit number
+    jr      .gotCloserHit
+
+.useLast
+    ; de = hLastHitKeys
+    ldh     a, [hLastHit.low]
+    ld      c, a
+    ; c = on-timeness
+    ldh     a, [hNextHitNumber]
+    dec     a
+    ; a = hit number
+    jr      .gotCloserHit
+
+.lastNotReallyBad
+    ; The last hit is not really far, how's the next hit?
+    ; a = [hNextHit.high]
+    ; High byte is always 1 higher than it really is (for using Z with `dec`)
+    dec     a
+    jr      nz, .useLast
+    
+    ; Both hits are not really far -> compare low bytes
+    ld      a, [hl] ; hl = hLastHit.low
+    ; Check which hit (next or last) is closer
     ld      l, LOW(hNextHit.low)
     cp      a, [hl]
     ld      c, a    ; Save on-timeness
     ldh     a, [hNextHitNumber]
     dec     a       ; This hit is the previous hit (doesn't affect carry)
-    jr      c, .notEarly
+    ; The last hit is closer (player is late)
+    jr      c, .gotCloserHit
     
+    ; The next hit is closer (player is early)
     ld      c, [hl] ; Get on-timeness of next hit
     ASSERT hNextHitKeys == hLastHitKeys - 1
     dec     e       ; Use next hit keys instead of last hit keys
     inc     a       ; This hit is the next hit
     
-.notEarly
+.gotCloserHit
     ; Save hit number
     ld      l, a
     ldh     [hScratch1], a
     
     ; Check if the player pressed the hit keys
-    ld      a, [de]
+    ld      a, [de] ; de = hLastHitKeys or hNextHitKeys
     bit     HITB_RELEASE, a
+    res     HITB_RELEASE, a
+    ld      d, a    ; Save hit keys
+    ; Release hit bit was set -> use hReleasedKeys
     jr      nz, .release
+    ; Release hit bit not set -> use hNewKeys
     ldh     a, [hNewKeys]
     DB      $C2     ; jp nz, a16 to consume the next 2 bytes
 .release
     ldh     a, [hReleasedKeys]
-    
-    ld      b, a
-    ld      a, [de]
-    res     HITB_RELEASE, a
-    and     a, b
-    ; The player hit the wrong keys
+    ld      e, a    ; Save pressed keys
+    ; Get pressed hit keys
+    and     a, d    ; d = hit keys
+    ; a = pressed hit keys
+    ; If there are no pressed hit keys, all the keys the player pressed
+    ; were wrong -> skip normal rating stuff
     jr      z, .wrong
     
     ld      b, a    ; Save pressed hit keys for rating count
     
     ; Check if this hit was already rated (disallow making it again)
+    ; This comes after the block above so the values in D and E are
+    ; correct for the block at .wrong
     ldh     a, [hLastRatedHitNumber]
-    cp      a, l    ; l = this hit's number
+    cp      a, l    ; l = hit number
     ; Hit was made again, count it as Bad (negatively affect overall
     ; rating)
     ld      l, LOW(hHitBadCount)
     jr      z, .countLoop
     
+    ; The player has done everything right... but were they on-time?
     ld      a, c    ; Restore on-timeness
-    ; Bad
+    
+    ; Check for Bad
     cp      a, HIT_OK_WINDOW / 2
+    ; If on-timeness is outside the OK window, give Bad
+    ; hl = hHitBadCount
     jr      nc, .countLoop
     
-    ; OK
+    ; Check for OK
     cp      a, HIT_PERFECT_WINDOW / 2
+    ; If on-timeness is outside the Perfect window but inside the OK
+    ; window, give OK
     ldh     a, [hScratch1]  ; Restore hit number
     ASSERT hHitOkCount == hHitBadCount + 1
     inc     l       ; Doesn't affect carry
     jr      nc, .gotRating
     
-    ; Perfect
+    ; On-timeness is inside the Perfect window -> give Perfect
     ASSERT hHitPerfectCount == hHitOkCount + 1
     inc     l
 
@@ -213,20 +254,12 @@ EngineUpdate::
     ; Bad hits don't go here; give the player a chance to do better
     ldh     [hLastRatedHitNumber], a
 .countLoop
-    ; Increment number of this rating of hit for each pressed hit key
+    ; Increment count of this rating of hit for each pressed hit key
     inc     [hl]
 .next
     srl     b       ; b = pressed hit keys
     jr      z, .rated
     jr      nc, .next
-    jr      .countLoop
-
-.wrong
-    ; The player hit the wrong keys -> give them a Bad for every wrong
-    ; key
-    ldh     a, [hGameHitKeys]
-    and     a, b    ; b = [hNewKeys]
-    ld      l, LOW(hHitBadCount)
     jr      .countLoop
 
 .rated
@@ -237,7 +270,30 @@ EngineUpdate::
     ld      a, l
     sub     a, LOW(hHitRatingCounts)
     ldh     [hLastHitRating], a
-
+.wrong
+    ; Give the player a Bad for every wrong key they pressed
+    ld      a, d    ; d = hit keys
+    cpl
+    ld      b, a
+    ; b = non-hit keys
+    ldh     a, [hGameHitKeys]
+    and     a, b    ; b = non-hit keys
+    ; a = non-game hit keys
+    and     a, e    ; e = pressed keys
+    ; a = pressed non-game hit keys
+    
+    and     a, ~HITF_RELEASE    ; Can't use `res` because it doesn't change Z
+    ; No wrong keys
+    jr      z, .noHit
+    
+    ld      l, LOW(hHitBadCount)
+.wrongCountLoop
+    inc     [hl]
+.wrongNext
+    srl     a
+    jr      z, .noHit
+    jr      nc, .wrongNext
+    jr      .wrongCountLoop
 .noHit
     ; Update hit timing
     
@@ -248,10 +304,10 @@ EngineUpdate::
     ; Last hit moves farther away
     ld      hl, hLastHit
     inc     [hl]
-    jr      nz, :+
+    jr      nz, .noCarry
     inc     l
     inc     [hl]
-:
+.noCarry
     
     ldh     a, [hHitTableBank]
     and     a, a    ; Bank number 0 = no more hits (finished)

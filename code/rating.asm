@@ -140,8 +140,10 @@ SetupRatingScreen::
     add     a, b    ; rating type * 5 (+Bank)
     add     a, LOW(RatingTilesTable)
     ld      l, a
-    ASSERT HIGH(RatingTilesTable.end - 1) == HIGH(RatingTilesTable)
-    ld      h, HIGH(RatingTilesTable)
+    ASSERT HIGH(RatingTilesTable.end - 1) != HIGH(RatingTilesTable)
+    adc     a, HIGH(RatingTilesTable)
+    sub     a, l
+    ld      h, a
     
     ; Get pointer to tile data
     ld      a, [hli]
@@ -203,13 +205,10 @@ SetupRatingScreen::
     add     a, c    ; c = game offset
     add     a, LOW(RatingTextTable)
     ld      l, a
-    ASSERT HIGH(RatingTextTable.end - 1) != HIGH(RatingTextTable)
-    adc     a, HIGH(RatingTextTable)
-    sub     a, l
-    ld      h, a
+    ASSERT HIGH(RatingTextTable.end - 1) == HIGH(RatingTextTable)
+    ld      h, HIGH(RatingTextTable)
     
     ; Get pointer to text
-    ASSERT HIGH(RatingTextTable.end - 1) != HIGH(RatingTextTable)
     ld      a, [hli]
     ld      b, a    ; b = bank number
     ld      a, [hli]
