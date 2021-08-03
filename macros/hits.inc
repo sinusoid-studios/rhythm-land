@@ -14,10 +14,6 @@ MACRO fhit
     ENDC
     REDEF FIRST_HIT = 0
     
-    IF LOW(FRAMES) != 0
-        REDEF FRAMES = FRAMES + (1 << 8)
-    ENDC
-    
     ASSERT LOW(FRAMES) != LOW(HITS_END), STRFMT("%d is reserved for the end of the hit table", HITS_END)
     DW FRAMES
     DB \2

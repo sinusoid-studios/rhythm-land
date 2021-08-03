@@ -141,8 +141,7 @@ EngineUpdate::
     ldh     a, [hNextHit.high]
     jr      z, .lastNotReallyBad
     ; Really far from the last hit, how's the next hit?
-    ; High byte is always 1 higher than it really is (for using Z with `dec`)
-    dec     a
+    and     a, a
     ld      l, LOW(hHitBadCount)
     jr      nz, .countLoop
     
@@ -170,8 +169,7 @@ EngineUpdate::
 .lastNotReallyBad
     ; The last hit is not really far, how's the next hit?
     ; a = [hNextHit.high]
-    ; High byte is always 1 higher than it really is (for using Z with `dec`)
-    dec     a
+    and     a, a
     jr      nz, .useLast
     
     ; Both hits are not really far -> compare low bytes
@@ -315,10 +313,17 @@ EngineUpdate::
     
     ; Next hit comes closer
     ld      l, LOW(hNextHit)
+    ld      a, [hl] ; Save current value of low byte
     dec     [hl]
+    and     a, a    ; If previous value was 0, there is a borrow
+    ; Not zero, no borrow
     jr      nz, .updateCues
+    
+    ; Borrow from low byte
     inc     l
+    ld      a, [hl] ; Save current value of high byte
     dec     [hl]
+    and     a, a    ; Both bytes were 0 -> time to move on to the next hit
     call    z, SetNextHit
 
 .updateCues
