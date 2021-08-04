@@ -2,10 +2,10 @@
 
 ; Number of frames the window for a Perfect hit lasts (centred; half
 ; before and half after the hit)
-DEF HIT_PERFECT_WINDOW EQU 7 * 2
+DEF HIT_PERFECT_WINDOW EQU 3 * 2
 
 ; Number of frames the window for an OK hit lasts (centred)
-DEF HIT_OK_WINDOW EQU 12 * 2
+DEF HIT_OK_WINDOW EQU 10 * 2
 
 ; Number of frames after a hit to be considered a miss, for use in games
 ; to react when the player misses a hit
