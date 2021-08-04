@@ -48,6 +48,11 @@ xGameSetupSeagullSerenade::
     call    ActorsNew
     call    ActorsNew
     
+    ; Set up game data
+    ld      c, BANK(xHitTableSeagullSerenade)
+    ld      hl, xHitTableSeagullSerenade
+    call    EngineInit
+    
     ; Prepare music
     ld      c, BANK(Inst_SeagullSerenade)
     ld      de, Inst_SeagullSerenade
@@ -101,6 +106,17 @@ xGameSeagullSerenade::
     jr      xGameSeagullSerenade
 
 .noTransition
+    ; Left and Right perform the same action -> combine them into the
+    ; Left bit
+    ldh     a, [hNewKeys]
+    bit     PADB_RIGHT, a
+    jr      z, .noRight
+    res     PADB_RIGHT, a
+    set     PADB_LEFT, a
+    ldh     [hNewKeys], a
+.noRight
+    
+    call    EngineUpdate
     call    ActorsUpdate
     jr      xGameSeagullSerenade
 
@@ -155,8 +171,20 @@ xActorSeagullPlayer::
     ; Check for sync actions
     ld      a, [wMusicSyncData]
     cp      a, SYNC_SEAGULL_SERENADE_GROOVE
-    ret     nz
+    jr      nz, .noSync
     
     ; Stop bobbing and start to really get in the groove
     ld      a, CEL_SEAGULL_GROOVE
     jp      ActorsSetCel
+
+.noSync
+    ; Check if the player pressed a hit key
+    ldh     a, [hNewKeys]
+    and     a, PADF_UP | PADF_LEFT | PADF_DOWN
+    ret     z
+    
+    ; Squawk
+    ; TODO: Squawk the right squawk
+    ; For now always start the high squawk animation
+    ld      a, CEL_SEAGULL_HIGH
+    jp      ActorsSetAnimationOverride
