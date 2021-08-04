@@ -3,6 +3,7 @@ INCLUDE "constants/other-hardware.inc"
 INCLUDE "constants/rating.inc"
 INCLUDE "constants/games.inc"
 INCLUDE "constants/transition.inc"
+INCLUDE "constants/sfx.inc"
 INCLUDE "macros/misc.inc"
 
 SECTION UNION "Game Variables", HRAM
@@ -10,6 +11,11 @@ SECTION UNION "Game Variables", HRAM
 ; Temporary storage of the rating type for reference when drawing the
 ; rating graphic
 hRatingType:
+    DS 1
+
+; Toggles between 0 and 1 to play the text sound effect for every other
+; letter (every letter is too much and sounds like a garbled long tone)
+hLetterSFXFlipFlop:
     DS 1
 
 SECTION "Overall Rating Screen Setup", ROM0
@@ -50,6 +56,10 @@ SetupRatingScreen::
     ld      [wLastTextTile], a
     ld      a, HIGH(vRatingTextTiles) & $F0
     ld      [wTextTileBlock], a
+    
+    ; Reset "flip-flop"
+    xor     a, a
+    ldh     [hLetterSFXFlipFlop], a
     
     ; Next hit number after the last is the total number of hits in the
     ; current game
@@ -131,8 +141,10 @@ SetupRatingScreen::
     add     a, b    ; rating type * 5 (+Bank)
     add     a, LOW(RatingTilesTable)
     ld      l, a
-    ASSERT HIGH(RatingTilesTable.end - 1) == HIGH(RatingTilesTable)
-    ld      h, HIGH(RatingTilesTable)
+    ASSERT HIGH(RatingTilesTable.end - 1) != HIGH(RatingTilesTable)
+    adc     a, HIGH(RatingTilesTable)
+    sub     a, l
+    ld      h, a
     
     ; Get pointer to tile data
     ld      a, [hli]
@@ -160,6 +172,7 @@ SetupRatingScreen::
     ld      c, a
     add     a, a    ; game ID * NUM_RATING_TYPES + game ID * 2 (Pointer)
     add     a, c    ; game ID * NUM_RATING_TYPES + game ID * 3 (+Bank)
+    ; Ensure the highest value would fit in a single byte
     ASSERT HIGH((NUM_GAMES - 1) * 12) == 0
     ld      c, a
     
@@ -169,6 +182,8 @@ SetupRatingScreen::
     add     a, a    ; rating type * 2 (Pointer)
     add     a, b    ; rating type * 3 (+Bank)
     add     a, c    ; c = game offset
+    ; Ensure the highest value would fit in a single byte
+    ASSERT HIGH(NUM_RATING_TYPES * 3 + (NUM_GAMES - 1) * 12) == 0
     add     a, LOW(RatingTextTable)
     ld      l, a
     ASSERT HIGH(RatingTextTable.end - 1) == HIGH(RatingTextTable)
@@ -200,6 +215,22 @@ RatingScreen::
 .feedbackLoop
     rst     WaitVBlank
     
+    ; Play a text sound effect if a letter is about to be drawn this
+    ; frame
+    ld      a, [wTextNextLetterDelay]
+    dec     a
+    jr      nz, .noSFX
+    ; A letter is about to be drawn, but only play it for every other
+    ; letter
+    ldh     a, [hLetterSFXFlipFlop]
+    xor     a, 0 ^ 1    ; Toggle between 0 and 1
+    ldh     [hLetterSFXFlipFlop], a
+    jr      z, .noSFX
+    ; Every other letter, play the text sound effect
+    ld      b, SFX_TEXT
+    call    SFX_Play
+.noSFX
+    ; Update feedback text
     call    PrintVWFChar
     call    DrawVWFChars
     

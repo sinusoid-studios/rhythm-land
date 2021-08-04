@@ -8,6 +8,7 @@ SFX_Table::
     DW SFX3_CHNL0, 0, 0, SFX3_CHNL3
     DW SFX4_CHNL0, 0, 0, 0
     DW SFX5_CHNL0, 0, 0, 0
+    DW 0, SFX6_CHNL1, 0, 0
 
 SFX1_CHNL2:
     DB $07, $05, $20
@@ -87,3 +88,8 @@ SFX5_CHNL0:
     DB $1C, $04, $1F, $87
     DB $00, $08, $05, $00
     DB $01, $80, $02
+SFX6_CHNL1:
+    DB $07, $0A, $40
+    DB $05, $80, $04, $43
+    DB $87, $00, $01, $05
+    DB $00, $01, $80, $02
