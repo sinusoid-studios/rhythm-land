@@ -401,10 +401,12 @@ SetNextHit:
     ldh     [hHitTablePointer.low], a
     ld      a, h
     ldh     [hHitTablePointer.high], a
-.finished
     xor     a, a
-    ldh     [hLastHit.low], a
+.finished
     ldh     [hLastHit.high], a
+    inc     a
+    ldh     [hLastHit.low], a
+    ; frames since last hit = 1
     ret
 
 .hitsEnd
