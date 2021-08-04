@@ -5,37 +5,28 @@ INCLUDE "constants/games.inc"
 INCLUDE "constants/transition.inc"
 INCLUDE "macros/misc.inc"
 
+SECTION UNION "Game Variables", HRAM
+
+; Temporary storage of the rating type for reference when drawing the
+; rating graphic
+hRatingType:
+    DS 1
+
 SECTION "Overall Rating Screen Setup", ROM0
 
 SetupRatingScreen::
-    ; Make the screen black for now
-    ld      a, %11_11_11_11
-    ldh     [hBGP], a
-    ldh     [rBGP], a
-    
     ; Reset scroll
     xor     a, a
     ldh     [hSCX], a
     ldh     [hSCY], a
     
-    ; Cover the rating graphic temporarily with the window
-    ld      a, 0 + 7
-    ldh     [rWX], a
-    ld      a, RATING_GRAPHIC_Y * 8
-    ldh     [rWY], a
-    
     ; Set appropriate LCDC flags
-    ld      a, LCDCF_ON | LCDCF_BG8800 | LCDCF_BG9800 | LCDCF_BGON | LCDCF_WIN9C00 | LCDCF_WINON
+    ld      a, LCDCF_ON | LCDCF_BG8800 | LCDCF_BG9800 | LCDCF_BGON
     ldh     [hLCDC], a
     
     ; Clear the background map
     ld      hl, _SCRN0
     lb      bc, 0, SCRN_Y_B
-    call    LCDMemsetMap
-    ; Clear the visible part of the window map
-    ld      hl, _SCRN1
-    ; b = 0
-    ld      c, SCRN_Y_B - RATING_GRAPHIC_Y
     call    LCDMemsetMap
     
     ; Set up text engine for rating text
@@ -128,9 +119,9 @@ SetupRatingScreen::
 
 ; @param    b   Rating type ID
 .gotRating
-    ; Save rating type ID: it gets overwritten for memcopies
+    ; Save rating type ID for drawing the graphic later on
     ld      a, b
-    ldh     [hScratch1], a
+    ldh     [hRatingType], a
     
     ; Load appropriate background tiles
     ; Find pointer to tile data
@@ -140,10 +131,8 @@ SetupRatingScreen::
     add     a, b    ; rating type * 5 (+Bank)
     add     a, LOW(RatingTilesTable)
     ld      l, a
-    ASSERT HIGH(RatingTilesTable.end - 1) != HIGH(RatingTilesTable)
-    adc     a, HIGH(RatingTilesTable)
-    sub     a, l
-    ld      h, a
+    ASSERT HIGH(RatingTilesTable.end - 1) == HIGH(RatingTilesTable)
+    ld      h, HIGH(RatingTilesTable)
     
     ; Get pointer to tile data
     ld      a, [hli]
@@ -161,29 +150,6 @@ SetupRatingScreen::
     ld      hl, $9000
     rst     LCDMemcopy
     
-    ; Load appropriate background map
-    ; Find pointer to map data
-    ldh     a, [hScratch1]
-    ld      b, a
-    add     a, a    ; rating type * 2 (Pointer)
-    add     a, b    ; rating type * 3 (+Bank)
-    add     a, LOW(RatingMapTable)
-    ld      l, a
-    ASSERT HIGH(RatingMapTable.end - 1) == HIGH(RatingMapTable)
-    ld      h, HIGH(RatingMapTable)
-    
-    ; Get pointer to map data
-    ld      a, [hli]
-    ldh     [hCurrentBank], a
-    ld      [rROMB0], a
-    ld      a, [hli]
-    ld      e, a
-    ld      d, [hl]
-    ; Copy to VRAM
-    ld      hl, vRatingGraphic
-    ld      c, RATING_GRAPHIC_HEIGHT
-    call    LCDMemcopyMap
-    
     ; Set up feedback text for this rating
     ; Find current game's part of the rating text table
     ldh     a, [hCurrentGame]
@@ -198,7 +164,7 @@ SetupRatingScreen::
     ld      c, a
     
     ; Find pointer to text for this type of rating
-    ldh     a, [hScratch1]
+    ldh     a, [hRatingType]
     ld      b, a
     add     a, a    ; rating type * 2 (Pointer)
     add     a, b    ; rating type * 3 (+Bank)
@@ -243,9 +209,30 @@ RatingScreen::
     inc     a   ; ($FF + 1) & $FF == 0
     jr      nz, .feedbackLoop
 
-    ; Text is finished -> uncover rating graphic
-    ld      hl, hLCDC
-    res     LCDCB_WIN, [hl]
+    ; Text is finished -> show rating graphic
+    
+    ; Load appropriate background map
+    ; Find pointer to map data
+    ldh     a, [hRatingType]
+    ld      b, a
+    add     a, a    ; rating type * 2 (Pointer)
+    add     a, b    ; rating type * 3 (+Bank)
+    add     a, LOW(RatingMapTable)
+    ld      l, a
+    ASSERT HIGH(RatingMapTable.end - 1) == HIGH(RatingMapTable)
+    ld      h, HIGH(RatingMapTable)
+    
+    ; Get pointer to map data
+    ld      a, [hli]
+    ldh     [hCurrentBank], a
+    ld      [rROMB0], a
+    ld      a, [hli]
+    ld      e, a
+    ld      d, [hl]
+    ; Copy to VRAM
+    ld      hl, vRatingGraphic
+    ld      c, RATING_GRAPHIC_HEIGHT
+    call    LCDMemcopyMap
     
     ; Wait for player input
 .wait
