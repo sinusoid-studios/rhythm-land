@@ -7,6 +7,8 @@ INCLUDE "macros/misc.inc"
 SECTION "Initialization", ROM0
 
 Initialize::
+    ; Interrupts disabled from entry point
+    
     ; Wait for VBlank and disable the LCD
     ldh     a, [rLY]
     cp      a, SCRN_Y
@@ -106,6 +108,43 @@ Initialize::
     ld      c, $10 * 2
     ld      hl, wTextTileBuffer
     rst     MemsetSmall
+    
+    ; Detect bad emulators
+    ; Although this doesn't actually test specific things that are
+    ; required to run the game, it's important to 1) prevent bad
+    ; emulators from ruining the game in other places and 2) get more
+    ; people to switch to more accurate emulators anyway.
+    
+    ; Test 1: Non-existent flag bits
+    ; The low 4 bits of F in AF should always be 0
+    ld      hl, $9C47   ; This value has no significance
+    push    hl
+    pop     af      ; AF should now be $9C40
+    ; Move AF into a register pair (DE here)
+    push    af
+    pop     de
+    ; H and D matching isn't the focus of this, but if they don't match,
+    ; that's a big problem
+    ld      a, h    ; h = $9C
+    cp      a, d    ; D should also be $9C
+    jp      nz, BadEmulator
+    ; Check if the low 4 bits of F in AF are all 0
+    ld      a, l    ; l = $47
+    and     a, $F0  ; a = $40
+    cp      a, e    ; E should be $40
+    jp      nz, BadEmulator
+    
+    ; Test 2: Unused hardware register bits
+    ; SC bits 6-2 are unused and should always read back 1
+    xor     a, a
+    ldh     [rSC], a
+    ldh     a, [rSC]
+    and     a, %01111100
+    cp      a, %01111100
+    jp      nz, BadEmulator
+    
+    ; If the program runs to here, the game will hopefully play
+    ; accurately
     
     ; Starting with the title screen -> set it up
     call    SetupTitleScreen
