@@ -2,7 +2,14 @@ INCLUDE "constants/hardware.inc"
 INCLUDE "constants/actors.inc"
 INCLUDE "constants/engine.inc"
 INCLUDE "constants/transition.inc"
+INCLUDE "constants/games.inc"
+INCLUDE "constants/SoundSystem.inc"
 INCLUDE "constants/games/seagull-serenade.inc"
+
+SECTION UNION "Game Variables", HRAM
+
+hEndDelay:
+    DS 1
 
 SECTION "Seagull Serenade Game Setup", ROMX
 
@@ -47,6 +54,10 @@ xGameSetupSeagullSerenade::
     call    ActorNew
     call    ActorNew
     call    ActorNew
+    
+    ; Delay after the music ends
+    ld      a, SEAGULL_SERENADE_END_DELAY
+    ldh     [hEndDelay], a
     
     ; Set up game data
     ld      c, BANK(xHitTableSeagullSerenade)
@@ -118,6 +129,18 @@ xGameSeagullSerenade::
     
     call    EngineUpdate
     call    ActorsUpdate
+    ld      a, [wMusicPlayState]
+    ASSERT MUSIC_STATE_STOPPED == 0
+    and     a, a
+    jr      nz, xGameSeagullSerenade
+    ldh     a, [hEndDelay]
+    dec     a
+    ldh     [hEndDelay], a
+    jr      nz, xGameSeagullSerenade
+    
+    ; Game is over -> go to the overall rating screen
+    ld      a, ID_RATING_SCREEN
+    call    TransitionStart
     jr      xGameSeagullSerenade
 
 SECTION "Seagull Serenade Seagull Actor", ROMX
