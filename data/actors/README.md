@@ -207,7 +207,7 @@ table](#tile-tables) in the same section.
 actor that has a meta-sprite that needs more, the
 `NUM_ACTOR_RESERVED_TILES` constant in
 [constants/actors.inc](/constants/actors.inc) needs to be changed, and
-the reserved tile pointer calculation in `ActorsSetTiles` and per-actor
+the reserved tile pointer calculation in `ActorSetTiles` and per-actor
 tile number adjustment in `ActorsUpdate` in
 [code/actors.asm](/code/actors.asm) updated to reflect the new value.
 

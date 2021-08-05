@@ -44,9 +44,9 @@ xGameSetupSeagullSerenade::
     ; Create seagull actors
     ld      de, xActorSeagullDefinitions
     ASSERT NUM_SEAGULLS == 3
-    call    ActorsNew
-    call    ActorsNew
-    call    ActorsNew
+    call    ActorNew
+    call    ActorNew
+    call    ActorNew
     
     ; Set up game data
     ld      c, BANK(xHitTableSeagullSerenade)
@@ -152,18 +152,18 @@ xActorSeagull::
     jr      z, .mid
     ; High
     ld      a, CEL_SEAGULL_HIGH
-    jp      ActorsSetAnimationOverride
+    jp      ActorSetAnimationOverride
 .low
     ld      a, CEL_SEAGULL_LOW
-    jp      ActorsSetAnimationOverride
+    jp      ActorSetAnimationOverride
 .mid
     ld      a, CEL_SEAGULL_MID
-    jp      ActorsSetAnimationOverride
+    jp      ActorSetAnimationOverride
 
 .groove
     ; Stop bobbing and start to really get in the groove
     ld      a, CEL_SEAGULL_GROOVE
-    jp      ActorsSetCel
+    jp      ActorSetCel
 
 SECTION "Seagull Serenade Seagull Player Actor", ROMX
 
@@ -175,7 +175,7 @@ xActorSeagullPlayer::
     
     ; Stop bobbing and start to really get in the groove
     ld      a, CEL_SEAGULL_GROOVE
-    jp      ActorsSetCel
+    jp      ActorSetCel
 
 .noSync
     ; Check if the player pressed a hit key
@@ -187,4 +187,4 @@ xActorSeagullPlayer::
     ; TODO: Squawk the right squawk
     ; For now always start the high squawk animation
     ld      a, CEL_SEAGULL_HIGH
-    jp      ActorsSetAnimationOverride
+    jp      ActorSetAnimationOverride

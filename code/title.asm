@@ -72,7 +72,7 @@ SetupTitleScreen::
     ld      a, NUM_STARS
     ldh     [hScratch1], a
 .starLoop
-    call    ActorsNew
+    call    ActorNew
     ldh     a, [hScratch1]
     dec     a
     ldh     [hScratch1], a

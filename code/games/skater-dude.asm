@@ -95,7 +95,7 @@ xGameSetupSkaterDude::
     ; Create the Skater Dude actor
     ASSERT BANK(xActorSkaterDudeDefinition) == BANK(@)
     ld      de, xActorSkaterDudeDefinition
-    call    ActorsNew
+    call    ActorNew
     ld      a, -1
     ldh     [hSkaterDudePosIndex], a
     
@@ -191,7 +191,7 @@ xCueDangerAlert::
     ; Create a Danger Alert actor
     ASSERT BANK(xActorDangerAlertDefinition) == BANK(@)
     ld      de, xActorDangerAlertDefinition
-    jp      ActorsNew
+    jp      ActorNew
 
 xActorDangerAlertDefinition:
     DB ACTOR_DANGER_ALERT
@@ -222,7 +222,7 @@ xCueObstacle::
     ld      e, a
     ASSERT HIGH(xObstacleDefinitions.end - 1) == HIGH(xObstacleDefinitions)
     ld      d, HIGH(xObstacleDefinitions)
-    jp      ActorsNew
+    jp      ActorNew
 
 xObstacleDefinitions:
     ; Car
@@ -386,7 +386,7 @@ xActorSkaterDude::
     ld      c, e
 .noSFX
     ld      a, CEL_SKATER_DUDE_JUMPING
-    jp      ActorsSetAnimationOverride
+    jp      ActorSetAnimationOverride
 
 .noJump
     ; If the player missed this hit (is late enough), they get hit by
@@ -436,7 +436,7 @@ xActorSkaterDude::
     
     ; Start the falling animation
     ld      a, CEL_SKATER_DUDE_FALLING
-    jp      ActorsSetAnimationOverride
+    jp      ActorSetAnimationOverride
 
 .skatingOnscreen
     ; Check if Skater Dude has reached his normal position
@@ -516,7 +516,7 @@ xActorObstacle::
     
     ; Use slower animation
     ld      a, CEL_OBSTACLE_SLO_MO
-    call    ActorsSetAnimationOverride
+    call    ActorSetAnimationOverride
     jr      .noChange
 .noSloMo
     ; No longer in slo-mo -> move at the regular speed
@@ -544,4 +544,4 @@ xActorObstacle::
     ret     c
     
     ; Kill this obstacle
-    jp      ActorsKill
+    jp      ActorKill

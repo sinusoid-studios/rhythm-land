@@ -163,7 +163,7 @@ ActorsUpdate::
 .updatePosition
     ; Update the actor's position
     ; X position
-    call    ActorsAddSpeedToPos
+    call    ActorAddSpeedToPos
     ; Y position
     ASSERT wActorYSpeedTable == wActorXSpeedTable + MAX_NUM_ACTORS
     ASSERT wActorYSpeedAccTable == wActorXSpeedAccTable + MAX_NUM_ACTORS
@@ -175,7 +175,7 @@ ActorsUpdate::
     ld      a, c
     add     a, MAX_NUM_ACTORS
     ld      c, a
-    call    ActorsAddSpeedToPos
+    call    ActorAddSpeedToPos
     pop     bc
     
 .skipPositionUpdate
@@ -224,7 +224,7 @@ ActorsUpdate::
     jr      nz, .override
     
     ; No animation override -> get regular animation cel
-    call    ActorsGetAnimationCel
+    call    ActorGetAnimationCel
     jr      .render
 .override
     ; Animation override -> get animation override cel
@@ -235,7 +235,7 @@ ActorsUpdate::
     ld      a, c
     add     a, MAX_NUM_ACTORS
     ld      c, a
-    call    ActorsGetAnimationCel
+    call    ActorGetAnimationCel
     pop     bc
 .render
     ld      a, [hl]     ; a = meta-sprite number
@@ -338,7 +338,7 @@ SECTION "Actor Creation", ROM0
 ; Create a new actor
 ; @param    de  Pointer to actor definition
 ; @return   bc  Actor index
-ActorsNew::
+ActorNew::
     ld      hl, wActorTypeTable
     ld      bc, 0   ; bc = actor index
 .loop
@@ -397,7 +397,7 @@ ActorsNew::
     ; First copy tiles
     push    hl
     push    de
-    call    ActorsSetTiles
+    call    ActorSetTiles
     ; Update cel number to skip the command (4 bytes)
     ld      hl, wActorCelTable
     add     hl, bc
@@ -459,7 +459,7 @@ SECTION "Actor Add Speed to Position", ROM0
 
 ; Add an actor's speed to its position on a single axis
 ; @param    bc  Actor index
-ActorsAddSpeedToPos:
+ActorAddSpeedToPos:
     ; Get actor speed value
     ld      hl, wActorXSpeedTable
     add     hl, bc
@@ -522,7 +522,7 @@ ActorsUpdateAnimation:
     inc     [hl]
     
 .advanceAnimation
-    call    ActorsGetAnimationCel
+    call    ActorGetAnimationCel
     ; Check if this is a command (bit 7 set)
     bit     7, [hl]
     jr      nz, .command
@@ -545,7 +545,7 @@ ActorsUpdateAnimation:
     ; Kill this actor
     ; WARNING: This will break if the kill actor command is encountered
     ; in an animation override, since bc isn't actually correct!
-    jp      z, ActorsKill
+    jp      z, ActorKill
     ASSERT ANIMATION_OVERRIDE_END & ~$80 == 2
     dec     a
     jr      z, .overrideEnd
@@ -553,7 +553,7 @@ ActorsUpdateAnimation:
     ASSERT NUM_ANIMATION_SPECIAL_VALUES == 4
     
     ; Stream a set of tiles to VRAM
-    call    ActorsSetTiles
+    call    ActorSetTiles
     ; Update cel number to skip the command (4 bytes)
     ld      hl, wActorCelTable
     add     hl, bc
@@ -595,7 +595,7 @@ ActorsUpdateAnimation:
     ld      a, c
     sub     a, MAX_NUM_ACTORS
     ld      c, a
-    jp      ActorsSetTiles
+    jp      ActorSetTiles
 
 .goto
     ; Goto: Jump to another position in the animation
@@ -616,7 +616,7 @@ ActorsUpdateAnimation:
 SECTION "Actor Kill", ROM0
 
 ; @param    bc  Actor index
-ActorsKill::
+ActorKill::
     ld      hl, wActorTypeTable
     add     hl, bc
     ld      [hl], ACTOR_EMPTY
@@ -629,7 +629,7 @@ SECTION "Actor Tile Streaming", ROM0
 ; Copy tiles to an actor's reserved tiles in VRAM
 ; @param    hl  Pointer to 2nd byte of set tiles command
 ; @param    bc  Actor index
-ActorsSetTiles:
+ActorSetTiles:
     push    bc
     ; Check if the actor index is wrong (for override animations)
     ld      a, c
@@ -696,7 +696,7 @@ SECTION "Actor Get Animation Table", ROM0
 ; @param    [hScratch1] Actor type * 3
 ; @return   hl          Pointer to current animation cel data
 ; @return   de          Pointer to animation table
-ActorsGetAnimationCel:
+ActorGetAnimationCel:
     ; Find animation table
     ldh     a, [hScratch1]  ; a = actor type * 3
     add     a, LOW(ActorAnimationTable)
@@ -735,7 +735,7 @@ SECTION "Actor Set Animation Cel", ROM0
 ; @param    [hScratch1] Actor type * 3
 ; @return   hl          Pointer to current animation cel data
 ; @return   de          Pointer to animation table
-ActorsSetCel::
+ActorSetCel::
     ; Set new cel number
     ld      hl, wActorCelTable
     add     hl, bc
@@ -778,7 +778,7 @@ ActorsSetCel::
     
     ; First copy tiles
     push    hl
-    call    ActorsSetTiles
+    call    ActorSetTiles
     ; Update cel number to skip the command (4 bytes)
     ld      hl, wActorCelTable
     add     hl, bc
@@ -815,7 +815,7 @@ SECTION "Actor Set Animation Override Cel", ROM0
 ; @param    [hScratch1] Actor type * 3
 ; @return   hl          Pointer to current animation cel data
 ; @return   de          Pointer to animation table
-ActorsSetAnimationOverride::
+ActorSetAnimationOverride::
     ASSERT wActorCelOverrideTable == wActorCelTable + MAX_NUM_ACTORS
     ASSERT wActorCelOverrideCountdownTable == wActorCelCountdownTable + MAX_NUM_ACTORS
     push    bc
@@ -826,6 +826,6 @@ ActorsSetAnimationOverride::
     ld      c, a
     ld      a, b    ; Restore cel number
     ld      b, 0
-    call    ActorsSetCel
+    call    ActorSetCel
     pop     bc
     ret
