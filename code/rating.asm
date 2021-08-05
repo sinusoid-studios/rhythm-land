@@ -216,7 +216,7 @@ RatingScreen::
     ; Play a text sound effect if a letter is about to be drawn this
     ; frame
     ld      a, [wTextNextLetterDelay]
-    dec     a
+    and     a, a
     jr      nz, .noSFX
     ; A letter is about to be drawn, but only play it for every other
     ; letter
@@ -238,8 +238,14 @@ RatingScreen::
     inc     a   ; ($FF + 1) & $FF == 0
     jr      nz, .feedbackLoop
 
-    ; Text is finished -> show rating graphic
+    ; Text is finished -> delay a bit before drawing the rating graphic
+    ld      c, RATING_GRAPHIC_DELAY
+.delayLoop
+    rst     WaitVBlank
+    dec     c
+    jr      nz, .delayLoop
     
+    ; Draw the rating graphic
     ; Load appropriate background map
     ; Find pointer to map data
     ldh     a, [hRatingType]

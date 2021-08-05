@@ -10,6 +10,5 @@ ENDM
 ; rating graphic. Also includes the text terminator value.
 MACRO feedback_last
     DB \#
-    DB TEXT_DELAY, 80
     DB TEXT_END
 ENDM
