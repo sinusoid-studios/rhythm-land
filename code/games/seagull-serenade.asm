@@ -180,11 +180,17 @@ xActorSeagullPlayer::
 .noSync
     ; Check if the player pressed a hit key
     ldh     a, [hNewKeys]
-    and     a, PADF_UP | PADF_LEFT | PADF_DOWN
-    ret     z
-    
-    ; Squawk
-    ; TODO: Squawk the right squawk
-    ; For now always start the high squawk animation
+    ld      d, a
+    ; Up -> high squawk
+    bit     PADB_UP, d
     ld      a, CEL_SEAGULL_HIGH
-    jp      ActorSetAnimationOverride
+    jp      nz, ActorSetAnimationOverride
+    ; Left/Right -> mid squawk
+    bit     PADB_LEFT, d
+    ld      a, CEL_SEAGULL_MID
+    jp      nz, ActorSetAnimationOverride
+    ; Down -> low squawk
+    bit     PADB_DOWN, d
+    ld      a, CEL_SEAGULL_LOW
+    jp      nz, ActorSetAnimationOverride
+    ret
