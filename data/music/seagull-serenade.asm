@@ -148,9 +148,9 @@ INSTSeagullSerenade5_CHNL2:
     DB $9B, $BB, $97, $55
     DB $55, $57, $9D, $DF
     DB $01, $80, $00, $01
-    DB $01, $80, $00, $0D
-    DB $05, $40, $00, $1A
-    DB $05, $60, $00, $0D
+    DB $01, $80, $00, $0E
+    DB $05, $40, $00, $09
+    DB $05, $60, $00, $03
     DB $02
 INSTSeagullSerenade6_CHNL0:
     DB $07, $0B, $08
