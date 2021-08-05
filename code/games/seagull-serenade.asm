@@ -180,17 +180,21 @@ xActorSeagullPlayer::
 .noSync
     ; Check if the player pressed a hit key
     ldh     a, [hNewKeys]
-    ld      d, a
     ; Up -> high squawk
-    bit     PADB_UP, d
-    ld      a, CEL_SEAGULL_HIGH
-    jp      nz, ActorSetAnimationOverride
+    bit     PADB_UP, a
+    jr      nz, .high
     ; Left/Right -> mid squawk
-    bit     PADB_LEFT, d
-    ld      a, CEL_SEAGULL_MID
-    jp      nz, ActorSetAnimationOverride
+    bit     PADB_LEFT, a
+    jr      nz, .mid
     ; Down -> low squawk
-    bit     PADB_DOWN, d
+    bit     PADB_DOWN, a
+    ret     z
+    
     ld      a, CEL_SEAGULL_LOW
-    jp      nz, ActorSetAnimationOverride
-    ret
+    jp      ActorSetAnimationOverride
+.high
+    ld      a, CEL_SEAGULL_HIGH
+    jp      ActorSetAnimationOverride
+.mid
+    ld      a, CEL_SEAGULL_MID
+    jp      ActorSetAnimationOverride
