@@ -166,7 +166,7 @@ mainloop:
 	call	DisplaySync
 	call	DisplaySongID
 	call	DisplaySFXID
-	; call	DisplayVUMeters
+	call	DisplayVUMeters
 
 	; clear the vbl end flag
 	xor	a
@@ -327,7 +327,6 @@ DisplaySFXID:
 	ret
 
 ;--------------------------------------------------------------
-/*
 DisplayVUMeters:
 	; channel 1
 	; $99EC/$9A0C
@@ -420,7 +419,6 @@ DisplayVUMeters:
 	ld	a,8
 	ld	[$9A12],a
 	ret
-*/
 
 ;--------------------------------------------------------------
 ; wait for the vblank int to set the flag

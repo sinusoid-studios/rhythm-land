@@ -96,7 +96,7 @@ SOUNDSYSTEM_GBC_COMPATIBLE	EQU	1
 ; - CPU and code size is slightly less when this is disabled.
 
 ;-------------------------------
-;SOUNDSYSTEM_ENABLE_VUM	EQU	1
+SOUNDSYSTEM_ENABLE_VUM	EQU	1
 
 ; SoundSystem can provide data that can drive a VU-meter type display. This is
 ; disabled by default, but access to that data is provided by setting

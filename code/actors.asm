@@ -375,10 +375,8 @@ ActorNew::
     add     a, l    ; a * 3 (+Bank)
     add     a, LOW(ActorAnimationTable)
     ld      l, a
-    ASSERT HIGH(ActorAnimationTable.end - 1) != HIGH(ActorAnimationTable)
-    adc     a, HIGH(ActorAnimationTable)
-    sub     a, l
-    ld      h, a
+    ASSERT HIGH(ActorAnimationTable.end - 1) == HIGH(ActorAnimationTable)
+    ld      h, HIGH(ActorAnimationTable)
     
     ; Save current bank to restore when finished
     ldh     a, [hCurrentBank]
@@ -703,10 +701,8 @@ ActorGetAnimationCel:
     ldh     a, [hScratch1]  ; a = actor type * 3
     add     a, LOW(ActorAnimationTable)
     ld      l, a
-    ASSERT HIGH(ActorAnimationTable.end - 1) != HIGH(ActorAnimationTable)
-    adc     a, HIGH(ActorAnimationTable)
-    sub     a, l
-    ld      h, a
+    ASSERT HIGH(ActorAnimationTable.end - 1) == HIGH(ActorAnimationTable)
+    ld      h, HIGH(ActorAnimationTable)
     
     ; Point hl to actor's type's animation table
     ld      a, [hli]
@@ -755,7 +751,7 @@ ActorSetCel::
     ldh     a, [hScratch1]  ; a = actor type * 3
     add     a, LOW(ActorAnimationTable)
     ld      l, a
-    ASSERT HIGH(ActorAnimationTable.end - 1) != HIGH(ActorAnimationTable)
+    ; ASSERT HIGH(ActorAnimationTable.end - 1) != HIGH(ActorAnimationTable)
     adc     a, HIGH(ActorAnimationTable)
     sub     a, l
     ld      h, a
