@@ -2,6 +2,7 @@ INCLUDE "constants/hardware.inc"
 INCLUDE "constants/other-hardware.inc"
 INCLUDE "constants/actors.inc"
 INCLUDE "constants/transition.inc"
+INCLUDE "macros/misc.inc"
 
 SECTION "Screen Transition Variables", HRAM
 
@@ -49,6 +50,19 @@ TransitionStart::
     ; Set initial music fade delay
     ld      a, TRANSITION_MUSIC_FADE_SPEED
     ldh     [hMusicFadeCountdown], a
+    
+    ; Fill the window black
+    ; TODO: Find something better
+    
+    ; Black tile
+    ld      hl, $8FF0
+    lb      bc, $FF, 16
+    call    LCDMemsetSmall
+    ; Fill window tilemap
+    ld      hl, _SCRN1
+    ; b = $FF
+    ld      c, SCRN_Y_B
+    call    LCDMemsetMap
     
     ; Enable the window
     ldh     a, [hLCDC]

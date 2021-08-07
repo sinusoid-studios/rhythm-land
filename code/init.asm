@@ -2,7 +2,6 @@ INCLUDE "constants/hardware.inc"
 INCLUDE "constants/actors.inc"
 INCLUDE "constants/games.inc"
 INCLUDE "constants/transition.inc"
-INCLUDE "macros/misc.inc"
 
 SECTION "Initialization", ROM0
 
@@ -62,25 +61,6 @@ Initialize::
     ld      hl, hOAMDMA
     ld      c, OAMDMA.end - OAMDMA
     call    MemcopySmall
-    
-    ; Fill the window black
-    ; TODO: Find something better
-    
-    ; Black tile
-    ld      hl, $8FF0
-    ld      a, $FF
-    ld      c, 16
-    rst     MemsetSmall
-    ; Fill window tilemap
-    ld      hl, _SCRN1
-    ; a = $FF
-    lb      bc, HIGH(SCRN_VX_B * SCRN_Y_B) + 1, LOW(SCRN_VX_B * SCRN_Y_B)
-.loop
-    ld      [hli], a
-    dec     c
-    jr      nz, .loop
-    dec     b
-    jr      nz, .loop
     
     ; Initialize SoundSystem
     call    SoundSystem_Init
