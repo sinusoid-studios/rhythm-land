@@ -6,39 +6,6 @@ INCLUDE	"constants/SoundSystemNotes.inc"
 INCLUDE	"data.asm"
 
 ;==============================================================
-; Joypad defintions
-;==============================================================
-RSRESET
-BTN_NOTPRESSED	RB	1	; button was either released or not pressed
-BTN_PRESSED	RB	1	; button was pressed and held down
-BTN_TRIGGERED	RB	1	; initial press of a button
-
-RSRESET
-BTNB_A		RB	1
-BTNB_B		RB	1
-BTNB_SELECT	RB	1
-BTNB_START	RB	1
-BTNB_RIGHT	RB	1
-BTNB_LEFT	RB	1
-BTNB_UP		RB	1
-BTNB_DOWN	RB	1
-NUM_BUTTONS	RB	0
-
-BTNF_A		EQU	1 << BTNB_A
-BTNF_B		EQU	1 << BTNB_B
-BTNF_SELECT	EQU	1 << BTNB_SELECT
-BTNF_START	EQU	1 << BTNB_START
-BTNF_RIGHT	EQU	1 << BTNB_RIGHT
-BTNF_LEFT	EQU	1 << BTNB_LEFT
-BTNF_UP		EQU	1 << BTNB_UP
-BTNF_DOWN	EQU	1 << BTNB_DOWN
-
-BTNF_NONE	EQU	0
-
-REBOOT_BTNS	EQU	BTNF_A|BTNF_B|BTNF_SELECT|BTNF_START
-
-
-;==============================================================
 ; RST handlers
 ;==============================================================
 RST_38	EQU	$38
@@ -107,33 +74,35 @@ mainloop:
 	; button processing
 	call	ReadJoypad
 	; check to see if A was pressed
-	ld	a,[wButtonData + BTNB_A]
-	cp	BTN_TRIGGERED
-	call	z,BtnAPressed
+	ldh	a,[hNewKeys]
+	ASSERT PADB_A == 0
+	rra		; move bit 0 (PADB_A) to carry
+	call	c,BtnAPressed
 	; check to see if B was pressed
-	ld	a,[wButtonData + BTNB_B]
-	cp	BTN_TRIGGERED
-	call	z,BtnBPressed
+	ldh	a,[hNewKeys]
+	bit	PADB_B,a
+	call	nz,BtnBPressed
 	; check to see if Select was pressed
-	ld	a,[wButtonData + BTNB_SELECT]
-	cp	BTN_TRIGGERED
-	call	z,BtnSelectPressed
+	ldh	a,[hNewKeys]
+	bit	PADB_SELECT,a
+	call	nz,BtnSelectPressed
 	; check to see if right was pressed
-	ld	a,[wButtonData + BTNB_RIGHT]
-	cp	BTN_TRIGGERED
-	call	z,BtnRightPressed
+	ldh	a,[hNewKeys]
+	bit	PADB_RIGHT,a
+	call	nz,BtnRightPressed
 	; check to see if left was pressed
-	ld	a,[wButtonData + BTNB_LEFT]
-	cp	BTN_TRIGGERED
-	call	z,BtnLeftPressed
+	ldh	a,[hNewKeys]
+	bit	PADB_LEFT,a
+	call	nz,BtnLeftPressed
 	; check to see if up was pressed
-	ld	a,[wButtonData + BTNB_UP]
-	cp	BTN_TRIGGERED
-	call	z,BtnUpPressed
+	ldh	a,[hNewKeys]
+	bit	PADB_UP,a
+	call	nz,BtnUpPressed
 	; check to see if down was pressed
-	ld	a,[wButtonData + BTNB_DOWN]
-	cp	BTN_TRIGGERED
-	call	z,BtnDownPressed
+	ldh	a,[hNewKeys]
+	ASSERT PADB_DOWN == 7
+	add	a	; move bit 7 (PADB_DOWN) to carry
+	call	c,BtnDownPressed
 
 	;--------------------------------------
 	; audio processing
@@ -462,58 +431,43 @@ PrintString:
 
 ;--------------------------------------------------------------
 ReadJoypad:
-	ld	c,LOW(rP1)
+	; read D-Pad
 	ld	a,P1F_GET_DPAD
-	ldh	[c],a
-	REPT 2
-	ldh	a,[c]
-	ENDR
-	cpl
-	and	$0F
-	swap	a
+	call	.readNibble
+	swap	a	; move directions to high nibble
 	ld	b,a
 
+	; read buttons
 	ld	a,P1F_GET_BTN
-	ldh	[c],a
-	REPT 6
-	ldh	a,[c]
-	ENDR
-	cpl
-	and	$0F
-	or	b
+	call	.readNibble
+	xor	b	; combine buttons and directions + complement
+	ld	b,a
 
-	ld	[wPadData],a
+	; update hNewKeys
+	ldh	a,[hPressedKeys]
+	xor	b	; a = keys that changed state
+	and	b	; a = keys that changed to pressed
+	ldh	[hNewKeys],a
 
-	; check for reboot button combination
-	and	REBOOT_BTNS
-	cp	REBOOT_BTNS
-	jp	z,Start
+	ld	a,b
+	ldh	[hPressedKeys],a
 
-	; update the buttons
-	ld	b,1	; start with bit 1
-	ld	hl,wButtonData
-.nextbutton
-	ld	a,[wPadData]
-	and	b
-	jr	z,.notpressed
-	; pressed, check the status from last time
-	ld	a,[hl]
-	cp	BTN_NOTPRESSED
-	jr	z,.justpressed
-	; was already pressed
-	ld	a,BTN_PRESSED
-	ld	[hl+],a
-	jr	.buttondone
-.justpressed
-	ld	a,BTN_TRIGGERED
-	ld	[hl+],a
-	jr	.buttondone
-.notpressed
-	ld	a,BTN_NOTPRESSED
-	ld	[hl+],a
-.buttondone
-	rl	b
-	jr	nc,.nextbutton
+	; done reading
+	ld	a,P1F_GET_NONE
+	ldh	[rP1],a
+	ret
+
+; @param    a   Value to write to rP1
+; @return   a   Reading from rP1, ignoring non-input bits (forced high)
+.readNibble
+	ldh	[rP1],a
+	; burn 16 cycles between write and read
+	call	.ret	; 6+4 cycles
+	ldh	a,[rP1]	; 3 cycles
+	ldh	a,[rP1]	; 3 cycles
+	ldh	a,[rP1]	; read
+	or	$F0	; ignore non-input bits
+.ret
 	ret
 
 ;==============================================================
@@ -692,15 +646,13 @@ UIMapEnd:
 InitializeVariables:
 	ld	hl,wVBlankDone
 	xor	a
-	ld	[hl+],a	; hVBlankDone
-	ld	[hl+],a	; hFrameCounter
-	ld	[hl+],a	; hCurrentSongID
-	ld	[hl+],a	; hSongID
-	ld	[hl+],a	; hSFXID
-	REPT NUM_BUTTONS
-	ld	[hl+],a	; hButtonData
-	ENDR
-	ld	[hl],a	; hPadData
+	ld	[hl+],a	; wVBlankDone
+	ld	[hl+],a	; wFrameCounter
+	ld	[hl+],a	; wCurrentSongID
+	ld	[hl+],a	; wSongID
+	ld	[hl+],a	; wSFXID
+	ld	[hl+],a	; hPressedKeys
+	ld	[hl],a	; hNewKeys
 	ret
 
 ;--------------------------------------------------------------
@@ -726,8 +678,8 @@ wFrameCounter:	DS	1
 wCurrentSongID:	DS	1
 wSongID:	DS	1
 wSFXID:		DS	1
-wButtonData:	DS	NUM_BUTTONS	; array to hold button activity
-wPadData:	DS	1	; raw button status bits
 
-SECTION	"Current Bank",HRAM
+SECTION	"HRAM",HRAM
+hPressedKeys:	DS	1
+hNewKeys:	DS	1
 hCurrentBank::	DS	1
