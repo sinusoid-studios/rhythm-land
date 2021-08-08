@@ -73,6 +73,40 @@ Start:
 mainloop:
 	; button processing
 	call	ReadJoypad
+
+	; check to see if Start is held down
+	ldh	a,[hPressedKeys]
+	bit	PADB_START,a
+	jr	z,.notoggle
+
+	; channel toggle
+	ldh	a,[hNewKeys]
+	ld	b,a
+	ld	a,AUDTERM_1_LEFT|AUDTERM_1_RIGHT
+	bit	PADB_UP,b
+	jr	nz,.channeltoggle
+	ASSERT AUDTERM_2_LEFT|AUDTERM_2_RIGHT == (AUDTERM_1_LEFT|AUDTERM_1_RIGHT) << 1
+	add	a	; shift to channel 2
+	bit	PADB_LEFT,b
+	jr	nz,.channeltoggle
+	ASSERT AUDTERM_3_LEFT|AUDTERM_3_RIGHT == (AUDTERM_2_LEFT|AUDTERM_2_RIGHT) << 1
+	add	a	; shift to channel 3
+	bit	PADB_RIGHT,b
+	jr	nz,.channeltoggle
+	ASSERT AUDTERM_4_LEFT|AUDTERM_4_RIGHT == (AUDTERM_3_LEFT|AUDTERM_3_RIGHT) << 1
+	add	a	; shift to channel 4
+	bit	PADB_DOWN,b
+	jr	z,.notoggle
+
+.channeltoggle
+	ld	b,a
+	; toggle the selected channel's bits in the channel mask
+	ld	a,[wChannelMask]
+	xor	b
+	ld	[wChannelMask],a
+	jr	.waitraster
+
+.notoggle
 	; check to see if A was pressed
 	ldh	a,[hNewKeys]
 	ASSERT PADB_A == 0
@@ -145,7 +179,7 @@ mainloop:
 	ld	hl,wFrameCounter
 	inc	[hl]
 
-	jr	mainloop
+	jp	mainloop
 
 
 ;==============================================================
