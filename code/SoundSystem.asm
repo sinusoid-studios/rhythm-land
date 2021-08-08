@@ -346,6 +346,7 @@ wMusicInstrumentBank:		DS	sizeof_BANK_VAR	; bank of instruments
 ENDC
 
 ; miscellaneous variables
+wChannelMask::			DS	1	; mask for AUDTERM (NR51)
 wChannelMusicFreq1:		DS	2	; GB frequency of channel 1 for music backup
 wChannelMusicFreq2:		DS	2	; GB frequency of channel 2 for music backup
 wChannelMusicFreq3:		DS	2	; GB frequency of channel 3 for music backup
@@ -511,6 +512,7 @@ SoundSystem_Init::
 	ldh	[rAUDVOL],a
 	ld	a,AUDTERM_ALL
 	ldh	[rAUDTERM],a
+	ld	[wChannelMask],a
 
 	ret
 
@@ -2883,6 +2885,8 @@ SSFP_Inst1_CMD_PANMID:
 	ld	a,AUDTERM_1_LEFT|AUDTERM_1_RIGHT
 	or	[hl]
 	ld	[hl],a
+	ld	a,[wChannelMask]
+	and	[hl]
 	ldh	[rAUDTERM],a
 	jp	SSFP_Inst1Update
 
@@ -2899,6 +2903,8 @@ SSFP_Inst1_CMD_PANRIGHT:
 	or	[hl]
 	and	~AUDTERM_1_LEFT
 	ld	[hl],a
+	ld	a,[wChannelMask]
+	and	[hl]
 	ldh	[rAUDTERM],a
 	jp	SSFP_Inst1Update
 
@@ -2915,6 +2921,8 @@ SSFP_Inst1_CMD_PANLEFT:
 	or	[hl]
 	and	~AUDTERM_1_RIGHT
 	ld	[hl],a
+	ld	a,[wChannelMask]
+	and	[hl]
 	ldh	[rAUDTERM],a
 	jp	SSFP_Inst1Update
 
@@ -3118,6 +3126,8 @@ SSFP_Inst2_CMD_PANMID:
 	ld	a,AUDTERM_2_LEFT|AUDTERM_2_RIGHT
 	or	[hl]
 	ld	[hl],a
+	ld	a,[wChannelMask]
+	and	[hl]
 	ldh	[rAUDTERM],a
 	jp	SSFP_Inst2Update
 
@@ -3134,6 +3144,8 @@ SSFP_Inst2_CMD_PANRIGHT:
 	or	[hl]
 	and	~AUDTERM_2_LEFT
 	ld	[hl],a
+	ld	a,[wChannelMask]
+	and	[hl]
 	ldh	[rAUDTERM],a
 	jp	SSFP_Inst2Update
 
@@ -3150,6 +3162,8 @@ SSFP_Inst2_CMD_PANLEFT:
 	or	[hl]
 	and	~AUDTERM_2_RIGHT
 	ld	[hl],a
+	ld	a,[wChannelMask]
+	and	[hl]
 	ldh	[rAUDTERM],a
 	jp	SSFP_Inst2Update
 
@@ -3373,6 +3387,8 @@ SSFP_Inst3_CMD_PANMID:
 	ld	a,AUDTERM_3_LEFT|AUDTERM_3_RIGHT
 	or	[hl]
 	ld	[hl],a
+	ld	a,[wChannelMask]
+	and	[hl]
 	ldh	[rAUDTERM],a
 	jp	SSFP_Inst3Update
 
@@ -3389,6 +3405,8 @@ SSFP_Inst3_CMD_PANRIGHT:
 	or	[hl]
 	and	~AUDTERM_3_LEFT
 	ld	[hl],a
+	ld	a,[wChannelMask]
+	and	[hl]
 	ldh	[rAUDTERM],a
 	jp	SSFP_Inst3Update
 
@@ -3405,6 +3423,8 @@ SSFP_Inst3_CMD_PANLEFT:
 	or	[hl]
 	and	~AUDTERM_3_RIGHT
 	ld	[hl],a
+	ld	a,[wChannelMask]
+	and	[hl]
 	ldh	[rAUDTERM],a
 	jp	SSFP_Inst3Update
 
@@ -3627,6 +3647,8 @@ SSFP_Inst4_CMD_PANMID:
 	ld	a,AUDTERM_4_LEFT|AUDTERM_4_RIGHT
 	or	[hl]
 	ld	[hl],a
+	ld	a,[wChannelMask]
+	and	[hl]
 	ldh	[rAUDTERM],a
 	jp	SSFP_Inst4Update
 
@@ -3643,6 +3665,8 @@ SSFP_Inst4_CMD_PANRIGHT:
 	or	[hl]
 	and	AUDTERM_4_LEFT ^ $FF	; same as ~, but ~ here triggers a false warning
 	ld	[hl],a
+	ld	a,[wChannelMask]
+	and	[hl]
 	ldh	[rAUDTERM],a
 	jp	SSFP_Inst4Update
 
@@ -3659,6 +3683,8 @@ SSFP_Inst4_CMD_PANLEFT:
 	or	[hl]
 	and	~AUDTERM_4_RIGHT
 	ld	[hl],a
+	ld	a,[wChannelMask]
+	and	[hl]
 	ldh	[rAUDTERM],a
 	jp	SSFP_Inst4Update
 
