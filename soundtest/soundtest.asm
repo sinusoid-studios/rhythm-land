@@ -99,11 +99,14 @@ mainloop:
 	jr	z,.notoggle
 
 .channeltoggle
-	ld	b,a
 	; toggle the selected channel's bits in the channel mask
-	ld	a,[wChannelMask]
-	xor	b
-	ld	[wChannelMask],a
+	ld	hl,wChannelMask
+	xor	[hl]
+	ld	[hl],a
+	; update immediately
+	ld	a,[wMusicSFXPanning]
+	and	[hl]
+	ldh	[rAUDTERM],a
 	jr	.waitraster
 
 .notoggle

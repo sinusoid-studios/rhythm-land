@@ -311,7 +311,7 @@ wSoundFXStart:			DS	4	; sound fx to start
 wSoundFXNote:			DS	1	; sound fx's start note
 
 ; music/sfx shared variables
-wMusicSFXPanning:		DS	1
+wMusicSFXPanning::		DS	1
 wMusicSFXInstPause1:		DS	1	; frames left before instrument/soundfx update for channel 1
 wMusicSFXInstPause2:		DS	1	; frames left before instrument/soundfx update for channel 2
 wMusicSFXInstPause3:		DS	1	; frames left before instrument/soundfx update for channel 3
