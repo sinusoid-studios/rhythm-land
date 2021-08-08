@@ -38,6 +38,9 @@ game: bin/rhythm-land.gb
 soundtest: bin/soundtest.gb
 .PHONY: soundtest
 
+all: game soundtest
+.PHONY: all
+
 clean:
 	rm -rf bin
 	rm -rf obj
