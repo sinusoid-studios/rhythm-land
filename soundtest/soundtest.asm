@@ -87,15 +87,15 @@ mainloop:
 	jr	nz,.channeltoggle
 	ASSERT AUDTERM_2_LEFT|AUDTERM_2_RIGHT == (AUDTERM_1_LEFT|AUDTERM_1_RIGHT) << 1
 	add	a	; shift to channel 2
-	bit	PADB_LEFT,b
+	bit	PADB_RIGHT,b
 	jr	nz,.channeltoggle
 	ASSERT AUDTERM_3_LEFT|AUDTERM_3_RIGHT == (AUDTERM_2_LEFT|AUDTERM_2_RIGHT) << 1
 	add	a	; shift to channel 3
-	bit	PADB_RIGHT,b
+	bit	PADB_DOWN,b
 	jr	nz,.channeltoggle
 	ASSERT AUDTERM_4_LEFT|AUDTERM_4_RIGHT == (AUDTERM_3_LEFT|AUDTERM_3_RIGHT) << 1
 	add	a	; shift to channel 4
-	bit	PADB_DOWN,b
+	bit	PADB_LEFT,b
 	jr	z,.notoggle
 
 .channeltoggle
