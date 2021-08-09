@@ -69,7 +69,7 @@ ScreenSetupTitle::
     
     ; Create star actors
     ld      de, ActorStarDefinitions
-    ld      a, NUM_STARS
+    ld      a, STAR_COUNT
     ldh     [hScratch1], a
 .starLoop
     call    ActorNew
@@ -266,7 +266,7 @@ xActorTitle::
     
     ; Bounce to the beat
     ; Stars move inward -> bounce is just resetting the position
-    ASSERT HIGH(MAX_NUM_ACTORS * 5 + 1) == 0
+    ASSERT HIGH(MAX_ACTOR_COUNT * 5 + 1) == 0
     ld      a, c
     add     a, a    ; actor index * 2
     add     a, a    ; actor index * 4

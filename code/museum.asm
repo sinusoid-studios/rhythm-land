@@ -8,7 +8,7 @@ vJukeboxBackgroundTile:
     DS 16
 
 vJukeboxTextTiles:
-    DS JUKEBOX_LINE_LENGTH * JUKEBOX_NUM_LINES * 16
+    DS JUKEBOX_LINE_LENGTH * JUKEBOX_LINE_COUNT * 16
 .end
 
 SECTION "Museum Setup", ROM0

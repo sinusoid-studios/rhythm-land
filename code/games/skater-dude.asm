@@ -203,9 +203,9 @@ SECTION "Skater Dude Obstacle Cue", ROMX
 xCueObstacle::
     ; Create a random type of obstacle
     call    Random
-    ASSERT NUM_OBSTACLES == 3
+    ASSERT OBSTACLE_COUNT == 3
     and     a, 3
-    cp      a, NUM_OBSTACLES
+    cp      a, OBSTACLE_COUNT
     jr      c, .obstacleOk
     ; Cars would realistically be more common on the road, so go with
     ; that
@@ -381,7 +381,7 @@ xActorSkaterDude::
     ld      e, c    ; e not destroyed by SFX_Play
     ld      b, a    ; b = SFX ID
     call    SFX_Play
-    ASSERT HIGH(MAX_NUM_ACTORS) == 0
+    ASSERT HIGH(MAX_ACTOR_COUNT) == 0
     ld      b, 0
     ld      c, e
 .noSFX
@@ -412,7 +412,7 @@ xActorSkaterDude::
     ld      e, c    ; e not destroyed by SFX_Play
     ld      b, SFX_SKATER_DUDE_FALL
     call    SFX_Play
-    ASSERT HIGH(MAX_NUM_ACTORS) == 0
+    ASSERT HIGH(MAX_ACTOR_COUNT) == 0
     ld      b, 0
     ld      c, e
     
@@ -449,7 +449,7 @@ xActorSkaterDude::
     ret     nz
     
     ; Skater Dude has reached his normal position
-    ASSERT SKATER_DUDE_X >= NUM_SKATER_DUDE_STATES
+    ASSERT SKATER_DUDE_X >= SKATER_DUDE_STATE_COUNT
     ; State = normal Skater Dude function
     ldh     [hSkaterDudeState], a
     ret

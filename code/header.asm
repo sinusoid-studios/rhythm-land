@@ -34,8 +34,8 @@ hReleasedKeys::
 
 SECTION "Current ROM Bank Number", HRAM
 
-; Current bank number of the $4000-$7FFF range, for interrupt handlers
-; to restore
+; Current ROM bank number of the $4000-$7FFF range, for restoring after
+; temporarily switching banks
 hCurrentBank::
     DS 1
 

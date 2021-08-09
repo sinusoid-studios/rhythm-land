@@ -64,13 +64,13 @@ Initialize::
     ; Set all actors to empty
     ld      a, ACTOR_EMPTY
     ld      hl, wActorTypeTable
-    ld      c, MAX_NUM_ACTORS
+    ld      c, MAX_ACTOR_COUNT
     rst     MemsetSmall
     ; Reset all actor speed fractional accumulators
     xor     a, a
     ld      hl, wActorXSpeedAccTable
-    ASSERT wActorYSpeedAccTable == wActorXSpeedAccTable + MAX_NUM_ACTORS
-    ld      c, MAX_NUM_ACTORS * 2
+    ASSERT wActorYSpeedAccTable == wActorXSpeedAccTable + MAX_ACTOR_COUNT
+    ld      c, MAX_ACTOR_COUNT * 2
     rst     MemsetSmall
     
     ; Initialize text engine

@@ -50,7 +50,7 @@ xGameSetupSeagullSerenade::
     
     ; Create seagull actors
     ld      de, xActorSeagullDefinitions
-    ASSERT NUM_SEAGULLS == 3
+    ASSERT SEAGULL_COUNT == 3
     call    ActorNew
     call    ActorNew
     call    ActorNew

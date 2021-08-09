@@ -39,7 +39,7 @@ ScreenSetupRating::
     ld      a, RATING_TEXT_LINE_LENGTH * 8 + 1
     ld      [wTextLineLength], a
     ; Each entry is 1 line
-    ld      a, RATING_TEXT_NUM_LINES
+    ld      a, RATING_TEXT_LINE_COUNT
     ld      [wTextNbLines], a
     ld      [wTextRemainingLines], a
     ld      [wNewlinesUntilFull], a
@@ -165,14 +165,14 @@ ScreenSetupRating::
     ; Set up feedback text for this rating
     ; Find current game's part of the rating text table
     ldh     a, [hCurrentScreen]
-    ASSERT NUM_RATING_TYPES == 4
+    ASSERT RATING_TYPE_COUNT == 4
     add     a, a    ; game ID * 2
     add     a, a    ; game ID * 4
     ld      c, a
-    add     a, a    ; game ID * NUM_RATING_TYPES + game ID * 2 (Pointer)
-    add     a, c    ; game ID * NUM_RATING_TYPES + game ID * 3 (+Bank)
+    add     a, a    ; game ID * RATING_TYPE_COUNT + game ID * 2 (Pointer)
+    add     a, c    ; game ID * RATING_TYPE_COUNT + game ID * 3 (+Bank)
     ; Ensure the highest value would fit in a single byte
-    ASSERT HIGH((NUM_GAMES - 1) * 12) == 0
+    ASSERT HIGH((GAME_COUNT - 1) * 12) == 0
     ld      c, a
     
     ; Find pointer to text for this type of rating
@@ -182,7 +182,7 @@ ScreenSetupRating::
     add     a, b    ; rating type * 3 (+Bank)
     add     a, c    ; c = game offset
     ; Ensure the highest value would fit in a single byte
-    ASSERT HIGH(NUM_RATING_TYPES * 3 + (NUM_GAMES - 1) * 12) == 0
+    ASSERT HIGH(RATING_TYPE_COUNT * 3 + (GAME_COUNT - 1) * 12) == 0
     add     a, LOW(RatingTextTable)
     ld      l, a
     ASSERT HIGH(RatingTextTable.end - 1) == HIGH(RatingTextTable)

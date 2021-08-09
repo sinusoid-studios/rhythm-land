@@ -23,16 +23,16 @@ SECTION "Actor Type Table", WRAM0
 
 ; Type of actor, ACTOR_EMPTY for empty
 wActorTypeTable::
-    DS MAX_NUM_ACTORS
+    DS MAX_ACTOR_COUNT
 
 SECTION "Actor Position Tables", WRAM0
 
 ; 8-bit positions, relative to the screen
 
 wActorXPosTable::
-    DS MAX_NUM_ACTORS
+    DS MAX_ACTOR_COUNT
 wActorYPosTable::
-    DS MAX_NUM_ACTORS
+    DS MAX_ACTOR_COUNT
 
 SECTION "Actor Speed Tables", WRAM0
 
@@ -41,9 +41,9 @@ SECTION "Actor Speed Tables", WRAM0
 ; fractional accumulator carry added to position
 
 wActorXSpeedTable::
-    DS MAX_NUM_ACTORS
+    DS MAX_ACTOR_COUNT
 wActorYSpeedTable::
-    DS MAX_NUM_ACTORS
+    DS MAX_ACTOR_COUNT
 
 SECTION "Actor Speed Fractional Accumulator Tables", WRAM0
 
@@ -52,16 +52,16 @@ SECTION "Actor Speed Fractional Accumulator Tables", WRAM0
 ; speed to the actor's position
 
 wActorXSpeedAccTable::
-    DS MAX_NUM_ACTORS
+    DS MAX_ACTOR_COUNT
 wActorYSpeedAccTable::
-    DS MAX_NUM_ACTORS
+    DS MAX_ACTOR_COUNT
 
 SECTION "Actor Animation Cel Tables", WRAM0
 
 ; Index of the current animation cel, used to find meta-sprite data in
 ; the actor's type's animation table
 wActorCelTable::
-    DS MAX_NUM_ACTORS
+    DS MAX_ACTOR_COUNT
 
 ; A value other than ANIMATION_OVERRIDE_NONE here means an animation override
 ; is in effect, and that value will be used instead of the main
@@ -70,17 +70,17 @@ wActorCelTable::
 ; overrides are used to keep the main animation in sync with the music
 ; while another animation plays temporarily
 wActorCelOverrideTable::
-    DS MAX_NUM_ACTORS
+    DS MAX_ACTOR_COUNT
 
 SECTION "Actor Animation Cel Countdown Tables", WRAM0
 
 ; Number of frames left until the next animation cel
 wActorCelCountdownTable::
-    DS MAX_NUM_ACTORS
+    DS MAX_ACTOR_COUNT
 
 ; Ditto, but for the override animation
 wActorCelOverrideCountdownTable::
-    DS MAX_NUM_ACTORS
+    DS MAX_ACTOR_COUNT
 
 SECTION "Actor Update", ROM0
 
@@ -103,10 +103,10 @@ ActorsUpdate::
     
 .next
     ; Move to the next actor
-    ASSERT HIGH(MAX_NUM_ACTORS) == 0
+    ASSERT HIGH(MAX_ACTOR_COUNT) == 0
     inc     c
     ld      a, c
-    cp      a, MAX_NUM_ACTORS
+    cp      a, MAX_ACTOR_COUNT
     jr      c, .loop
     
     ; Restore bank
@@ -147,15 +147,15 @@ ActorsUpdate::
     jr      nz, .updatePosition
 .updateOverrideAnimation
     ; Update actor's override animation
-    ASSERT wActorCelOverrideTable == wActorCelTable + MAX_NUM_ACTORS
-    ASSERT wActorCelOverrideCountdownTable == wActorCelCountdownTable + MAX_NUM_ACTORS
+    ASSERT wActorCelOverrideTable == wActorCelTable + MAX_ACTOR_COUNT
+    ASSERT wActorCelOverrideCountdownTable == wActorCelCountdownTable + MAX_ACTOR_COUNT
     ; Override animation tables directly follow the regular animation
-    ; tables, so MAX_NUM_ACTORS (the tables' sizes) can simply be added
+    ; tables, so MAX_ACTOR_COUNT (the tables' sizes) can simply be added
     ; to the entity index in bc
     push    bc
-    ASSERT HIGH(MAX_NUM_ACTORS * 2) == HIGH(MAX_NUM_ACTORS)
+    ASSERT HIGH(MAX_ACTOR_COUNT * 2) == HIGH(MAX_ACTOR_COUNT)
     ld      a, c
-    add     a, MAX_NUM_ACTORS
+    add     a, MAX_ACTOR_COUNT
     ld      c, a
     call    ActorsUpdateAnimation
     pop     bc
@@ -165,15 +165,15 @@ ActorsUpdate::
     ; X position
     call    ActorAddSpeedToPos
     ; Y position
-    ASSERT wActorYSpeedTable == wActorXSpeedTable + MAX_NUM_ACTORS
-    ASSERT wActorYSpeedAccTable == wActorXSpeedAccTable + MAX_NUM_ACTORS
+    ASSERT wActorYSpeedTable == wActorXSpeedTable + MAX_ACTOR_COUNT
+    ASSERT wActorYSpeedAccTable == wActorXSpeedAccTable + MAX_ACTOR_COUNT
     ; Y speed tables directly follow the X speed tables, so
-    ; MAX_NUM_ACTORS (the tables' sizes) can simply be added to the
+    ; MAX_ACTOR_COUNT (the tables' sizes) can simply be added to the
     ; entity index in bc
     push    bc
-    ASSERT HIGH(MAX_NUM_ACTORS * 2) == HIGH(MAX_NUM_ACTORS)
+    ASSERT HIGH(MAX_ACTOR_COUNT * 2) == HIGH(MAX_ACTOR_COUNT)
     ld      a, c
-    add     a, MAX_NUM_ACTORS
+    add     a, MAX_ACTOR_COUNT
     ld      c, a
     call    ActorAddSpeedToPos
     pop     bc
@@ -228,12 +228,12 @@ ActorsUpdate::
     jr      .render
 .override
     ; Animation override -> get animation override cel
-    ASSERT wActorCelOverrideTable == wActorCelTable + MAX_NUM_ACTORS
-    ASSERT wActorCelOverrideCountdownTable == wActorCelCountdownTable + MAX_NUM_ACTORS
+    ASSERT wActorCelOverrideTable == wActorCelTable + MAX_ACTOR_COUNT
+    ASSERT wActorCelOverrideCountdownTable == wActorCelCountdownTable + MAX_ACTOR_COUNT
     push    bc
-    ASSERT HIGH(MAX_NUM_ACTORS * 2) == HIGH(MAX_NUM_ACTORS)
+    ASSERT HIGH(MAX_ACTOR_COUNT * 2) == HIGH(MAX_ACTOR_COUNT)
     ld      a, c
-    add     a, MAX_NUM_ACTORS
+    add     a, MAX_ACTOR_COUNT
     ld      c, a
     call    ActorGetAnimationCel
     pop     bc
@@ -279,11 +279,11 @@ ActorsUpdate::
     jr      z, .noTileStreaming
     
     ; Get first tile number of this actor's reserved tiles
-    ASSERT HIGH(MAX_NUM_ACTORS) == 0
+    ASSERT HIGH(MAX_ACTOR_COUNT) == 0
     ; Can just use c since b is always 0
-    ASSERT NUM_ACTOR_RESERVED_TILES == 16
-    swap    c       ; actor num * 16
-    ASSERT MAX_NUM_ACTORS & ~$0F == 0
+    ASSERT ACTOR_RESERVED_TILE_COUNT == 16
+    swap    c       ; actor index * 16
+    ASSERT MAX_ACTOR_COUNT & ~$0F == 0
     ; No need to clear low nibble (already 0)
     ; Carry cleared from swap
     DB      $38     ; jr c, e8 to consume the next byte
@@ -350,11 +350,11 @@ ActorNew::
     
     ; Move to the next slot
     inc     hl
-    ASSERT HIGH(MAX_NUM_ACTORS) == 0
+    ASSERT HIGH(MAX_ACTOR_COUNT) == 0
     inc     c
     ld      a, c
     ; If gone through all actors, return
-    cp      a, MAX_NUM_ACTORS
+    cp      a, MAX_ACTOR_COUNT
     jr      c, .loop
     ret
 
@@ -409,7 +409,7 @@ ActorNew::
     add     a, 4
     ld      l, a
     ld      a, h
-    ASSERT HIGH(MAX_NUM_ACTORS) == 0
+    ASSERT HIGH(MAX_ACTOR_COUNT) == 0
     adc     a, b    ; b = 0
     ld      h, a
 .setDuration
@@ -550,7 +550,7 @@ ActorsUpdateAnimation:
     dec     a
     jr      z, .overrideEnd
     ASSERT ANIMATION_SET_TILES & ~$80 == 3
-    ASSERT NUM_ANIMATION_SPECIAL_VALUES == 4
+    ASSERT ANIMATION_SPECIAL_VALUE_COUNT == 4
     
     ; Stream a set of tiles to VRAM
     call    ActorSetTiles
@@ -591,9 +591,9 @@ ActorsUpdateAnimation:
     sub     a, l
     ld      h, a
     ; Fix actor index
-    ASSERT HIGH(MAX_NUM_ACTORS) == 0
+    ASSERT HIGH(MAX_ACTOR_COUNT) == 0
     ld      a, c
-    sub     a, MAX_NUM_ACTORS
+    sub     a, MAX_ACTOR_COUNT
     ld      c, a
     jp      ActorSetTiles
 
@@ -633,11 +633,11 @@ ActorSetTiles:
     push    bc
     ; Check if the actor index is wrong (for override animations)
     ld      a, c
-    cp      a, MAX_NUM_ACTORS
+    cp      a, MAX_ACTOR_COUNT
     jr      c, .indexOk
     ; Fix actor index
-    ASSERT HIGH(MAX_NUM_ACTORS) == 0
-    sub     a, MAX_NUM_ACTORS
+    ASSERT HIGH(MAX_ACTOR_COUNT) == 0
+    sub     a, MAX_ACTOR_COUNT
     ld      c, a
 .indexOk
     ; Get the pointer to the tile data
@@ -645,25 +645,25 @@ ActorSetTiles:
     ld      e, a
     ld      a, [hli]
     ld      d, a
-    ASSERT HIGH(MAX_NUM_ACTORS) == 0
+    ASSERT HIGH(MAX_ACTOR_COUNT) == 0
     ; Save number of bytes (halved for copy loop unroll)
     ld      b, [hl]
     
     ; Get the pointer to the destination in VRAM
-    ASSERT HIGH(MAX_NUM_ACTORS) == 0
+    ASSERT HIGH(MAX_ACTOR_COUNT) == 0
     ld      a, c
-    swap    a       ; actor num * 16
-    ASSERT MAX_NUM_ACTORS & ~$0F == 0
+    swap    a       ; actor index * 16
+    ASSERT MAX_ACTOR_COUNT & ~$0F == 0
     ; No need to clear low nibble (already 0)
-    ASSERT HIGH(MAX_NUM_ACTORS * 16 * 2) != 0
+    ASSERT HIGH(MAX_ACTOR_COUNT * 16 * 2) != 0
     ; High byte won't be 0 after the next x2 -> move to hl
-    ld      h, HIGH($8000 >> 4)
     ld      l, a
-    ASSERT NUM_ACTOR_RESERVED_TILES == 16
-    add     hl, hl  ; actor num * 2
-    add     hl, hl  ; actor num * 4
-    add     hl, hl  ; actor num * 8
-    add     hl, hl  ; actor num * 16
+    ld      h, HIGH($8000 >> 4)
+    ASSERT ACTOR_RESERVED_TILE_COUNT == 16
+    add     hl, hl  ; actor index * 2
+    add     hl, hl  ; actor index * 4
+    add     hl, hl  ; actor index * 8
+    add     hl, hl  ; actor index * 16
     
     ; Copy the tiles
     ; de = source
@@ -792,7 +792,7 @@ ActorSetCel::
     add     a, 4
     ld      l, a
     ld      a, h
-    ASSERT HIGH(MAX_NUM_ACTORS) == 0
+    ASSERT HIGH(MAX_ACTOR_COUNT) == 0
     adc     a, b    ; b = 0
     ld      h, a
 .setDuration
@@ -818,13 +818,13 @@ SECTION "Actor Set Animation Override Cel", ROM0
 ; @return   hl          Pointer to current animation cel data
 ; @return   de          Pointer to animation table
 ActorSetAnimationOverride::
-    ASSERT wActorCelOverrideTable == wActorCelTable + MAX_NUM_ACTORS
-    ASSERT wActorCelOverrideCountdownTable == wActorCelCountdownTable + MAX_NUM_ACTORS
+    ASSERT wActorCelOverrideTable == wActorCelTable + MAX_ACTOR_COUNT
+    ASSERT wActorCelOverrideCountdownTable == wActorCelCountdownTable + MAX_ACTOR_COUNT
     push    bc
     ld      b, a    ; Save cel number
-    ASSERT HIGH(MAX_NUM_ACTORS * 2) == HIGH(MAX_NUM_ACTORS)
+    ASSERT HIGH(MAX_ACTOR_COUNT * 2) == HIGH(MAX_ACTOR_COUNT)
     ld      a, c
-    add     a, MAX_NUM_ACTORS
+    add     a, MAX_ACTOR_COUNT
     ld      c, a
     ld      a, b    ; Restore cel number
     ld      b, 0

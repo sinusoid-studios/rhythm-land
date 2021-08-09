@@ -123,7 +123,7 @@ TransitionUpdate::
     ; Set all actors to empty
     ld      a, ACTOR_EMPTY
     ld      hl, wActorTypeTable
-    ld      c, MAX_NUM_ACTORS
+    ld      c, MAX_ACTOR_COUNT
     rst     MemsetSmall
     ; Hide all existing objects
     call    HideAllObjects
