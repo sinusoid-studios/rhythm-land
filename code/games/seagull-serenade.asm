@@ -4,6 +4,8 @@ INCLUDE "constants/engine.inc"
 INCLUDE "constants/transition.inc"
 INCLUDE "constants/screens.inc"
 INCLUDE "constants/SoundSystem.inc"
+INCLUDE "constants/SoundSystemNotes.inc"
+INCLUDE "constants/sfx.inc"
 INCLUDE "constants/games/seagull-serenade.inc"
 
 SECTION UNION "Game Variables", HRAM
@@ -203,21 +205,81 @@ xActorSeagullPlayer::
 .noSync
     ; Check if the player pressed a hit key
     ldh     a, [hNewKeys]
-    ; Up -> high squawk
-    bit     PADB_UP, a
-    jr      nz, .high
-    ; Left/Right -> mid squawk
-    bit     PADB_LEFT, a
-    jr      nz, .mid
+    ; Save squawk type
+    ld      hl, hScratch3
+    ld      [hl], 0
+    
     ; Down -> low squawk
     bit     PADB_DOWN, a
+    jr      nz, .low
+    ; Left/Right -> mid squawk
+    inc     [hl]
+    bit     PADB_LEFT, a
+    jr      nz, .mid
+    ; Up -> high squawk
+    inc     [hl]
+    bit     PADB_UP, a
     ret     z
     
-    ld      a, CEL_SEAGULL_LOW
-    jp      ActorSetAnimationOverride
-.high
     ld      a, CEL_SEAGULL_HIGH
-    jp      ActorSetAnimationOverride
+    call    ActorSetAnimationOverride
+    jr      .playSFX
+.low
+    ld      a, CEL_SEAGULL_LOW
+    call    ActorSetAnimationOverride
+    jr      .playSFX
 .mid
     ld      a, CEL_SEAGULL_MID
-    jp      ActorSetAnimationOverride
+    call    ActorSetAnimationOverride
+.playSFX
+    ldh     a, [hLastPlayerHitNumber]
+    ld      d, a
+    add     a, a    ; hit number * 2
+    add     a, d    ; hit number * 3
+    ld      d, a
+    ldh     a, [hScratch3]
+    add     a, d    ; hit number * 3 + squawk type
+    add     a, LOW(xSquawkNoteTable)
+    ld      l, a
+    ASSERT HIGH(xSquawkNoteTable.end - 1) == HIGH(xSquawkNoteTable)
+    ld      h, HIGH(xSquawkNoteTable)
+    
+    ld      b, SFX_SEAGULL_SQUAWK
+    ld      e, c    ; e not destroyed by SFX_Play
+    ld      c, [hl] ; c = note
+    call    SFX_Play
+    ld      c, e
+    ASSERT HIGH(MAX_ACTOR_COUNT) == HIGH(0)
+    ld      b, 0
+    ret
+
+xSquawkNoteTable:
+    ;  Low, Mid, High
+    REPT 2
+    DB B_5, D#6, G_6
+    DB F#6, G#6, C_7
+    DB C#6, F_6, G_6
+    DB A#5, D#6, G_6
+    DB B_5, F_6, G#6
+    ENDR
+    
+    DB A_6, C#7, D#7
+    DB A_6, B_6, F_7
+    DB D#6, G#6, B_6
+    DB F_6, A#6, B_6
+    DB F_6, G#6, C#7
+    DB C#6, F_6, C_7
+    
+    DB B_5, D#6, G_6
+    DB F#6, G#6, C_7
+    DB C#6, F_6, G_6
+    DB A#5, D#6, G_6
+    DB B_5, F_6, G#6
+    
+    DB B_5, D#6, G_6
+    DB F_6, A#6, C#7
+    DB B_5, D#6, G_6
+    DB C_6, F_6, G#6
+    DB A#5, D#6, G_6
+    DB B_5, F_6, G#6
+.end
