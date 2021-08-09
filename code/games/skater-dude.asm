@@ -407,7 +407,6 @@ xActorSkaterDude::
     ret     nc
     
     ; The player missed the hit
-    ld      e, c    ; e not destroyed by SFX_Play
     ld      b, SFX_SKATER_DUDE_FALL
     call    SFX_Play
     ASSERT HIGH(MAX_ACTOR_COUNT) == HIGH(0)
