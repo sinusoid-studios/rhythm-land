@@ -397,7 +397,8 @@ xActorSkaterDude::
     and     a, a
     ret     nz
     
-    ; It's late enough, but did the player already make this hit?
+    ; It's late enough, but did the player already jump successfully (OK
+    ; or Perfect hit)?
     ldh     a, [hNextHitNumber]
     ld      e, a
     ldh     a, [hLastRatedHitNumber]

@@ -57,8 +57,11 @@ hHitPerfectCount::
 ; times
 hNextHitNumber::
     DS 1
-; Index of the last hit the player made that wasn't missed, used for
-; disallowing making a hit multiple times
+; Index of the last hit the player made, used for
+hLastPlayerHitNumber::
+    DS 1
+; Index of the last hit the player made that wasn't a Miss or Bad, used
+; for disallowing making a hit multiple times
 hLastRatedHitNumber::
     DS 1
 
@@ -98,8 +101,10 @@ EngineInit::
     ; Reset hit numbers
     ASSERT hNextHitNumber == hHitPerfectCount + 1
     ld      [hli], a
-    ASSERT hLastRatedHitNumber == hNextHitNumber + 1
-    dec     a       ; Haven't rated any hits
+    dec     a       ; Player hasn't made any hits yet
+    ASSERT hLastPlayerHitNumber == hNextHitNumber + 1
+    ld      [hli], a
+    ASSERT hLastRatedHitNumber == hLastPlayerHitNumber + 1
     ld      [hli], a
     
     jp      BankedReturn
@@ -224,7 +229,7 @@ EngineUpdate::
     ; Hit was made again, count it as Bad (negatively affect overall
     ; rating)
     ld      l, LOW(hHitBadCount)
-    jr      z, .countLoop
+    jr      z, .gotRatingBad
     
     ; The player has done everything right... but were they on-time?
     ld      a, c    ; Restore on-timeness
@@ -233,7 +238,7 @@ EngineUpdate::
     cp      a, HIT_OK_WINDOW / 2
     ; If on-timeness is outside the OK window, give Bad
     ; hl = hHitBadCount
-    jr      nc, .countLoop
+    jr      nc, .gotRatingBad
     
     ; Check for OK
     cp      a, HIT_PERFECT_WINDOW / 2
@@ -251,6 +256,8 @@ EngineUpdate::
 .gotRating
     ; Bad hits don't go here; give the player a chance to do better
     ldh     [hLastRatedHitNumber], a
+.gotRatingBad
+    ldh     [hLastPlayerHitNumber], a
 .countLoop
     ; Increment count of this rating of hit for each pressed hit key
     inc     [hl]
