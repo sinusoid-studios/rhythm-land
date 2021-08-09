@@ -100,12 +100,13 @@ ScreenSetupRating::
     add     a, b
     
     ; Score is negative -> go straight to Bad
-    bit     7, a
+    rlca    ; Copy bit 7 (sign) to carry
     ld      b, RATING_BAD
-    jr      nz, .gotRating
+    jr      c, .gotRating
     
     ; Numerator must be less than denominator, but that's fine since
     ; it'll be 100 anyway
+    rrca    ; Undo rlca
     cp      a, c
     ld      b, RATING_PERFECT
     jr      nc, .gotRating
