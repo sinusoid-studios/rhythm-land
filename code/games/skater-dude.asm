@@ -378,12 +378,10 @@ xActorSkaterDude::
     ASSERT SFX_SKATER_DUDE_JUMP_PERFECT == SFX_SKATER_DUDE_JUMP_OK + 1
     inc     a
 .notPerfect
-    ld      e, c    ; e not destroyed by SFX_Play
     ld      b, a    ; b = SFX ID
     call    SFX_Play
-    ASSERT HIGH(MAX_ACTOR_COUNT) == 0
+    ASSERT HIGH(MAX_ACTOR_COUNT) == HIGH(0)
     ld      b, 0
-    ld      c, e
 .noSFX
     ld      a, CEL_SKATER_DUDE_JUMPING
     jp      ActorSetAnimationOverride
@@ -412,9 +410,8 @@ xActorSkaterDude::
     ld      e, c    ; e not destroyed by SFX_Play
     ld      b, SFX_SKATER_DUDE_FALL
     call    SFX_Play
-    ASSERT HIGH(MAX_ACTOR_COUNT) == 0
+    ASSERT HIGH(MAX_ACTOR_COUNT) == HIGH(0)
     ld      b, 0
-    ld      c, e
     
     ; End slo-mo
     ld      a, SKATER_DUDE_NO_SLO_MO
