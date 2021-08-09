@@ -254,7 +254,7 @@ xActorSeagullPlayer::
     ret
 
 xSquawkNoteTable:
-    ;  Low, Mid, High
+    ; Low, Mid, High
     REPT 2
     DB B_5, D#6, G_6
     DB F#6, G#6, C_7
