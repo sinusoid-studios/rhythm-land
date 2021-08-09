@@ -279,7 +279,7 @@ xActorSkaterDude::
     jr      z, .moving
     ; Add 1 to compensate for inc
     cp      a, CEL_SKATER_DUDE_FALLING + 1
-    jr      nc, .notMoving
+    jr      nc, .updateJump
     
 .moving
     ; Skater Dude is either skating or jumping -> "move"
@@ -291,7 +291,7 @@ xActorSkaterDude::
     add     hl, bc
     ld      [hl], SKATER_DUDE_X
     
-.notMoving
+.updateJump
     ; If Skater Dude is currently jumping, update his Y position
     ldh     a, [hSkaterDudePosIndex]
     inc     a
@@ -443,13 +443,13 @@ xActorSkaterDude::
     ; Speed is slow enough to simply check for the exact position
     ASSERT SKATER_DUDE_IN_SPEED < 0 && SKATER_DUDE_IN_SPEED >> 3 == -1
     cp      a, SKATER_DUDE_X
-    ret     nz
+    jp      nz, .updateJump
     
     ; Skater Dude has reached his normal position
     ASSERT SKATER_DUDE_X >= SKATER_DUDE_STATE_COUNT
     ; State = normal Skater Dude function
     ldh     [hSkaterDudeState], a
-    ret
+    jp      .updateJump
 
 .skateOffscreen
     ld      hl, wActorXSpeedTable
@@ -458,7 +458,7 @@ xActorSkaterDude::
     
     ld      a, SKATER_DUDE_STATE_OUT
     ldh     [hSkaterDudeState], a
-    ret
+    jp      .updateJump
 
 .skatingOffscreen
     ; Check if Skater Dude is finished skating off-screen
@@ -471,17 +471,17 @@ xActorSkaterDude::
     ASSERT SKATER_DUDE_X & (1 << 7) == 0
     add     a, a    ; Move bit 7 to carry
     ; Not negative (end position is) -> not there yet
-    ret     nc
+    jp      nc, .updateJump
     
     ; Add 1 to check for > instead of >=, shifted to compensate for
     ; double (add a, a)
     cp      a, (SKATER_DUDE_END_X + 1) << 1
-    ret     nc
+    jp      nc, .updateJump
     
     ; Game is over
     ld      a, SKATER_DUDE_STATE_END
     ldh     [hSkaterDudeState], a
-    ret
+    jp      .updateJump
 
 xJumpPositionTable:
     DB SKATER_DUDE_Y - SKATER_DUDE_JUMP_HEIGHT * 1/3, 1
