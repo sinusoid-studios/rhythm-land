@@ -75,9 +75,9 @@ hOBP0::
 hOBP1::
     DS 1
 
-SECTION "Current Game ID", HRAM
+SECTION "Current Screen ID", HRAM
 
-; The ID of the current game
-; See constants/games.inc for possible values
-hCurrentGame::
+; The ID of the current screen
+; See constants/screens.inc for possible values
+hCurrentScreen::
     DS 1

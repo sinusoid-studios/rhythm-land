@@ -2,7 +2,7 @@ INCLUDE "constants/hardware.inc"
 INCLUDE "constants/engine.inc"
 INCLUDE "constants/actors.inc"
 INCLUDE "constants/sfx.inc"
-INCLUDE "constants/games.inc"
+INCLUDE "constants/screens.inc"
 INCLUDE "constants/transition.inc"
 INCLUDE "constants/games/skater-dude.inc"
 
@@ -181,7 +181,7 @@ xGameSkaterDude::
     jr      xGameSkaterDude
 
 .finished
-    ld      a, ID_RATING_SCREEN
+    ld      a, SCREEN_RATING
     call    TransitionStart
     jr      xGameSkaterDude
 

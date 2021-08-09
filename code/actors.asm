@@ -1,6 +1,6 @@
 INCLUDE "constants/hardware.inc"
 INCLUDE "constants/actors.inc"
-INCLUDE "constants/games.inc"
+INCLUDE "constants/screens.inc"
 INCLUDE "constants/games/skater-dude.inc"
 
 SECTION "Actor Rendering Temporary Variables", HRAM
@@ -136,8 +136,8 @@ ActorsUpdate::
     
     ; Check for slo-mo
     ; Don't update the override animation during slo-mo
-    ldh     a, [hCurrentGame]
-    cp      a, ID_SKATER_DUDE
+    ldh     a, [hCurrentScreen]
+    cp      a, GAME_SKATER_DUDE
     jr      nz, .updateOverrideAnimation
     ldh     a, [hSloMoCountdown]
     ; No slo-mo is non-zero in the update bits, adjust for that

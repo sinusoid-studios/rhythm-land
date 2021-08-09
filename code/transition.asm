@@ -19,18 +19,18 @@ hTransitionIndex::
 hMusicFadeCountdown::
     DS 1
 
-; Game ID of the screen to transition to
-hTransitionNextGame::
+; Screen ID of the screen to transition to
+hTransitionNextScreen::
     DS 1
 
 SECTION "Screen Transition Initialization", ROM0
 
 ; Start a screen transition
 ; The next screen will be set up when the screen is fully covered
-; @param    a   Game ID of the next screen
+; @param    a   Screen ID of the next screen
 TransitionStart::
-    ; Save next screen's game ID
-    ldh     [hTransitionNextGame], a
+    ; Save next screen's ID
+    ldh     [hTransitionNextScreen], a
     
     ; Signal transition coming in
     ld      a, TRANSITION_STATE_IN
@@ -128,15 +128,15 @@ TransitionUpdate::
     ; Hide all existing objects
     call    HideAllObjects
     
-    ; Get next screen's game ID
-    ldh     a, [hTransitionNextGame]
+    ; Get next screen's ID
+    ldh     a, [hTransitionNextScreen]
     ld      b, a
     add     a, a    ; a * 2 (Pointer)
     add     a, b    ; a * 3 (+Bank)
-    add     a, LOW(GameSetupTable)
+    add     a, LOW(ScreenSetupTable)
     ld      l, a
-    ASSERT HIGH(GameSetupTable.end - 1) == HIGH(GameSetupTable)
-    ld      h, HIGH(GameSetupTable)
+    ASSERT HIGH(ScreenSetupTable.end - 1) == HIGH(ScreenSetupTable)
+    ld      h, HIGH(ScreenSetupTable)
     
     ld      a, [hli]
     ; Switching the bank to 0 in this case is benign but still triggers
@@ -171,16 +171,16 @@ TransitionUpdate::
     ldh     [hTransitionIndex], a
     
     ; Jump into the next screen's loop
-    ldh     a, [hTransitionNextGame]
+    ldh     a, [hTransitionNextScreen]
     ; Switch to the next screen
-    ldh     [hCurrentGame], a
+    ldh     [hCurrentScreen], a
     ld      b, a
     add     a, a    ; a * 2 (Pointer)
     add     a, b    ; a * 3 (+Bank)
-    add     a, LOW(GameTable)
+    add     a, LOW(ScreenTable)
     ld      l, a
-    ASSERT HIGH(GameTable.end - 1) == HIGH(GameTable)
-    ld      h, HIGH(GameTable)
+    ASSERT HIGH(ScreenTable.end - 1) == HIGH(ScreenTable)
+    ld      h, HIGH(ScreenTable)
     
     ld      a, [hli]
     ; Switching the bank to 0 in this case is benign but still triggers

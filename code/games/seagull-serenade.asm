@@ -2,7 +2,7 @@ INCLUDE "constants/hardware.inc"
 INCLUDE "constants/actors.inc"
 INCLUDE "constants/engine.inc"
 INCLUDE "constants/transition.inc"
-INCLUDE "constants/games.inc"
+INCLUDE "constants/screens.inc"
 INCLUDE "constants/SoundSystem.inc"
 INCLUDE "constants/games/seagull-serenade.inc"
 
@@ -139,7 +139,7 @@ xGameSeagullSerenade::
     jr      nz, xGameSeagullSerenade
     
     ; Game is over -> go to the overall rating screen
-    ld      a, ID_RATING_SCREEN
+    ld      a, SCREEN_RATING
     call    TransitionStart
     jr      xGameSeagullSerenade
 

@@ -1,7 +1,7 @@
 INCLUDE "constants/hardware.inc"
 INCLUDE "constants/other-hardware.inc"
 INCLUDE "constants/rating.inc"
-INCLUDE "constants/games.inc"
+INCLUDE "constants/screens.inc"
 INCLUDE "constants/transition.inc"
 INCLUDE "constants/sfx.inc"
 INCLUDE "macros/misc.inc"
@@ -20,7 +20,7 @@ hLetterSFXFlipFlop:
 
 SECTION "Overall Rating Screen Setup", ROM0
 
-SetupRatingScreen::
+ScreenSetupRating::
     ; Reset scroll
     xor     a, a
     ldh     [hSCX], a
@@ -164,8 +164,8 @@ SetupRatingScreen::
     
     ; Set up feedback text for this rating
     ; Find current game's part of the rating text table
-    ldh     a, [hCurrentGame]
-    sub     a, ID_GAMES_START
+    ldh     a, [hCurrentScreen]
+    sub     a, SCREEN_GAMES_START
     ASSERT NUM_RATING_TYPES == 4
     add     a, a    ; game ID * 2
     add     a, a    ; game ID * 4
@@ -203,7 +203,7 @@ SetupRatingScreen::
 
 SECTION "Overall Rating Screen", ROM0
 
-RatingScreen::
+ScreenRating::
     ; Force the transition to end
     ASSERT TRANSITION_STATE_OFF == 0
     xor     a, a
@@ -289,7 +289,7 @@ RatingScreen::
     and     a, PADF_A | PADF_START
     jr      z, .wait
     
-    ld      a, ID_GAME_SELECT
+    ld      a, SCREEN_GAME_SELECT
     call    TransitionStart
     jr      .wait
 

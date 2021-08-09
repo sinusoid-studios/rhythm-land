@@ -1,7 +1,7 @@
 INCLUDE "constants/hardware.inc"
 INCLUDE "constants/other-hardware.inc"
 INCLUDE "constants/actors.inc"
-INCLUDE "constants/games.inc"
+INCLUDE "constants/screens.inc"
 INCLUDE "constants/title.inc"
 INCLUDE "constants/transition.inc"
 
@@ -13,7 +13,7 @@ hFlashCountdown:
 
 SECTION "Title Screen Setup", ROM0
 
-SetupTitleScreen::
+ScreenSetupTitle::
     ; Set palettes
     ld      a, TITLE_BGP
     ldh     [hBGP], a
@@ -162,7 +162,7 @@ MapWindowTitle:
 
 SECTION "Title Screen Loop", ROM0
 
-TitleScreen::
+ScreenTitle::
     ; Start the music
     ld      c, BANK(Music_Title)
     ld      de, Music_Title
@@ -251,7 +251,7 @@ TitleScreen::
     jr      z, .loop
     
     ; Move to game select screen
-    ld      a, ID_GAME_SELECT
+    ld      a, SCREEN_GAME_SELECT
     call    TransitionStart
     jr      .loop
 

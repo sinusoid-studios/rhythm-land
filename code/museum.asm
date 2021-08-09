@@ -13,7 +13,7 @@ vJukeboxTextTiles:
 
 SECTION "Museum Setup", ROM0
 
-SetupMuseum::
+ScreenSetupMuseum::
     ; Clear tile
     ld      c, CEIL(DIV(16.0, 7.0)) >> 16
     ld      hl, $9000
@@ -137,7 +137,7 @@ SetupMuseum::
 
 SECTION "Museum", ROM0
 
-Museum::
+ScreenMuseum::
     rst     WaitVBlank
     
     ldh     a, [hTransitionState]
@@ -146,9 +146,9 @@ Museum::
     jr      z, .noTransition
     
     call    TransitionUpdate
-    jr      Museum
+    jr      ScreenMuseum
 
 .noTransition
     call    PrintVWFChar
     call    DrawVWFChars
-    jr      Museum
+    jr      ScreenMuseum

@@ -1,6 +1,6 @@
 INCLUDE "constants/hardware.inc"
 INCLUDE "constants/actors.inc"
-INCLUDE "constants/games.inc"
+INCLUDE "constants/screens.inc"
 INCLUDE "constants/transition.inc"
 
 SECTION "Initialization", ROM0
@@ -26,8 +26,8 @@ Initialize::
     ldh     [rSCX], a
     ldh     [hSCY], a
     ldh     [rSCY], a
-    ASSERT ID_TITLE_SCREEN == 0
-    ldh     [hCurrentGame], a
+    ASSERT SCREEN_TITLE == 0
+    ldh     [hCurrentScreen], a
     ; TODO: Use a player-reliant seed
     ldh     [hRandomNumber], a
     ASSERT TRANSITION_STATE_OFF == 0
@@ -127,7 +127,7 @@ Initialize::
     ; accurately
     
     ; Starting with the title screen -> set it up
-    call    SetupTitleScreen
+    call    ScreenSetupTitle
     
     ; Set up interrupts
     
@@ -150,4 +150,4 @@ Initialize::
     ldh     [rLCDC], a
     
     ; Jump to the title screen
-    jp      TitleScreen
+    jp      ScreenTitle

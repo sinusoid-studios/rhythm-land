@@ -2,14 +2,14 @@ INCLUDE "constants/hardware.inc"
 INCLUDE "constants/game-select.inc"
 INCLUDE "constants/transition.inc"
 
-SECTION "Currently Selected Game ID", HRAM
+SECTION UNION "Game Variables", HRAM
 
 hCurrentSelection:
     DS 1
 
 SECTION "Game Select Screen Setup", ROM0
 
-SetupGameSelectScreen::
+ScreenSetupGameSelect::
     ; Load tiles
     ld      de, HexDigitTiles
     ld      hl, $9000
@@ -58,7 +58,7 @@ SetupGameSelectScreen::
 
 SECTION "Game Select Screen Loop", ROM0
 
-GameSelectScreen::
+ScreenGameSelect::
     rst     WaitVBlank
     
     ldh     a, [hTransitionState]
@@ -68,7 +68,7 @@ GameSelectScreen::
     
     call    TransitionUpdate
     ; Transitioning -> don't take player input
-    jr      GameSelectScreen
+    jr      ScreenGameSelect
     
 .noTransition
     ld      hl, hCurrentSelection
@@ -89,34 +89,34 @@ GameSelectScreen::
     
     ld      a, b
     and     a, PADF_A | PADF_START
-    jr      z, GameSelectScreen
+    jr      z, ScreenGameSelect
 
     ; Jump to the selected game
     ld      a, [hl]
     call    TransitionStart
-    jr      GameSelectScreen
+    jr      ScreenGameSelect
 
 .increment
     inc     [hl]
     call    UpdateGameID
-    jr      GameSelectScreen
+    jr      ScreenGameSelect
 .add16
     ld      a, [hl]
     add     a, 16
     ld      [hl], a
     call    UpdateGameID
-    jr      GameSelectScreen
+    jr      ScreenGameSelect
 
 .decrement
     dec     [hl]
     call    UpdateGameID
-    jr      GameSelectScreen
+    jr      ScreenGameSelect
 .sub16
     ld      a, [hl]
     sub     a, 16
     ld      [hl], a
     call    UpdateGameID
-    jr      GameSelectScreen
+    jr      ScreenGameSelect
 
 SECTION "Game Select Screen Game ID Update", ROM0
 
