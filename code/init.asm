@@ -26,8 +26,6 @@ Initialize::
     ldh     [rSCX], a
     ldh     [hSCY], a
     ldh     [rSCY], a
-    ASSERT SCREEN_TITLE == 0
-    ldh     [hCurrentScreen], a
     ; TODO: Use a player-reliant seed
     ldh     [hRandomNumber], a
     ASSERT TRANSITION_STATE_OFF == 0
@@ -41,11 +39,6 @@ Initialize::
     ; Set current bank number
     ld      a, 1
     ldh     [hCurrentBank], a
-    
-    ; Set initial palettes that the title screen (the first screen)
-    ; doesn't set up
-    ld      a, %11_10_01_00 ; Black, Dark gray, Light gray
-    ldh     [hOBP1], a
     
     ; Clear OAM
     ld      hl, _OAMRAM
@@ -127,7 +120,12 @@ Initialize::
     ; accurately
     
     ; Starting with the title screen -> set it up
+    ld      a, SCREEN_TITLE
+    ldh     [hCurrentScreen], a
     call    ScreenSetupTitle
+    ; Set initial palettes that the title screen doesn't set up
+    ld      a, %11_10_01_00 ; Black, Dark gray, Light gray
+    ldh     [hOBP1], a
     
     ; Set up interrupts
     

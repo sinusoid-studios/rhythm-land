@@ -165,7 +165,6 @@ ScreenSetupRating::
     ; Set up feedback text for this rating
     ; Find current game's part of the rating text table
     ldh     a, [hCurrentScreen]
-    sub     a, SCREEN_GAMES_START
     ASSERT NUM_RATING_TYPES == 4
     add     a, a    ; game ID * 2
     add     a, a    ; game ID * 4
