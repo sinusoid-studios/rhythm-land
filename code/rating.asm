@@ -64,11 +64,11 @@ ScreenSetupRating::
     ; Next hit number after the last is the total number of hits in the
     ; current game
     ldh     a, [hNextHitNumber]
-    ld      d, a
+    ld      d, a    ; Save for calculating missed hit count
     add     a, a    ; Double total to give weights in 1/2s
     ld      c, a    ; c = denominator
     
-    ; Miss: Weight -0.5
+    ; Miss: Weight -1
     ld      hl, hHitPerfectCount
     ld      a, [hld]
     ASSERT hHitOkCount == hHitPerfectCount - 1
@@ -79,8 +79,9 @@ ScreenSetupRating::
     ; a = -(Perfects + OKs)
     add     a, d
     ; a = Total - Perfects - OKs = Misses
+    add     a, a    ; Weight 1
     cpl
-    inc     a       ; Weight -0.5
+    inc     a       ; Weight -1
     
     ; OK: Weight 0.5
     add     a, [hl]
