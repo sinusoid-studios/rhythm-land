@@ -13,6 +13,11 @@ SECTION UNION "Game Variables", HRAM
 hEndDelay:
     DS 1
 
+; Current position in xSquawkNoteTable, incremented every non-player
+; squawk
+hSquawkIndex:
+    DS 1
+
 SECTION "Seagull Serenade Game Setup", ROMX
 
 xGameSetupSeagullSerenade::
@@ -60,6 +65,11 @@ xGameSetupSeagullSerenade::
     ; Delay after the music ends
     ld      a, SEAGULL_SERENADE_END_DELAY
     ldh     [hEndDelay], a
+    
+    ; Index is incremented before use, so start with -1 for the first
+    ; squawk
+    ld      a, -1
+    ldh     [hSquawkIndex], a
     
     ; Set up game data
     ld      c, BANK(xHitTableSeagullSerenade)
@@ -131,6 +141,14 @@ xGameSeagullSerenade::
     
     call    EngineUpdate
     call    ActorsUpdate
+    
+    ; Play squawk sound effects
+    ld      a, [wMusicSyncData]
+    ; Squawk sync values will only use the low 3 bits
+    and     a, ~%111
+    jr      z, .squawk
+    
+.squawkDone
     ld      a, [wMusicPlayState]
     ASSERT MUSIC_STATE_STOPPED == 0
     and     a, a
@@ -144,6 +162,51 @@ xGameSeagullSerenade::
     ld      a, SCREEN_RATING
     call    TransitionStart
     jr      xGameSeagullSerenade
+
+.squawk
+    ldh     a, [hSquawkIndex]
+    inc     a
+    ldh     [hSquawkIndex], a
+    add     a, LOW(xSquawkNoteTable)
+    ld      l, a
+    ASSERT HIGH(xSquawkNoteTable.end - 1) == HIGH(xSquawkNoteTable)
+    ld      h, HIGH(xSquawkNoteTable)
+    
+    ld      b, SFX_SEAGULL_SQUAWK
+    ld      c, [hl] ; c = note
+    call    SFX_Play
+    jr      .squawkDone
+
+xSquawkNoteTable:
+    ; Seagull 1, Seagull 2
+    REPT 2
+    DB C_6, E_6
+    DB F_6, A_6
+    DB C_6, E_6
+    DB G_6, G_6
+    DB F_6, F_6
+    ENDR
+    
+    DB E_7, C_7
+    DB A_6, A_6
+    DB E_6, G_6
+    DB C_7, A_6
+    DB F_6, F_6
+    DB C_6, E_6
+    
+    DB C_6, E_6
+    DB F_6, A_6
+    DB C_6, E_6
+    DB G_6, G_6
+    DB F_6, F_6
+    
+    DB C_6, E_6
+    DB C_7, A_6
+    DB C_6, E_6
+    DB G_6, E_6
+    DB G_6, G_6
+    DB F_6, F_6
+.end
 
 SECTION "Seagull Serenade Seagull Actor", ROMX
 
@@ -239,10 +302,10 @@ xActorSeagullPlayer::
     ld      d, a
     ldh     a, [hScratch3]
     add     a, d    ; hit number * 3 + squawk type
-    add     a, LOW(xSquawkNoteTable)
+    add     a, LOW(xPlayerSquawkNoteTable)
     ld      l, a
-    ASSERT HIGH(xSquawkNoteTable.end - 1) == HIGH(xSquawkNoteTable)
-    ld      h, HIGH(xSquawkNoteTable)
+    ASSERT HIGH(xPlayerSquawkNoteTable.end - 1) == HIGH(xPlayerSquawkNoteTable)
+    ld      h, HIGH(xPlayerSquawkNoteTable)
     
     ld      b, SFX_SEAGULL_SQUAWK
     ld      e, c    ; e not destroyed by SFX_Play
@@ -253,7 +316,7 @@ xActorSeagullPlayer::
     ld      b, 0
     ret
 
-xSquawkNoteTable:
+xPlayerSquawkNoteTable:
     ; Low, Mid, High
     REPT 2
     DB B_5, D#6, G_6
