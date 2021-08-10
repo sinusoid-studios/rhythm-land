@@ -169,8 +169,10 @@ xGameSeagullSerenade::
     ldh     [hSquawkIndex], a
     add     a, LOW(xSquawkNoteTable)
     ld      l, a
-    ASSERT HIGH(xSquawkNoteTable.end - 1) == HIGH(xSquawkNoteTable)
-    ld      h, HIGH(xSquawkNoteTable)
+    ASSERT HIGH(xSquawkNoteTable.end - 1) != HIGH(xSquawkNoteTable)
+    adc     a, HIGH(xSquawkNoteTable)
+    sub     a, l
+    ld      h, a
     
     ld      b, SFX_SEAGULL_SQUAWK
     ld      c, [hl] ; c = note
@@ -304,8 +306,10 @@ xActorSeagullPlayer::
     add     a, d    ; hit number * 3 + squawk type
     add     a, LOW(xPlayerSquawkNoteTable)
     ld      l, a
-    ASSERT HIGH(xPlayerSquawkNoteTable.end - 1) == HIGH(xPlayerSquawkNoteTable)
-    ld      h, HIGH(xPlayerSquawkNoteTable)
+    ; ASSERT HIGH(xPlayerSquawkNoteTable.end - 1) != HIGH(xPlayerSquawkNoteTable)
+    adc     a, HIGH(xPlayerSquawkNoteTable)
+    sub     a, l
+    ld      h, a
     
     ld      b, SFX_SEAGULL_SQUAWK
     ld      e, c    ; e not destroyed by SFX_Play

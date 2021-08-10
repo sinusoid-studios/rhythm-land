@@ -292,10 +292,6 @@ InterruptReturn:
     ; waiting for HBlank) would result in a minimum of
     ; 20 - 7 (pop + reti) = only 13 cycles!!!
 
-SECTION FRAGMENT "LYC Value Table", ROM0, ALIGN[8]
-
-; TODO
-
 SECTION "Sound Update Interrupt Handler", ROM0
 
 UpdateSound:

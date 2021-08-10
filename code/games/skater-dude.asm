@@ -3,6 +3,7 @@ INCLUDE "constants/engine.inc"
 INCLUDE "constants/actors.inc"
 INCLUDE "constants/sfx.inc"
 INCLUDE "constants/screens.inc"
+INCLUDE "constants/interrupts.inc"
 INCLUDE "constants/transition.inc"
 INCLUDE "constants/games/skater-dude.inc"
 
@@ -19,6 +20,30 @@ hSkaterDudePosCountdown:
 
 ; Number of frames left in slo-mo
 hSloMoCountdown::
+    DS 1
+
+; Storage for the current positions of the different sections of the
+; background
+hSectionMapXPosStart:
+hBuildingMapXPos:
+.low
+    DS 1
+.high
+    DS 1
+hRoadMapXPos:
+.low
+    DS 1
+.high
+    DS 1
+hGrassMapXPos:
+.low
+    DS 1
+.high
+    DS 1
+
+hRoadSCX:
+    DS 1
+hGrassSCX:
     DS 1
 
 SECTION "Skater Dude Game Setup", ROMX
@@ -76,15 +101,30 @@ xGameSetupSkaterDude::
     ; Set initial map position
     ASSERT hMapXPos == hMapPointer + 2
     inc     l
-    ld      [hl], LOW(MAP_SKATER_DUDE_START_X)
-    inc     l
-    ld      [hl], HIGH(MAP_SKATER_DUDE_START_X)
-    ASSERT hMapYPos == hMapXPos + 2
-    inc     l
-    ASSERT MAP_SKATER_DUDE_START_Y == 0
     xor     a, a
     ld      [hli], a
+    ld      [hli], a
+    ASSERT hMapTileYPos == hMapXPos + 2
+    ld      [hli], a
+    ASSERT hMapSCX == hMapTileYPos + 1
+    ld      [hli], a
+    ASSERT hMapSCY == hMapSCX + 1
+    ld      [hli], a
+    ASSERT hMapUpdateHeight == hMapSCY + 1
+    ; Draw the entire visible map to start
+    ld      [hl], SCRN_Y_B
+    
+    ; Initialize section map positions
+    ld      l, LOW(hSectionMapXPosStart)
+    ld      [hli], a
+    ld      [hli], a
+    ld      [hli], a
+    ld      [hli], a
+    ld      [hli], a
+    ld      [hli], a
+    ld      [hli], a
     ld      [hl], a
+    
     ; Draw the initial visible map
     call    MapDraw
     
@@ -134,9 +174,51 @@ SECTION "Skater Dude Game Background Map", ROMX
 xMap:
     INCBIN "res/skater-dude/background.bg.tilemap"
 
+SECTION FRAGMENT "LYC Value Table", ROM0, ALIGN[8]
+
+LYCTableSkaterDude:
+    DB 0
+    DB MAP_SKATER_DUDE_ROAD_Y * 8 - 1
+    DB MAP_SKATER_DUDE_GRASS_Y * 8 - 1
+    DB LYC_RESET
+
+SECTION "Skater Dude Game Extra LYC Interrupt Handler", ROM0
+
+LYCHandlerSkaterDude::
+    ; Set appropriate map section's X scroll value
+    ldh     a, [rLYC]
+    cp      a, MAP_SKATER_DUDE_ROAD_Y * 8 - 1
+    jr      z, .road
+    ; Grass section
+    ldh     a, [hGrassSCX]
+    ; Z still unset
+    DB      $CA     ; jp z, a16 to consume the next 2 bytes
+.road
+    ; Road section
+    ldh     a, [hRoadSCX]
+    
+    ; Set SCX in/after HBlank
+    ld      b, a
+.waitHBlank
+    ldh     a, [rSTAT]
+    ASSERT STATF_HBL == 0
+    and     a, STAT_MODE_MASK
+    jr      nz, .waitHBlank
+    
+    ld      a, b
+    ldh     [rSCX], a
+    ret
+
 SECTION "Skater Dude Game Loop", ROMX
 
 xGameSkaterDude::
+    ; Set up extra LYC interrupts
+    ASSERT LYCTableSkaterDude - STARTOF("LYC Value Table") == 0
+    xor     a, a
+    ldh     [hLYCIndex], a
+    ldh     [hLYCResetIndex], a
+    
+.loop
     rst     WaitVBlank
     
     ldh     a, [hTransitionState]
@@ -145,18 +227,18 @@ xGameSkaterDude::
     jr      z, .noTransition
     
     call    TransitionUpdate
-    call    MapScrollLeft
+    call    .scroll
     
     ldh     a, [hTransitionState]
     ASSERT TRANSITION_STATE_OFF == 0
     and     a, a
-    jr      nz, xGameSkaterDude
+    jr      nz, .loop
     
     ; Start music
     ld      c, BANK(Music_SkaterDude)
     ld      de, Music_SkaterDude
     call    Music_Play
-    jr      xGameSkaterDude
+    jr      .loop
 
 .noTransition
     call    EngineUpdate
@@ -165,7 +247,7 @@ xGameSkaterDude::
     ldh     a, [hSloMoCountdown]
     ASSERT SKATER_DUDE_NO_SLO_MO == -1
     inc     a
-    call    z, MapScrollLeft
+    call    z, .scroll
     
     ; If the game is over, go to the overall rating screen
     ldh     a, [hSkaterDudeState]
@@ -176,14 +258,99 @@ xGameSkaterDude::
     ld      a, [hl]
     ASSERT SKATER_DUDE_NO_SLO_MO == -1
     inc     a
-    jr      z, xGameSkaterDude
+    jr      z, .loop
     dec     [hl]
-    jr      xGameSkaterDude
+    jr      .loop
 
 .finished
     ld      a, SCREEN_RATING
     call    TransitionStart
-    jr      xGameSkaterDude
+    jr      .loop
+
+.scroll
+    ; Scroll each section of the background map
+    
+    ; Scroll the grass
+    ldh     a, [hGrassMapXPos.low]
+    ldh     [hMapXPos.low], a
+    ldh     a, [hGrassMapXPos.high]
+    ldh     [hMapXPos.high], a
+    ldh     a, [hGrassSCX]
+    ldh     [hMapSCX], a
+    ld      a, MAP_SKATER_DUDE_GRASS_Y
+    ldh     [hMapTileYPos], a
+    ld      a, MAP_SKATER_DUDE_GRASS_Y * 8
+    ldh     [hMapSCY], a
+    ld      a, MAP_SKATER_DUDE_GRASS_HEIGHT
+    ldh     [hMapUpdateHeight], a
+    ; Grass scrolls 1 pixel every 3/4 frames and 2 pixels every 1/4 frames
+    ldh     a, [hFrameCounter]
+    and     a, 3        ; a = 0-3
+    ld      d, 2
+    jr      z, .grass2  ; Scroll 2 pixels if a = 0
+    dec     d           ; Scroll 1 pixel otherwise
+.grass2
+    call    MapScrollLeft
+    ; Save new position
+    ldh     a, [hMapXPos.low]
+    ldh     [hGrassMapXPos.low], a
+    ldh     a, [hMapXPos.high]
+    ldh     [hGrassMapXPos.high], a
+    ldh     a, [hMapSCX]
+    ldh     [hGrassSCX], a
+    
+    ; Scroll the road
+    ldh     a, [hRoadMapXPos.low]
+    ldh     [hMapXPos.low], a
+    ldh     a, [hRoadMapXPos.high]
+    ldh     [hMapXPos.high], a
+    ldh     a, [hRoadSCX]
+    ldh     [hMapSCX], a
+    ld      a, MAP_SKATER_DUDE_ROAD_Y
+    ldh     [hMapTileYPos], a
+    ld      a, MAP_SKATER_DUDE_ROAD_Y * 8
+    ldh     [hMapSCY], a
+    ld      a, MAP_SKATER_DUDE_ROAD_HEIGHT
+    ldh     [hMapUpdateHeight], a
+    ; Road scrolls 1 pixel every frame
+    ld      d, 1
+    call    MapScrollLeft
+    ; Save new position
+    ldh     a, [hMapXPos.low]
+    ldh     [hRoadMapXPos.low], a
+    ldh     a, [hMapXPos.high]
+    ldh     [hRoadMapXPos.high], a
+    ldh     a, [hMapSCX]
+    ldh     [hRoadSCX], a
+    
+    ; Scroll the buildings
+    ; Buildings scroll 1 pixel every 3/4 frames
+    ldh     a, [hFrameCounter]
+    and     a, 3    ; a = 0-3
+    ret     z       ; Only scroll if a = 1-3
+    
+    ldh     a, [hBuildingMapXPos.low]
+    ldh     [hMapXPos.low], a
+    ldh     a, [hBuildingMapXPos.high]
+    ldh     [hMapXPos.high], a
+    ldh     a, [hSCX]
+    ldh     [hMapSCX], a
+    ld      a, MAP_SKATER_DUDE_BUILDING_Y
+    ldh     [hMapTileYPos], a
+    ld      a, MAP_SKATER_DUDE_BUILDING_Y * 8
+    ldh     [hMapSCY], a
+    ld      a, MAP_SKATER_DUDE_BUILDING_HEIGHT
+    ldh     [hMapUpdateHeight], a
+    ld      d, 1
+    call    MapScrollLeft
+    ; Save new position
+    ldh     a, [hMapXPos.low]
+    ldh     [hBuildingMapXPos.low], a
+    ldh     a, [hMapXPos.high]
+    ldh     [hBuildingMapXPos.high], a
+    ldh     a, [hMapSCX]
+    ldh     [hSCX], a
+    ret
 
 SECTION "Skater Dude Danger Alert Cue", ROMX
 

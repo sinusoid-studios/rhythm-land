@@ -18,16 +18,24 @@ hMapPointer::
 .high::
     DS 1
 
-; Position, in pixels, of the viewport to the current background map
+; X position, in pixels, of the viewport to the current background map
 hMapXPos::
 .low::
     DS 1
 .high::
     DS 1
-hMapYPos::
-.low::
+; Y position, in tiles, of the viewport the the current background map
+hMapTileYPos::
     DS 1
-.high::
+
+hMapSCX::
+    DS 1
+hMapSCY::
+    DS 1
+
+; Number of tiles to copy to the edge of the screen if a tile boundary
+; is crossed
+hMapUpdateHeight::
     DS 1
 
 SECTION "Background Map Drawing", ROM0
@@ -37,7 +45,7 @@ SECTION "Background Map Drawing", ROM0
 MapDraw::
     ; Reset scroll
     xor     a, a
-    ldh     [hSCX], a
+    ldh     [hMapSCX], a
     
     ; Get X tile position
     ld      hl, hMapXPos
@@ -59,43 +67,52 @@ MapDraw::
     ld      a, b
     call    MapDrawColumn.posOk
     pop     bc
-    ldh     a, [hSCX]
+    ldh     a, [hMapSCX]
     add     a, 8
-    ldh     [hSCX], a
+    ldh     [hMapSCX], a
     inc     b
     dec     c
     jr      nz, .loop
     
     ; Reset scroll again
     xor     a, a
-    ldh     [hSCX], a
+    ldh     [hMapSCX], a
     ret
 
 SECTION "Background Map Scrolling", ROM0
 
-; Scroll the background map to the left by 1 pixel
+; Scroll the background map to the left
+; WARNING: A scroll distance of 8 pixels or greater will not work
+; properly, as only a single column of tiles is copied when a tile
+; boundary is crossed
+; @param    d   Scroll distance, in pixels
 MapScrollLeft::
-    ; Update hSCX
-    ldh     a, [hSCX]
-    dec     a
-    ldh     [hSCX], a
+    ; Update hMapSCX
+    ldh     a, [hMapSCX]
+    sub     a, d
+    ldh     [hMapSCX], a
     
     ; Update map position
     ld      hl, hMapXPos
-    ld      a, [hl]     ; Low byte
-    sub     a, LOW(1)
+    ld      a, [hl] ; Low byte
+    sub     a, d
+    ld      b, [hl] ; Save old position for comparing
     ld      [hli], a
     jr      nc, .noBorrow
-    dec     [hl]        ; High byte
+    dec     [hl]    ; High byte
 .noBorrow
     ; Check if just scrolled past a tile boundary
-    ; Ignore non-pixel bits ("tile bits")
-    or      a, ~7
-    ; If just moved to the next tile (%XXXXX000 -> %XXXXX111), a should
-    ; now be %11111111, increment to get 0 if scrolled to new tile
-    inc     a
+    ; Ignore pixel bits -> looking at which tile
+    and     a, ~7
+    ; A tile boundary has been crossed if the new tile bits don't match
+    ; the old tile bits
+    ld      c, a
+    ld      a, b    ; b = old position
+    and     a, ~7
+    ; Check if old and new tile positions are the same
+    cp      a, c
     ; Didn't scroll to a new tile, finished
-    ret     nz
+    ret     z
     
     ; Scrolled to a new tile -> load a new column of tiles
     
@@ -131,12 +148,12 @@ MapDrawColumn:
     rl      b           ; pos * 4
     add     a, a
     rl      b           ; pos * 8
-    ; Scroll a pixel left
-    sub     a, LOW(1)
+    ; Scroll left by the scroll distance
+    sub     a, d
     dec     l
     ld      [hli], a    ; Low byte
     ld      a, b
-    sbc     a, HIGH(1)
+    sbc     a, 0
     ld      [hld], a    ; High byte
     
     ld      a, [hli]    ; Low byte
@@ -160,16 +177,7 @@ MapDrawColumn:
     ; de = x * height
     
     ; Get Y tile position
-    ld      hl, hMapYPos
-    ld      a, [hli]    ; Low byte
-    ld      b, [hl]     ; High byte
-    srl     b
-    rra                 ; pos / 2
-    srl     b
-    rra                 ; pos / 4
-    srl     b
-    rra                 ; pos / 8
-    
+    ldh     a, [hMapTileYPos]
     ld      l, a
     ld      h, 0
     add     hl, de
@@ -193,20 +201,27 @@ MapDrawColumn:
     ld      [rROMB0], a
     
     ; Copy map data to the background map
-    ldh     a, [hSCY]
-    ; a = y * 8
-    and     a, (SCRN_VY_B - 1) << 3
+    ldh     a, [hMapSCY]
+    rrca    ; y / 2
+    rrca    ; y / 4
+    rrca    ; y / 8
+    and     a, SCRN_VY_B - 1
+    ; a = tile y
     ldh     [hScratch2], a
+    add     a, a    ; tile y * 2
+    add     a, a    ; tile y * 4
+    add     a, a    ; tile y * 8
     ld      l, a
     ld      h, 0
-    add     hl, hl      ; y * 16
-    add     hl, hl      ; y * 32
+    add     hl, hl  ; tile y * 16
+    add     hl, hl  ; tile y * 32
     
-    ldh     a, [hSCX]
-    srl     a           ; x / 2
-    srl     a           ; x / 4
-    srl     a           ; x / 8
+    ldh     a, [hMapSCX]
+    rrca    ; x / 2
+    rrca    ; x / 4
+    rrca    ; x / 8
     and     a, SCRN_VX_B - 1
+    ; a = tile x
     ld      c, a
     ld      b, HIGH(_SCRN0)
     add     hl, bc
@@ -214,7 +229,7 @@ MapDrawColumn:
     
     ld      bc, SCRN_VX_B
     ; Loop count
-    ld      a, SCRN_Y_B
+    ldh     a, [hMapUpdateHeight]
     ldh     [hScratch1], a
 .drawLoop
     ldh     a, [rSTAT]
