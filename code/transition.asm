@@ -91,7 +91,7 @@ TransitionUpdate::
     
     ldh     [hTransitionIndex], a
     ; Set first block's position before LY 0
-    add     a, LOW(TransitionPosTable)
+    ASSERT LOW(TransitionPosTable) == 0
     ld      l, a
     ASSERT HIGH(TransitionPosTable.end - 1) == HIGH(TransitionPosTable)
     ld      h, HIGH(TransitionPosTable)
@@ -203,7 +203,7 @@ TransitionUpdate::
     
     ldh     [hTransitionIndex], a
     ; Set first block's position before LY 0
-    add     a, LOW(TransitionPosTable)
+    ASSERT LOW(TransitionPosTable) == 0
     ld      l, a
     ASSERT HIGH(TransitionPosTable.end - 1) == HIGH(TransitionPosTable)
     ld      h, HIGH(TransitionPosTable)
