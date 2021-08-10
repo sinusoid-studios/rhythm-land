@@ -42,8 +42,12 @@ Initialize::
     ASSERT LYC_INDEX_NONE == -1
     ldh     [hLYCIndex], a
     
+    ; Reset frame counter
+    xor     a, a
+    ldh     [hFrameCounter], a
+    
     ; Set current bank number
-    ld      a, 1
+    inc     a   ; a = 1
     ldh     [hCurrentBank], a
     
     ; Clear OAM

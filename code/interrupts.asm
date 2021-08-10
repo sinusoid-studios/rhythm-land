@@ -41,6 +41,11 @@ VBlankHandler:
     ldh     a, [hOBP1]
     ldh     [rOBP1], a
     
+    ; Increment frame counter
+    ldh     a, [hFrameCounter]
+    inc     a
+    ldh     [hFrameCounter], a
+    
     push    bc
     
     ld      a, HIGH(wShadowOAM)

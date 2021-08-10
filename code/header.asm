@@ -49,6 +49,12 @@ hScratch2::
 hScratch3::
     DS 1
 
+SECTION "Frame Counter", HRAM
+
+; Increments every VBlank, used for some timing
+hFrameCounter::
+    DS 1
+
 SECTION "Random Number Variable", HRAM
 
 ; A random-ish number, modified when Random is called
