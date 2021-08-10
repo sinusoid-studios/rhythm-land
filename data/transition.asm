@@ -28,3 +28,12 @@ TransitionPosTable::
         ENDC
     ENDR
 .end::
+
+SECTION "Screen Transition Block Position Table", ROM0, ALIGN[8]
+
+TransitionBlockLYCTable::
+    FOR Y, 1, SCRN_Y_B
+        DB Y * 8 - 1
+    ENDR
+    ; Go back to the sound update interrupt after the last block
+    DB 0

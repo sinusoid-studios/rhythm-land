@@ -2,6 +2,7 @@ INCLUDE "constants/hardware.inc"
 INCLUDE "constants/other-hardware.inc"
 INCLUDE "constants/actors.inc"
 INCLUDE "constants/transition.inc"
+INCLUDE "constants/interrupts.inc"
 INCLUDE "macros/misc.inc"
 
 SECTION "Screen Transition Variables", HRAM
@@ -107,6 +108,9 @@ TransitionUpdate::
     ; The screen is now entirely covered, so setup for the next screen
     ; can be done!
     
+    ; Disable extra LYC interrupts
+    ld      a, LYC_INDEX_NONE
+    ldh     [hLYCIndex], a
     ; Stop updating the window mid-frame and ensure the LYC interrupt is
     ; for the sound update
     xor     a, a

@@ -75,6 +75,21 @@ hOBP0::
 hOBP1::
     DS 1
 
+SECTION "LYC Value Variables", HRAM
+
+; Whether or not the current LYC interrupt is an "extra" LYC interrupt
+; 0 = False, Non-zero = True
+hLYCFlag::
+    DS 1
+
+; Current position in LYCTable
+hLYCIndex::
+    DS 1
+; Value to rest hLYCIndex to when LYC_RESET is found at the current
+; position in LYCTable
+hLYCResetIndex::
+    DS 1
+
 SECTION "Current Screen ID", HRAM
 
 ; The ID of the current screen

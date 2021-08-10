@@ -2,6 +2,7 @@ INCLUDE "constants/hardware.inc"
 INCLUDE "constants/actors.inc"
 INCLUDE "constants/screens.inc"
 INCLUDE "constants/transition.inc"
+INCLUDE "constants/interrupts.inc"
 
 SECTION "Initialization", ROM0
 
@@ -21,6 +22,7 @@ Initialize::
     ; Reset variables
     ; a = 0
     ldh     [hVBlankFlag], a
+    ldh     [hLYCFlag], a
     ldh     [hNextHitKeys], a
     ldh     [hSCX], a
     ldh     [rSCX], a
@@ -35,6 +37,10 @@ Initialize::
     dec     a       ; a = $FF = all pressed
     ; Make all keys pressed so hNewKeys is correct
     ldh     [hPressedKeys], a
+    
+    ; Disable extra LYC interrupts
+    ASSERT LYC_INDEX_NONE == -1
+    ldh     [hLYCIndex], a
     
     ; Set current bank number
     ld      a, 1

@@ -23,3 +23,10 @@ ScreenSetupTable::
     full_pointer ScreenSetupMuseum
     full_pointer ScreenSetupRating
 .end::
+
+SECTION "Extra LYC Interrupt Handler Table", ROM0, ALIGN[8]
+
+LYCHandlerTable::
+    ; TODO
+    DW $FE00
+.end::
