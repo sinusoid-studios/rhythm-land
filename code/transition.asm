@@ -32,8 +32,8 @@ TransitionStart::
     ; Save next screen's ID
     ldh     [hTransitionNextScreen], a
     
-    ; Signal transition coming in
-    ld      a, TRANSITION_STATE_IN
+    ; Signal transitioning out
+    ld      a, TRANSITION_STATE_OUT
     ldh     [hTransitionState], a
     
     ; Reset transition position index
@@ -78,12 +78,12 @@ TransitionUpdate::
     ; Advance the transition
     ; Get transition direction
     ldh     a, [hTransitionState]
-    ASSERT TRANSITION_STATE_IN == 1
+    ASSERT TRANSITION_STATE_OUT == 1
     dec     a
     ldh     a, [hTransitionIndex]
-    jr      nz, .goingOut
+    jr      nz, .transitionIn
     
-    ; Transition is coming in
+    ; Transitioning out
     inc     a
     ; Check if this part of the transition is over
     cp      a, TransitionPosTable.end - TransitionPosTable
@@ -98,8 +98,8 @@ TransitionUpdate::
     ld      a, [hl]
     ldh     [rWX], a
     
-    ; This must also be called when the transition is going out if it
-    ; cuts into that time
+    ; This must also be called when transitioning in if it cuts into
+    ; that time
     ASSERT TRANSITION_MUSIC_FADE_SPEED * 8 <= TRANSITION_DURATION + TRANSITION_DELAY
     jp      MusicFadeOut
 
@@ -162,8 +162,8 @@ TransitionUpdate::
     ldh     [hScratch1], a
     jr      nz, .delayLoop
     
-    ; Start moving the transition out
-    ld      a, TRANSITION_STATE_OUT
+    ; Start transitioning in
+    ld      a, TRANSITION_STATE_IN
     ldh     [hTransitionState], a
     
     ; Animate this part in reverse
@@ -195,8 +195,8 @@ TransitionUpdate::
     ld      l, a
     jp      hl
 
-.goingOut
-    ; Transition is going out
+.transitionIn
+    ; Transitioning into the next screen
     dec     a
     ; Check if this part of the transition is over
     jr      z, .finished
