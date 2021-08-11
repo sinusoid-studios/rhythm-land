@@ -155,17 +155,23 @@ TransitionUpdate::
     ld      a, [hli]
     ld      h, [hl]
     ld      l, a
+    
+    ; Get the frame number of when to start the transition in
+    ldh     a, [hFrameCounter]
+    add     a, TRANSITION_DELAY
+    ldh     [hTransitionIndex], a
+    
     rst     JP_HL
     
-    ; Delay a little bit
-    ld      a, TRANSITION_DELAY
-    ldh     [hScratch1], a
 .delayLoop
     rst     WaitVBlank
     call    MusicFadeOut
-    ldh     a, [hScratch1]
-    dec     a
-    ldh     [hScratch1], a
+    ; Wait until the frame counter reaches
+    ; Setup start frame + TRANSITION_DELAY
+    ldh     a, [hFrameCounter]
+    ld      b, a
+    ldh     a, [hTransitionIndex]
+    cp      a, b
     jr      nz, .delayLoop
     
     ; Start transitioning in
