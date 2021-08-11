@@ -177,10 +177,9 @@ xMap:
 SECTION FRAGMENT "LYC Value Table", ROM0, ALIGN[8]
 
 LYCTableSkaterDude:
-    DB 0
     DB MAP_SKATER_DUDE_ROAD_Y * 8 - 1
     DB MAP_SKATER_DUDE_GRASS_Y * 8 - 1
-    DB LYC_RESET
+    DB LYC_FRAME_END
 
 SECTION "Skater Dude Game Extra LYC Interrupt Handler", ROM0
 

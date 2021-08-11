@@ -46,6 +46,10 @@ VBlankHandler:
     inc     a
     ldh     [hFrameCounter], a
     
+    ; Reset the extra LYC index
+    ldh     a, [hLYCResetIndex]
+    ldh     [hLYCIndex], a
+    
     push    bc
     
     ld      a, HIGH(wShadowOAM)
@@ -176,7 +180,7 @@ STATHandler:
     ld      a, l    ; l = WX value
     ldh     [rWX], a
     
-.setupNextInterrupt
+.setUpNextInterrupt
     ; Get next transition block's LYC value
     ASSERT LOW(TransitionBlockLYCTable) == 0
     ld      l, b    ; b = block index
@@ -200,16 +204,22 @@ STATHandler:
     ; Get next LYC value
     ASSERT LOW(STARTOF("LYC Value Table")) == 0
     ld      l, a
-    ld      h, HIGH(STARTOF("LYC Value Table"))
+    ASSERT HIGH(STARTOF("LYC Value Table")) == HIGH(TransitionBlockLYCTable) + 1
+    inc     h
+    ; If there are no more extra LYC values for the frame, the
+    ; transition wins
+    ld      a, [hl]
+    ASSERT LYC_FRAME_END == -1
+    inc     a
+    jr      z, .frameEnd
     ; Compare with the next transition block's LYC value so the earlier
     ; one goes first
     ldh     a, [rLYC]
     cp      a, [hl]
     jr      c, InterruptReturn
     ; The extra LYC interrupt comes before the next transition block
-    ld      a, [hli]
+    ld      a, [hl]
     ldh     [rLYC], a
-    ld      a, [hl]     ; Get next extra LYC value
     ; Move on to the next LYC
     ld      hl, hLYCIndex
     inc     [hl]
@@ -217,12 +227,12 @@ STATHandler:
     ASSERT hLYCFlag == hLYCIndex - 1
     dec     l
     ld      [hl], h     ; Non-zero
-    ; Check if the next extra LYC value is the reset value
-    ASSERT LYC_RESET == -1
-    inc     a
-    jr      nz, InterruptReturn
-    ; The next extra LYC value is the reset value -> reset LYC index
-    ldh     a, [hLYCResetIndex]
+    jr      InterruptReturn
+
+.frameEnd
+    ; Set the LYC index to none to speed up checking a bit
+    ASSERT LYC_INDEX_NONE == LYC_FRAME_END
+    dec     a   ; Undo inc
     ldh     [hLYCIndex], a
     jr      InterruptReturn
 
@@ -240,6 +250,16 @@ STATHandler:
     ; Call it
     rst     JP_HL
     
+    ; Check if currently transitioning
+    ldh     a, [hTransitionState]
+    ; Transition state bit 0:
+    ; 0 = off OR midway setup and delay
+    ; 1 = transitioning in OR transitioning out
+    ASSERT TRANSITION_STATE_OUT & 1 == 1 && TRANSITION_STATE_IN & 1 == 1
+    ASSERT TRANSITION_STATE_MID & 1 == 0 && TRANSITION_STATE_OFF & 1 == 0
+    rra     ; Move bit 0 to carry
+    jr      nc, .setUpNextLYC
+    
     ; Find the next transition block's index for setting up the next
     ; interrupt
     ldh     a, [rLYC]
@@ -251,7 +271,11 @@ STATHandler:
     rrca        ; a / 8
     and     a, %00011111
     ld      b, a    ; .setupNextInterrupt expects block index in b
-    jr      .setupNextInterrupt
+    jr      .setUpNextInterrupt
+
+.setUpNextLYC
+    call    SetUpNextLYC
+    ; Fall-through
 
 InterruptReturn:
     pop     hl
@@ -292,6 +316,41 @@ InterruptReturn:
     ; waiting for HBlank) would result in a minimum of
     ; 20 - 7 (pop + reti) = only 13 cycles!!!
 
+SECTION "Set Up Next Extra LYC Interrupt", ROM0
+
+SetUpNextLYC:
+    ; Check for extra LYC interrupts
+    ldh     a, [hLYCIndex]
+    ASSERT LYC_INDEX_NONE == -1
+    inc     a
+    ret     z
+    dec     a   ; Undo inc
+    ; Get next LYC value
+    ASSERT LOW(STARTOF("LYC Value Table")) == 0
+    ld      l, a
+    ld      h, HIGH(STARTOF("LYC Value Table"))
+    ; Check if there are no more extra LYC values for the frame
+    ld      a, [hl]
+    ASSERT LYC_FRAME_END == -1
+    inc     a
+    jr      z, .frameEnd
+    dec     a   ; Undo inc
+    ldh     [rLYC], a
+    ; Move on to the next LYC
+    ld      hl, hLYCIndex
+    inc     [hl]
+    ; Set the extra LYC interrupt flag
+    ASSERT hLYCFlag == hLYCIndex - 1
+    dec     l
+    ld      [hl], h     ; Non-zero
+    ret
+
+.frameEnd
+    ; Next is the sound update
+    ; a = 0
+    ldh     [rLYC], a
+    ret
+
 SECTION "Sound Update Interrupt Handler", ROM0
 
 UpdateSound:
@@ -307,28 +366,9 @@ UpdateSound:
     ; Set up next interrupt
     ld      a, TRANSITION_BLOCK_HEIGHT - 1
     ldh     [rLYC], a
+    jr      .noSetLYC
 .noTransition
-    ldh     a, [hLYCIndex]
-    ASSERT LYC_INDEX_NONE == -1
-    inc     a
-    jr      z, .noSetLYC
-    dec     a
-    ASSERT LOW(STARTOF("LYC Value Table")) == 0
-    ld      l, a
-    ld      h, HIGH(STARTOF("LYC Value Table"))
-    ld      a, [hli]
-    ldh     [rLYC], a
-    ld      a, [hl]
-    ld      hl, hLYCIndex
-    inc     [hl]
-    ASSERT hLYCFlag == hLYCIndex - 1
-    dec     l
-    ld      [hl], h     ; Non-zero
-    ASSERT LYC_RESET == -1
-    inc     a
-    jr      nz, .noSetLYC
-    ldh     a, [hLYCResetIndex]
-    ldh     [hLYCIndex], a
+    call    SetUpNextLYC
 .noSetLYC
     
     ; Just updating sound, which is interruptable

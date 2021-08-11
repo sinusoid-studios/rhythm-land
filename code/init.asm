@@ -41,6 +41,7 @@ Initialize::
     ; Disable extra LYC interrupts
     ASSERT LYC_INDEX_NONE == -1
     ldh     [hLYCIndex], a
+    ldh     [hLYCResetIndex], a
     
     ; Reset frame counter
     xor     a, a
