@@ -124,7 +124,7 @@ ActorsUpdate::
     ldh     [hScratch1], a
     
     ; Update actor's regular animation
-    call    ActorsUpdateAnimation
+    call    ActorUpdateAnimation
     
     ; Check for override animation
     ld      hl, wActorCelOverrideTable
@@ -157,7 +157,7 @@ ActorsUpdate::
     ld      a, c
     add     a, MAX_ACTOR_COUNT
     ld      c, a
-    call    ActorsUpdateAnimation
+    call    ActorUpdateAnimation
     pop     bc
     
 .updatePosition
@@ -246,10 +246,8 @@ ActorsUpdate::
     ldh     a, [hScratch1]  ; a = actor type
     add     a, LOW(ActorMetaspriteTable)
     ld      l, a
-    ASSERT HIGH(ActorMetaspriteTable.end - 1) != HIGH(ActorMetaspriteTable)
-    adc     a, HIGH(ActorMetaspriteTable)
-    sub     a, l
-    ld      h, a
+    ASSERT HIGH(ActorMetaspriteTable.end - 1) == HIGH(ActorMetaspriteTable)
+    ld      h, HIGH(ActorMetaspriteTable)
     
     ; Point hl to actor's type's meta-sprite table
     ld      a, [hli]
@@ -505,7 +503,7 @@ SECTION "Actor Animation Update", ROM0
 ; Update an actor's animation cel countdown and update its cel number as
 ; well if necessary
 ; @param    bc  Actor index
-ActorsUpdateAnimation:
+ActorUpdateAnimation:
     ; Update actor's animation cel countdown
     ld      hl, wActorCelCountdownTable
     add     hl, bc
@@ -755,10 +753,8 @@ ActorSetCel::
     ldh     a, [hScratch1]  ; a = actor type * 3
     add     a, LOW(ActorAnimationTable)
     ld      l, a
-    ; ASSERT HIGH(ActorAnimationTable.end - 1) != HIGH(ActorAnimationTable)
-    adc     a, HIGH(ActorAnimationTable)
-    sub     a, l
-    ld      h, a
+    ASSERT HIGH(ActorAnimationTable.end - 1) == HIGH(ActorAnimationTable)
+    ld      h, HIGH(ActorAnimationTable)
     
     ; Point hl to actor's type's animation table
     ld      a, [hli]
@@ -777,34 +773,8 @@ ActorSetCel::
     adc     a, d
     sub     a, l
     ld      h, a
-    ; Check if tiles need to be copied first
-    ld      a, [hli]
-    cp      a, ANIMATION_SET_TILES
-    jr      nz, .setDuration
-    
-    ; First copy tiles
-    push    hl
-    call    ActorSetTiles
-    ; Update cel number to skip the command (4 bytes)
-    ld      hl, wActorCelTable
-    add     hl, bc
-    inc     [hl]    ; Command + HIGH(Tile pointer)
-    inc     [hl]    ; LOW(Tile pointer) + length
-    pop     hl
-    ; Skip over tile pointer + byte count + next meta-sprite number
-    ld      a, l
-    add     a, 4
-    ld      l, a
-    ld      a, h
-    ASSERT HIGH(MAX_ACTOR_COUNT) == 0
-    adc     a, b    ; b = 0
-    ld      h, a
-.setDuration
-    ; Set animation cel countdown
-    ld      a, [hl] ; a = cel duration
-    ld      hl, wActorCelCountdownTable
-    add     hl, bc
-    ld      [hl], a
+    ; Take care of any commands and set the cel duration
+    call    ActorUpdateAnimation.advanceAnimation
     
     ; Restore bank
     pop     af
