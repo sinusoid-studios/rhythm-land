@@ -89,17 +89,17 @@ SECTION "Background Map Scrolling", ROM0
 ; WARNING: A scroll distance of 8 pixels or greater will not work
 ; properly, as only a single column of tiles is copied when a tile
 ; boundary is crossed
-; @param    d   Scroll distance, in pixels
+; @param    b   Scroll distance, in pixels
 MapScrollLeft::
     ; Update hMapSCX
     ldh     a, [hMapSCX]
-    sub     a, d
+    sub     a, b
     ldh     [hMapSCX], a
     
     ; Update map position
     ld      hl, hMapXPos
     ld      a, [hl] ; Low byte
-    sub     a, d
+    sub     a, b
     ld      b, [hl] ; Save old position for comparing
     ld      [hli], a
     jr      nc, .noBorrow
@@ -152,16 +152,19 @@ MapDrawColumn:
     rl      b           ; pos * 4
     add     a, a
     rl      b           ; pos * 8
-    ; Scroll left by the scroll distance
-    sub     a, d
+    ld      c, a
+    ; Adjust position with previous underflow
     dec     l
-    ld      [hli], a    ; Low byte
-    ld      a, b
-    sbc     a, 0
-    ld      [hld], a    ; High byte
-    
     ld      a, [hli]    ; Low byte
-    ld      b, [hl]     ; High byte
+    ld      h, [hl]     ; High byte
+    ld      l, a
+    add     hl, bc
+    ld      a, h
+    ldh     [hMapXPos.high], a
+    ld      a, l
+    ldh     [hMapXPos.low], a
+    ld      b, h
+    ; a = low byte, b = high byte
     jr      .getPos
 
 .posOk

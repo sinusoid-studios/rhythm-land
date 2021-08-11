@@ -318,9 +318,9 @@ xGameSkaterDude::
     ; Grass scrolls 1 pixel every 3/4 frames and 2 pixels every 1/4 frames
     ldh     a, [hFrameCounter]
     and     a, 3        ; a = 0-3
-    ld      d, 2
+    ld      b, 2
     jr      z, .grass2  ; Scroll 2 pixels if a = 0
-    dec     d           ; Scroll 1 pixel otherwise
+    dec     b           ; Scroll 1 pixel otherwise
 .grass2
     call    MapScrollLeft
     ; Save new position
@@ -354,7 +354,7 @@ xGameSkaterDude::
     ld      [hl], MAP_SKATER_DUDE_ROAD_Y * 8
     
     ; Road scrolls 1 pixel every frame
-    ld      d, 1
+    ld      b, 1
     call    MapScrollLeft
     ; Save new position
     ldh     a, [hMapXPos.low]
@@ -398,8 +398,7 @@ xGameSkaterDude::
     ASSERT hMapSCY == hMapSCX + 1
     ld      [hl], MAP_SKATER_DUDE_SIDEWALK_Y * 8
     
-    ; Road scrolls 1 pixel every frame
-    ld      d, 1
+    ld      b, 1
     call    MapScrollLeft
     ; Save new position
     ldh     a, [hMapXPos.low]
@@ -434,7 +433,7 @@ xGameSkaterDude::
     ASSERT hMapSCY == hMapSCX + 1
     ld      [hl], MAP_SKATER_DUDE_BUILDING_Y * 8
     
-    ld      d, 1
+    ld      b, 1
     call    MapScrollLeft
     ; Save new position
     ldh     a, [hMapXPos.low]
