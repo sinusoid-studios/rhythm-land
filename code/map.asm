@@ -28,14 +28,17 @@ hMapXPos::
 hMapTileYPos::
     DS 1
 
-hMapSCX::
-    DS 1
-hMapSCY::
-    DS 1
-
 ; Number of tiles to copy to the edge of the screen if a tile boundary
 ; is crossed
 hMapUpdateHeight::
+    DS 1
+
+; SCX and SCY values, but not hSCX and hSCY because they shouldn't be
+; copied to rSCX and rSCY
+; The game must set hSCX and hSCY appropriately itself
+hMapSCX::
+    DS 1
+hMapSCY::
     DS 1
 
 SECTION "Background Map Drawing", ROM0
@@ -46,6 +49,7 @@ MapDraw::
     ; Reset scroll
     xor     a, a
     ldh     [hMapSCX], a
+    ldh     [hMapSCY], a
     
     ; Get X tile position
     ld      hl, hMapXPos
@@ -74,7 +78,7 @@ MapDraw::
     dec     c
     jr      nz, .loop
     
-    ; Reset scroll again
+    ; Reset modified X scroll
     xor     a, a
     ldh     [hMapSCX], a
     ret

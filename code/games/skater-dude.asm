@@ -24,8 +24,12 @@ hSloMoCountdown::
 
 ; Storage for the current positions of the different sections of the
 ; background
-hSectionMapXPosStart:
 hBuildingMapXPos:
+.low
+    DS 1
+.high
+    DS 1
+hSidewalkMapXPos:
 .low
     DS 1
 .high
@@ -41,9 +45,14 @@ hGrassMapXPos:
 .high
     DS 1
 
+hSidewalkSCX:
+    DS 1
 hRoadSCX:
     DS 1
 hGrassSCX:
+    DS 1
+
+hSidewalkScrollTimer:
     DS 1
 
 SECTION "Skater Dude Game Setup", ROMX
@@ -106,24 +115,32 @@ xGameSetupSkaterDude::
     ld      [hli], a
     ASSERT hMapTileYPos == hMapXPos + 2
     ld      [hli], a
-    ASSERT hMapSCX == hMapTileYPos + 1
-    ld      [hli], a
-    ASSERT hMapSCY == hMapSCX + 1
-    ld      [hli], a
-    ASSERT hMapUpdateHeight == hMapSCY + 1
+    ASSERT hMapUpdateHeight == hMapTileYPos + 1
     ; Draw the entire visible map to start
     ld      [hl], SCRN_Y_B
     
     ; Initialize section map positions
-    ld      l, LOW(hSectionMapXPosStart)
+    ld      l, LOW(hBuildingMapXPos)
     ld      [hli], a
     ld      [hli], a
+    ASSERT hSidewalkMapXPos == hBuildingMapXPos + 2
     ld      [hli], a
     ld      [hli], a
+    ASSERT hRoadMapXPos == hSidewalkMapXPos + 2
     ld      [hli], a
     ld      [hli], a
+    ASSERT hGrassMapXPos == hRoadMapXPos + 2
     ld      [hli], a
-    ld      [hl], a
+    ld      [hli], a
+    ASSERT hSidewalkSCX == hGrassMapXPos + 2
+    ld      [hli], a
+    ASSERT hRoadSCX == hSidewalkSCX + 1
+    ld      [hli], a
+    ASSERT hGrassSCX == hRoadSCX + 1
+    ld      [hli], a
+    
+    ASSERT hSidewalkScrollTimer == hGrassSCX + 1
+    ld      [hli], a
     
     ; Draw the initial visible map
     call    MapDraw
@@ -177,6 +194,7 @@ xMap:
 SECTION FRAGMENT "LYC Value Table", ROM0, ALIGN[8]
 
 LYCTableSkaterDude:
+    DB MAP_SKATER_DUDE_SIDEWALK_Y * 8 - 1
     DB MAP_SKATER_DUDE_ROAD_Y * 8 - 1
     DB MAP_SKATER_DUDE_GRASS_Y * 8 - 1
     DB LYC_FRAME_END
@@ -186,16 +204,20 @@ SECTION "Skater Dude Game Extra LYC Interrupt Handler", ROM0
 LYCHandlerSkaterDude::
     ; Set appropriate map section's X scroll value
     ldh     a, [rLYC]
+    cp      a, MAP_SKATER_DUDE_SIDEWALK_Y * 8 - 1
+    jr      z, .sidewalk
     cp      a, MAP_SKATER_DUDE_ROAD_Y * 8 - 1
     jr      z, .road
     ; Grass section
     ldh     a, [hGrassSCX]
-    ; Z still unset
-    DB      $CA     ; jp z, a16 to consume the next 2 bytes
+    jr      .set
 .road
-    ; Road section
     ldh     a, [hRoadSCX]
-    
+    ; Z still set
+    DB      $C2     ; jp nz, a16 to consume the next 2 bytes
+.sidewalk
+    ldh     a, [hSidewalkSCX]
+.set
     ; Set SCX in/after HBlank
     ld      b, a
 .waitHBlank
@@ -322,11 +344,47 @@ xGameSkaterDude::
     ldh     a, [hMapSCX]
     ldh     [hRoadSCX], a
     
-    ; Scroll the buildings
-    ; Buildings scroll 1 pixel every 3/4 frames
+    ; Scroll the sidewalk
+    ; Sidewalk scrolls 1 pixel every 5/8 frames
+    ldh     a, [hSidewalkScrollTimer]
+    ld      c, a
+    and     a, ~7
+    ld      b, a
+    ld      a, c
+    add     a, 5
+    ldh     [hSidewalkScrollTimer], a
+    and     a, ~7
+    cp      a, b
+    jr      z, .scrollBuildings
+    
+    ldh     a, [hSidewalkMapXPos.low]
+    ldh     [hMapXPos.low], a
+    ldh     a, [hSidewalkMapXPos.high]
+    ldh     [hMapXPos.high], a
+    ldh     a, [hSidewalkSCX]
+    ldh     [hMapSCX], a
+    ld      a, MAP_SKATER_DUDE_SIDEWALK_Y
+    ldh     [hMapTileYPos], a
+    ld      a, MAP_SKATER_DUDE_SIDEWALK_Y * 8
+    ldh     [hMapSCY], a
+    ld      a, MAP_SKATER_DUDE_SIDEWALK_HEIGHT
+    ldh     [hMapUpdateHeight], a
+    ; Road scrolls 1 pixel every frame
+    ld      d, 1
+    call    MapScrollLeft
+    ; Save new position
+    ldh     a, [hMapXPos.low]
+    ldh     [hSidewalkMapXPos.low], a
+    ldh     a, [hMapXPos.high]
+    ldh     [hSidewalkMapXPos.high], a
+    ldh     a, [hMapSCX]
+    ldh     [hSidewalkSCX], a
+    
+.scrollBuildings
+    ; Buildings scroll 1 pixel every other frame
     ldh     a, [hFrameCounter]
-    and     a, 3    ; a = 0-3
-    ret     z       ; Only scroll if a = 1-3
+    and     a, 1
+    ret     z
     
     ldh     a, [hBuildingMapXPos.low]
     ldh     [hMapXPos.low], a
