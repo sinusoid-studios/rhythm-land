@@ -141,6 +141,7 @@ STATHandler:
     ; Need to set WX -> get current position
     ld      a, l    ; a = [rLYC]
     inc     a       ; LYC offset by -1
+.updateTransition
     ; Divide by 8 to get block index
     ASSERT TRANSITION_BLOCK_HEIGHT == 8
     ; a will be a multiple of 8
@@ -264,6 +265,14 @@ STATHandler:
     ; interrupt
     ldh     a, [rLYC]
     inc     a   ; LYC offset by -1
+    ld      b, a
+    ; If a transition block also appears this scanline, update that as
+    ; well
+    and     a, TRANSITION_BLOCK_HEIGHT - 1
+    ld      a, b
+    jr      z, .updateTransition
+    
+    ; Set up the next block's interrupt
     ; Divide by 8 to get block index
     ASSERT TRANSITION_BLOCK_HEIGHT == 8
     rrca        ; a / 2
