@@ -57,7 +57,7 @@ xActorSeagull3Animation::
 
 .missedNote
     set_tiles missedNote, 6
-    cel resting1, ANIMATION_DURATION_FOREVER
+    override_end
 
 xActorSeagull3Tiles:
 .resting

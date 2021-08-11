@@ -208,14 +208,14 @@ xSquawkNoteTable:
     DB F_6, F_6
 .end
 
-SECTION "Seagull Serenade Seagull Actor", ROMX
+SECTION "Seagull Serenade Seagull Actors", ROMX
 
 xActorSeagull::
     ; Check for sync actions
     ld      a, [wMusicSyncData]
     ASSERT SYNC_NONE == -1
     inc     a
-    ret     z
+    jr      z, xActorSeagullNoSquawk
     
     ; Add 1 to compensate for inc
     cp      a, SYNC_SEAGULL_SERENADE_GROOVE + 1
@@ -227,7 +227,7 @@ xActorSeagull::
     ld      d, a    ; Save for checking type of squawk
     and     a, 1    ; a = 0 or 1
     cp      a, c    ; c = actor index (0 or 1)
-    ret     nz
+    jr      nz, xActorSeagullNoSquawk
     
     ; Squawk the right squawk
     ld      a, d    ; d = sync data
@@ -252,8 +252,6 @@ xActorSeagull::
     ; Stop bobbing and start to really get in the groove
     ld      a, CEL_SEAGULL_GROOVE
     jp      ActorSetCel
-
-SECTION "Seagull Serenade Seagull Player Actor", ROMX
 
 xActorSeagullPlayer::
     ; Check for sync actions
@@ -282,7 +280,7 @@ xActorSeagullPlayer::
     ; Up -> high squawk
     inc     [hl]
     bit     PADB_UP, a
-    ret     z
+    jr      z, xActorSeagullNoSquawk
     
     ld      a, CEL_SEAGULL_HIGH
     call    ActorSetAnimationOverride
@@ -304,10 +302,8 @@ xActorSeagullPlayer::
     add     a, d    ; hit number * 3 + squawk type
     add     a, LOW(xPlayerSquawkNoteTable)
     ld      l, a
-    ; ASSERT HIGH(xPlayerSquawkNoteTable.end - 1) != HIGH(xPlayerSquawkNoteTable)
-    adc     a, HIGH(xPlayerSquawkNoteTable)
-    sub     a, l
-    ld      h, a
+    ASSERT HIGH(xPlayerSquawkNoteTable.end - 1) == HIGH(xPlayerSquawkNoteTable)
+    ld      h, HIGH(xPlayerSquawkNoteTable)
     
     ld      b, SFX_SEAGULL_SQUAWK
     ld      e, c    ; e not destroyed by SFX_Play
@@ -317,6 +313,31 @@ xActorSeagullPlayer::
     ASSERT HIGH(MAX_ACTOR_COUNT) == HIGH(0)
     ld      b, 0
     ret
+
+xActorSeagullNoSquawk:
+    ; If the player missed this hit (is late enough), switch to the
+    ; missed note reaction
+    ldh     a, [hLastHit.low]
+    cp      a, HIT_MISS_DELAY
+    ret     nz
+    ldh     a, [hLastHit.high]
+    ASSERT HIGH(HIT_MISS_DELAY) == 0
+    and     a, a
+    ret     nz
+    
+    ; It's late enough, but did the player already get an OK or Perfect
+    ; squawk?
+    ldh     a, [hNextHitNumber]
+    ld      e, a
+    ldh     a, [hLastRatedHitNumber]
+    inc     a       ; Comparing with next hit number
+    cp      a, e
+    ; The player already made this hit -> they're not late
+    ret     nc
+    
+    ; Switch to the missed note reaction
+    ld      a, CEL_SEAGULL_MISSED_NOTE
+    jp      ActorSetAnimationOverride
 
 xPlayerSquawkNoteTable:
     ; Low, Mid, High
