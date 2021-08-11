@@ -111,6 +111,8 @@ TransitionUpdate::
     ; Disable extra LYC interrupts
     ld      a, LYC_INDEX_NONE
     ldh     [hLYCIndex], a
+    ldh     [hLYCResetIndex], a
+    
     ; Stop updating the window mid-frame and ensure the LYC interrupt is
     ; for the sound update
     xor     a, a
