@@ -29,25 +29,27 @@ hBuildingMapXPos:
     DS 1
 .high
     DS 1
+
 hSidewalkMapXPos:
 .low
     DS 1
 .high
     DS 1
+hSidewalkSCX:
+    DS 1
+
 hRoadMapXPos:
 .low
     DS 1
 .high
     DS 1
+hRoadSCX:
+    DS 1
+
 hGrassMapXPos:
 .low
     DS 1
 .high
-    DS 1
-
-hSidewalkSCX:
-    DS 1
-hRoadSCX:
     DS 1
 hGrassSCX:
     DS 1
@@ -126,17 +128,17 @@ xGameSetupSkaterDude::
     ASSERT hSidewalkMapXPos == hBuildingMapXPos + 2
     ld      [hli], a
     ld      [hli], a
-    ASSERT hRoadMapXPos == hSidewalkMapXPos + 2
+    ASSERT hSidewalkSCX == hSidewalkMapXPos + 2
+    ld      [hli], a
+    ASSERT hRoadMapXPos == hSidewalkSCX + 1
     ld      [hli], a
     ld      [hli], a
-    ASSERT hGrassMapXPos == hRoadMapXPos + 2
+    ASSERT hRoadSCX == hRoadMapXPos + 2
+    ld      [hli], a
+    ASSERT hGrassMapXPos == hRoadSCX + 1
     ld      [hli], a
     ld      [hli], a
-    ASSERT hSidewalkSCX == hGrassMapXPos + 2
-    ld      [hli], a
-    ASSERT hRoadSCX == hSidewalkSCX + 1
-    ld      [hli], a
-    ASSERT hGrassSCX == hRoadSCX + 1
+    ASSERT hGrassSCX == hGrassMapXPos + 2
     ld      [hli], a
     
     ASSERT hSidewalkScrollTimer == hGrassSCX + 1
@@ -292,18 +294,27 @@ xGameSkaterDude::
     ; Scroll each section of the background map
     
     ; Scroll the grass
-    ldh     a, [hGrassMapXPos.low]
-    ldh     [hMapXPos.low], a
-    ldh     a, [hGrassMapXPos.high]
-    ldh     [hMapXPos.high], a
-    ldh     a, [hGrassSCX]
-    ldh     [hMapSCX], a
-    ld      a, MAP_SKATER_DUDE_GRASS_Y
-    ldh     [hMapTileYPos], a
-    ld      a, MAP_SKATER_DUDE_GRASS_Y * 8
-    ldh     [hMapSCY], a
-    ld      a, MAP_SKATER_DUDE_GRASS_HEIGHT
-    ldh     [hMapUpdateHeight], a
+    ld      hl, hMapXPos
+    ld      de, hGrassMapXPos
+    ld      a, [de]     ; hGrassMapXPos.low
+    ld      [hli], a    ; hMapXPos.low
+    inc     e
+    ld      a, [de]     ; hGrassMapXPos.high
+    ld      [hli], a    ; hMapXPos.high
+    ASSERT hMapTileYPos == hMapXPos + 2
+    ld      [hl], MAP_SKATER_DUDE_GRASS_Y
+    ASSERT hMapUpdateHeight == hMapTileYPos + 1
+    inc     l
+    ld      [hl], MAP_SKATER_DUDE_GRASS_HEIGHT
+    ASSERT hGrassSCX == hGrassMapXPos + 2
+    inc     e
+    ld      a, [de]
+    ASSERT hMapSCX == hMapUpdateHeight + 1
+    inc     l
+    ld      [hli], a
+    ASSERT hMapSCY == hMapSCX + 1
+    ld      [hl], MAP_SKATER_DUDE_GRASS_Y * 8
+    
     ; Grass scrolls 1 pixel every 3/4 frames and 2 pixels every 1/4 frames
     ldh     a, [hFrameCounter]
     and     a, 3        ; a = 0-3
@@ -321,18 +332,27 @@ xGameSkaterDude::
     ldh     [hGrassSCX], a
     
     ; Scroll the road
-    ldh     a, [hRoadMapXPos.low]
-    ldh     [hMapXPos.low], a
-    ldh     a, [hRoadMapXPos.high]
-    ldh     [hMapXPos.high], a
-    ldh     a, [hRoadSCX]
-    ldh     [hMapSCX], a
-    ld      a, MAP_SKATER_DUDE_ROAD_Y
-    ldh     [hMapTileYPos], a
-    ld      a, MAP_SKATER_DUDE_ROAD_Y * 8
-    ldh     [hMapSCY], a
-    ld      a, MAP_SKATER_DUDE_ROAD_HEIGHT
-    ldh     [hMapUpdateHeight], a
+    ld      hl, hMapXPos
+    ld      de, hRoadMapXPos
+    ld      a, [de]     ; hRoadMapXPos.low
+    ld      [hli], a    ; hMapXPos.low
+    inc     e
+    ld      a, [de]     ; hRoadMapXPos.high
+    ld      [hli], a    ; hMapXPos.high
+    ASSERT hMapTileYPos == hMapXPos + 2
+    ld      [hl], MAP_SKATER_DUDE_ROAD_Y
+    ASSERT hMapUpdateHeight == hMapTileYPos + 1
+    inc     l
+    ld      [hl], MAP_SKATER_DUDE_ROAD_HEIGHT
+    ASSERT hRoadSCX == hRoadMapXPos + 2
+    inc     e
+    ld      a, [de]
+    ASSERT hMapSCX == hMapUpdateHeight + 1
+    inc     l
+    ld      [hli], a
+    ASSERT hMapSCY == hMapSCX + 1
+    ld      [hl], MAP_SKATER_DUDE_ROAD_Y * 8
+    
     ; Road scrolls 1 pixel every frame
     ld      d, 1
     call    MapScrollLeft
@@ -357,18 +377,27 @@ xGameSkaterDude::
     cp      a, b
     jr      z, .scrollBuildings
     
-    ldh     a, [hSidewalkMapXPos.low]
-    ldh     [hMapXPos.low], a
-    ldh     a, [hSidewalkMapXPos.high]
-    ldh     [hMapXPos.high], a
-    ldh     a, [hSidewalkSCX]
-    ldh     [hMapSCX], a
-    ld      a, MAP_SKATER_DUDE_SIDEWALK_Y
-    ldh     [hMapTileYPos], a
-    ld      a, MAP_SKATER_DUDE_SIDEWALK_Y * 8
-    ldh     [hMapSCY], a
-    ld      a, MAP_SKATER_DUDE_SIDEWALK_HEIGHT
-    ldh     [hMapUpdateHeight], a
+    ld      hl, hMapXPos
+    ld      de, hSidewalkMapXPos
+    ld      a, [de]     ; hSidewalkMapXPos.low
+    ld      [hli], a    ; hMapXPos.low
+    inc     e
+    ld      a, [de]     ; hSidewalkMapXPos.high
+    ld      [hli], a    ; hMapXPos.high
+    ASSERT hMapTileYPos == hMapXPos + 2
+    ld      [hl], MAP_SKATER_DUDE_SIDEWALK_Y
+    ASSERT hMapUpdateHeight == hMapTileYPos + 1
+    inc     l
+    ld      [hl], MAP_SKATER_DUDE_SIDEWALK_HEIGHT
+    ASSERT hSidewalkSCX == hSidewalkMapXPos + 2
+    inc     e
+    ld      a, [de]
+    ASSERT hMapSCX == hMapUpdateHeight + 1
+    inc     l
+    ld      [hli], a
+    ASSERT hMapSCY == hMapSCX + 1
+    ld      [hl], MAP_SKATER_DUDE_SIDEWALK_Y * 8
+    
     ; Road scrolls 1 pixel every frame
     ld      d, 1
     call    MapScrollLeft
@@ -386,18 +415,25 @@ xGameSkaterDude::
     and     a, 1
     ret     z
     
-    ldh     a, [hBuildingMapXPos.low]
-    ldh     [hMapXPos.low], a
-    ldh     a, [hBuildingMapXPos.high]
-    ldh     [hMapXPos.high], a
+    ld      hl, hMapXPos
+    ld      de, hBuildingMapXPos
+    ld      a, [de]     ; hBuildingMapXPos.low
+    ld      [hli], a    ; hMapXPos.low
+    inc     e
+    ld      a, [de]     ; hBuildingMapXPos.high
+    ld      [hli], a    ; hMapXPos.high
+    ASSERT hMapTileYPos == hMapXPos + 2
+    ld      [hl], MAP_SKATER_DUDE_BUILDING_Y
+    ASSERT hMapUpdateHeight == hMapTileYPos + 1
+    inc     l
+    ld      [hl], MAP_SKATER_DUDE_BUILDING_HEIGHT
     ldh     a, [hSCX]
-    ldh     [hMapSCX], a
-    ld      a, MAP_SKATER_DUDE_BUILDING_Y
-    ldh     [hMapTileYPos], a
-    ld      a, MAP_SKATER_DUDE_BUILDING_Y * 8
-    ldh     [hMapSCY], a
-    ld      a, MAP_SKATER_DUDE_BUILDING_HEIGHT
-    ldh     [hMapUpdateHeight], a
+    ASSERT hMapSCX == hMapUpdateHeight + 1
+    inc     l
+    ld      [hli], a
+    ASSERT hMapSCY == hMapSCX + 1
+    ld      [hl], MAP_SKATER_DUDE_BUILDING_Y * 8
+    
     ld      d, 1
     call    MapScrollLeft
     ; Save new position
