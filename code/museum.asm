@@ -121,7 +121,7 @@ ScreenSetupMuseum::
     add     a, a    ; a * SCRN_VX_B * 2 or JUKEBOX_LINE_GAP
     ld      e, a
     ld      d, 0
-    ASSERT HIGH((MusicNameTable.end - MusicNameTable) / (1 + 2) * JUKEBOX_LINE_GAP) != 0
+    ASSERT WARN, HIGH((MusicNameTable.end - MusicNameTable) / (1 + 2) * JUKEBOX_LINE_GAP) != 0
     rl      d       ; Carry from last `add a, a`
     add     hl, de
     call    SetPenPosition

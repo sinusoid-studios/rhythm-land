@@ -375,10 +375,8 @@ ActorNew::
     add     a, l    ; a * 3 (+Bank)
     add     a, LOW(ActorAnimationTable)
     ld      l, a
-    ; ASSERT HIGH(ActorAnimationTable.end - 1) != HIGH(ActorAnimationTable)
-    adc     a, HIGH(ActorAnimationTable)
-    sub     a, l
-    ld      h, a
+    ASSERT HIGH(ActorAnimationTable.end - 1) == HIGH(ActorAnimationTable)
+    ld      h, HIGH(ActorAnimationTable)
     
     ; Save current bank to restore when finished
     ldh     a, [hCurrentBank]
@@ -657,7 +655,7 @@ ActorSetTiles:
     swap    a       ; actor index * 16
     ASSERT MAX_ACTOR_COUNT & ~$0F == 0
     ; No need to clear low nibble (already 0)
-    ASSERT HIGH(MAX_ACTOR_COUNT * 16 * 2) != 0
+    ASSERT WARN, HIGH(MAX_ACTOR_COUNT * 16 * 2) != 0
     ; High byte won't be 0 after the next x2 -> move to hl
     ld      l, a
     ld      h, HIGH($8000 >> 4)

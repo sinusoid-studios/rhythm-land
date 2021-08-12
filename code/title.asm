@@ -274,7 +274,7 @@ xActorTitle::
     inc     a       ; Skip actor type to get to actor position
     add     a, LOW(ActorStarDefinitions)
     ld      l, a
-    ASSERT HIGH(ActorStarDefinitions.end - 1) != HIGH(ActorStarDefinitions)
+    ASSERT WARN, HIGH(ActorStarDefinitions.end - 1) != HIGH(ActorStarDefinitions)
     adc     a, HIGH(ActorStarDefinitions)
     sub     a, l
     ld      h, a
