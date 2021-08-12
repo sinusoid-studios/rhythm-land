@@ -375,10 +375,9 @@ UpdateSound:
     ; Set up next interrupt
     ld      a, TRANSITION_BLOCK_HEIGHT - 1
     ldh     [rLYC], a
-    jr      .noSetLYC
+    ; Carry still set
 .noTransition
-    call    SetUpNextLYC
-.noSetLYC
+    call    nc, SetUpNextLYC
     
     ; Just updating sound, which is interruptable
     ei
