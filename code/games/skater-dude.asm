@@ -315,13 +315,11 @@ xGameSkaterDude::
     ASSERT hMapSCY == hMapSCX + 1
     ld      [hl], MAP_SKATER_DUDE_GRASS_Y * 8
     
-    ; Grass scrolls 1 pixel every 3/4 frames and 2 pixels every 1/4 frames
+    ; Grass scrolls 1 pixel every other frame and 2 pixels every other frame
     ldh     a, [hFrameCounter]
-    and     a, 3        ; a = 0-3
-    ld      b, 2
-    jr      z, .grass2  ; Scroll 2 pixels if a = 0
-    dec     b           ; Scroll 1 pixel otherwise
-.grass2
+    and     a, 1    ; a = 0 or 1
+    inc     a       ; a = 1 or 2
+    ld      b, a
     call    MapScrollLeft
     ; Save new position
     ldh     a, [hMapXPos.low]
