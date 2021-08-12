@@ -111,7 +111,8 @@ EngineInit::
 
 SECTION "Engine Update", ROM0
 
-; Advance a frame in the cue table
+; Advance a frame in the hit table, rate any hits the player makes, and
+; call cue handlers
 EngineUpdate::
     ldh     a, [hNewKeys]
     and     a, a
