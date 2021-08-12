@@ -57,7 +57,8 @@ hHitPerfectCount::
 ; times
 hNextHitNumber::
     DS 1
-; Index of the last hit the player made, used for
+; Index of the last hit the player made, used for determining what to do
+; in games where not all of the same type of hit do the same thing
 hLastPlayerHitNumber::
     DS 1
 ; Index of the last hit the player made that wasn't a Miss or Bad, used
@@ -291,6 +292,10 @@ EngineUpdate::
     and     a, ~HITF_RELEASE    ; Can't use `res` because it doesn't change Z
     ; No wrong keys
     jr      z, .noHit
+    
+    ; Set last player hit number
+    ldh     a, [hScratch1]  ; This hit's number
+    ldh     [hLastPlayerHitNumber], a
     
     ld      l, LOW(hHitBadCount)
 .wrongCountLoop
