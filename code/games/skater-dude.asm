@@ -5,6 +5,7 @@ INCLUDE "constants/sfx.inc"
 INCLUDE "constants/screens.inc"
 INCLUDE "constants/interrupts.inc"
 INCLUDE "constants/transition.inc"
+INCLUDE "constants/cues.inc"
 INCLUDE "constants/games/skater-dude.inc"
 
 SECTION UNION "Game Variables", HRAM
@@ -55,6 +56,10 @@ hGrassSCX:
     DS 1
 
 hSidewalkScrollTimer:
+    DS 1
+
+; The current frame the building bounce effect is on
+hBuildingBounceIndex:
     DS 1
 
 SECTION "Skater Dude Game Setup", ROMX
@@ -144,6 +149,12 @@ xGameSetupSkaterDude::
     ASSERT hSidewalkScrollTimer == hGrassSCX + 1
     ld      [hli], a
     
+    ASSERT hBuildingBounceIndex == hSidewalkScrollTimer + 1
+    ; Start with buildings not bouncing
+    ASSERT BUILDING_NOT_BOUNCING == -1
+    dec     a
+    ld      [hl], a
+    
     ; Draw the initial visible map
     call    MapDraw
     
@@ -193,35 +204,125 @@ SECTION "Skater Dude Game Background Map", ROMX
 xMap:
     INCBIN "res/skater-dude/background.bg.tilemap"
 
+SECTION "Skater Dude Game Building Bounce Table", ROM0
+
+; Quadratic ease-out, for scaling the buildings
+; Formula from <https://gizma.com/easing>
+; Resulting values to be written to SCY each scanline
+BuildingBounceTable:
+    ; Start stretched and end normal ("bounce")
+    DEF START EQU (BUILDING_TOP - BUILDING_BOUNCE_HEIGHT) << 16
+    DEF END EQU BUILDING_TOP << 16
+    DEF CHANGE EQU END - START
+    
+    DEF DURATION = 0
+    
+    FOR TIME, 1, BUILDING_BOUNCE_DURATION + 1
+        DEF TIME_FRACTION = DIV(TIME << 16, BUILDING_BOUNCE_DURATION << 16)
+        DEF BOUNCE = (MUL(-CHANGE, MUL(TIME_FRACTION, TIME_FRACTION - 2.0)) + START) >> 16
+        IF BOUNCE != 0
+            REDEF DURATION = DURATION + 1
+            ; Generate an SCY value for each scanline between the top of
+            ; the screen and the bottom of the buildings
+            FOR SCANLINE, 0, BUILDING_BOTTOM, 2
+                ; Get the "scanline" from the original image to use on
+                ; this scanline
+                DEF SCALED_SCANLINE_FRACTION = DIV((SCANLINE - BOUNCE) << 16, (BUILDING_BOTTOM - BOUNCE) << 16)
+                DEF ORIGINAL_SCANLINE = FLOOR(MUL(SCALED_SCANLINE_FRACTION, (BUILDING_BOTTOM - 0) << 16)) >> 16
+                ; Value for SCY, offset by -LY
+                DB ORIGINAL_SCANLINE - SCANLINE
+            ENDR
+        ENDC
+    ENDR
+    
+    REDEF BUILDING_BOUNCE_DURATION EQU DURATION
+
+SECTION "Skater Dude Game Building Bounce Index Lookup Table", ROM0, ALIGN[8]
+
+BuildingBouncePointerTable:
+    FOR INDEX, BUILDING_BOUNCE_DURATION
+        DW BuildingBounceTable + INDEX * ((BUILDING_BOTTOM - 0) / 2)
+    ENDR
+.end
 
 SECTION "Skater Dude Game Extra LYC Interrupt Handler", ROM0
 
 LYCHandlerSkaterDude::
-    ; Set appropriate map section's X scroll value
+    ; If this scanline is before the parallax change, this is for
+    ; scaling the buildings
     ldh     a, [rLYC]
     cp      a, MAP_SKATER_DUDE_SIDEWALK_Y * 8 - 1
-    jr      z, .sidewalk
-    cp      a, MAP_SKATER_DUDE_ROAD_Y * 8 - 1
-    jr      z, .road
-    ; Grass section
-    ldh     a, [hGrassSCX]
-    jr      .set
-.road
-    ldh     a, [hRoadSCX]
-    ; Z still set
-    DB      $C2     ; jp nz, a16 to consume the next 2 bytes
-.sidewalk
-    ldh     a, [hSidewalkSCX]
-.set
-    ; Set SCX in/after HBlank
-    ld      b, a
-.waitHBlank
+    jr      nc, .parallax
+    
+    ld      c, a
+    ; If the buildings aren't currently bouncing, there's nothing to do
+    ldh     a, [hBuildingBounceIndex]
+    ASSERT BUILDING_NOT_BOUNCING == -1
+    inc     a
+    ret     z
+    
+    ; Adjust for -1 LYC offset
+    inc     c
+    ; LYC interrupts spread out every 2 scanlines but the values in the
+    ; tables are consecutive
+    srl     c
+    
+    ; Get a pointer to the SCY value to use
+    dec     a       ; Undo inc
+    add     a, a
+    ASSERT LOW(BuildingBouncePointerTable) == 0
+    ld      l, a
+    ASSERT HIGH(BuildingBouncePointerTable.end - 1) == HIGH(BuildingBouncePointerTable)
+    ld      h, HIGH(BuildingBouncePointerTable)
+    ld      a, [hli]
+    ld      h, [hl]
+    ld      l, a
+    ; c = scanline index
+    ld      b, 0
+    add     hl, bc
+.waitHBlankBounce
     ldh     a, [rSTAT]
     ASSERT STATF_HBL == 0
     and     a, STAT_MODE_MASK
-    jr      nz, .waitHBlank
+    jr      nz, .waitHBlankBounce
     
-    ld      a, b
+    ld      a, [hl]
+    ldh     [rSCY], a
+    ret
+
+.parallax
+    ; Set appropriate map section's X scroll value
+    ldh     a, [rLYC]
+    cp      a, MAP_SKATER_DUDE_SIDEWALK_Y * 8 - 1
+    ld      c, LOW(hSidewalkSCX)
+    jr      z, .sidewalk
+    cp      a, MAP_SKATER_DUDE_ROAD_Y * 8 - 1
+    ld      c, LOW(hRoadSCX)
+    jr      z, .waitHBlankParallax
+    ld      c, LOW(hGrassSCX)
+.waitHBlankParallax
+    ; Set SCX at the end of the scanline
+    ldh     a, [rSTAT]
+    ASSERT STATF_HBL == 0
+    and     a, STAT_MODE_MASK
+    jr      nz, .waitHBlankParallax
+    
+    ldh     a, [c]
+    ldh     [rSCX], a
+    ret
+
+.sidewalk
+    ; Set SCY and SCX at the end of the scanline
+    ldh     a, [rSTAT]
+    ASSERT STATF_HBL == 0
+    and     a, STAT_MODE_MASK
+    jr      nz, .sidewalk
+    
+    ; Reset SCY in case the buildings are bouncing
+    ; SCY should always be 0 for everything but the buildings
+    ; a = 0
+    ldh     [rSCY], a
+    ldh     a, [c]
     ldh     [rSCX], a
     ret
 
@@ -231,7 +332,6 @@ xGameSkaterDude::
     ; Set up extra LYC interrupts
     ASSERT LYCTable.skaterDude - LYCTable == 0
     xor     a, a
-    ldh     [hLYCIndex], a
     ldh     [hLYCResetIndex], a
     
 .loop
@@ -257,8 +357,50 @@ xGameSkaterDude::
     jr      .loop
 
 .noTransition
-    call    EngineUpdate
+    ; Update hSCY for LY 0 if the buildings are bouncing
+    ldh     a, [hBuildingBounceIndex]
+    inc     a
+    jr      z, .noBounce
     
+    ; Save the already incremented index for updating
+    ld      c, a
+    
+    ; Get a pointer to the SCY value to use
+    dec     a       ; Undo inc
+    add     a, a
+    ASSERT LOW(BuildingBouncePointerTable) == 0
+    ld      l, a
+    ASSERT HIGH(BuildingBouncePointerTable.end - 1) == HIGH(BuildingBouncePointerTable)
+    ld      h, HIGH(BuildingBouncePointerTable)
+    ld      a, [hli]
+    ld      h, [hl]
+    ld      l, a
+    ld      a, [hl]
+    ldh     [hSCY], a
+    
+    ; Increment the frame index
+    ld      a, c    ; c = [hBuildingBounceIndex] + 1
+    ; If the bounce is over, set the index to BUILDING_NOT_BOUNCING
+    cp      a, BUILDING_BOUNCE_DURATION
+    jr      c, .continueBouncing
+    ld      a, BUILDING_NOT_BOUNCING
+.continueBouncing
+    ldh     [hBuildingBounceIndex], a
+.noBounce
+    ; Check if it's time to start the building bounce
+    ld      a, [wMusicSyncData]
+    ASSERT SYNC_NONE == -1
+    inc     a
+    jr      z, .noStartBounce
+    ; All sync values except the obstacle cue land on a beat
+    ; Add 1 to compensate for inc
+    cp      a, CUE_OBSTACLE + 1
+    jr      z, .noStartBounce
+    ; Reset the frame index to 0
+    xor     a, a
+    ldh     [hBuildingBounceIndex], a
+.noStartBounce
+    call    EngineUpdate
     call    ActorsUpdate
     ldh     a, [hSloMoCountdown]
     ASSERT SKATER_DUDE_NO_SLO_MO == -1
