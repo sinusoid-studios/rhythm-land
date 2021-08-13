@@ -186,8 +186,9 @@ STATHandler:
     ; Get the current screen's extra LYC interrupt handler
     ldh     a, [hCurrentScreen]
     add     a, a
-    ASSERT LOW(LYCHandlerTable) == 0 && HIGH(LYCHandlerTable.end - 1) == HIGH(LYCHandlerTable)
+    ASSERT LOW(LYCHandlerTable) == 0
     ld      l, a
+    ASSERT HIGH(LYCHandlerTable.end - 1) == HIGH(LYCHandlerTable)
     ld      h, HIGH(LYCHandlerTable)
     ; Get the pointer to the handler
     ld      a, [hli]
@@ -302,9 +303,10 @@ SetUpNextLYCTransition:
     ret     z
     dec     a   ; Undo inc
     ; Get next LYC value
-    ASSERT LOW(STARTOF("LYC Value Table")) == 0
+    ASSERT LOW(LYCTable) == 0
     ld      l, a
-    ld      h, HIGH(STARTOF("LYC Value Table"))
+    ASSERT HIGH(LYCTable.end - 1) == HIGH(LYCTable)
+    ld      h, HIGH(LYCTable)
     ; If there are no more extra LYC values for the frame, the
     ; transition wins
     ld      a, [hl]
@@ -345,9 +347,10 @@ SetUpNextLYC:
     ret     z
     dec     a   ; Undo inc
     ; Get next LYC value
-    ASSERT LOW(STARTOF("LYC Value Table")) == 0
+    ASSERT LOW(LYCTable) == 0
     ld      l, a
-    ld      h, HIGH(STARTOF("LYC Value Table"))
+    ASSERT HIGH(LYCTable.end - 1) == HIGH(LYCTable)
+    ld      h, HIGH(LYCTable)
     ; Check if there are no more extra LYC values for the frame
     ld      a, [hl]
     ASSERT LYC_FRAME_END == -1

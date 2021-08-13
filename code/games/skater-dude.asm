@@ -193,13 +193,6 @@ SECTION "Skater Dude Game Background Map", ROMX
 xMap:
     INCBIN "res/skater-dude/background.bg.tilemap"
 
-SECTION FRAGMENT "LYC Value Table", ROM0, ALIGN[8]
-
-LYCTableSkaterDude:
-    DB MAP_SKATER_DUDE_SIDEWALK_Y * 8 - 1
-    DB MAP_SKATER_DUDE_ROAD_Y * 8 - 1
-    DB MAP_SKATER_DUDE_GRASS_Y * 8 - 1
-    DB LYC_FRAME_END
 
 SECTION "Skater Dude Game Extra LYC Interrupt Handler", ROM0
 
@@ -236,7 +229,7 @@ SECTION "Skater Dude Game Loop", ROMX
 
 xGameSkaterDude::
     ; Set up extra LYC interrupts
-    ASSERT LYCTableSkaterDude - STARTOF("LYC Value Table") == 0
+    ASSERT LYCTable.skaterDude - LYCTable == 0
     xor     a, a
     ldh     [hLYCIndex], a
     ldh     [hLYCResetIndex], a
