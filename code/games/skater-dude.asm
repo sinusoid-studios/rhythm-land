@@ -208,7 +208,9 @@ SECTION "Skater Dude Game Building Bounce Table", ROM0
 
 ; Quadratic ease-out, for scaling the buildings
 ; Formula from <https://gizma.com/easing>
-; Resulting values to be written to SCY each scanline
+; Resulting values to be written to SCY every other scanline
+; Updated every other scanline instead of every scanline because LYC
+; interrupt juggling is too slow
 BuildingBounceTable:
     ; Start stretched and end normal ("bounce")
     DEF START EQU (BUILDING_TOP - BUILDING_BOUNCE_HEIGHT) << 16

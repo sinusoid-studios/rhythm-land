@@ -91,7 +91,7 @@ hLYCFlag::
 ; Current position in LYCTable
 hLYCIndex::
     DS 1
-; Value to rest hLYCIndex to when LYC_RESET is found at the current
+; Value to reset hLYCIndex to when LYC_RESET is found at the current
 ; position in LYCTable
 hLYCResetIndex::
     DS 1
