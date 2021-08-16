@@ -19,6 +19,12 @@ PATTERN_OK0:
     DB $09, $02, $0F, $0D, $01, $21, $04, $01, $15, $09, $02, $13, $0B, $02, $01, $0B, $01, $22, $04, $02, $13, $0B, $01, $09, $09, $0D, $01, $21, $04, $01, $15, $09
     DB $02, $13, $0B, $02, $01, $00, $13, $07
 
+SECTION "OK Theme Pattern 1", ROMX
+
+PATTERN_OK1:
+    DB $0A
+    DB $0A, $01, $22, $04, $01, $0A, $09, $00, $03, $01, $23, $04, $01, $0B, $09, $0B, $01, $22, $04, $01, $0A, $09, $0B, $01, $21, $04, $01, $09, $09, $00, $09, $07
+
 SECTION "OK Theme End Pattern", ROMX
 
 PATTERN_OKLAST:
@@ -29,6 +35,7 @@ PATTERN_OKLAST:
 SECTION "OK Theme Pattern Table", ROMX
 
 Music_OK::
+    DW PATTERN_OK1, BANK(PATTERN_OK1)
     DW PATTERN_OK0, BANK(PATTERN_OK0)
     DW PATTERN_OKLAST, BANK(PATTERN_OKLAST)
 
