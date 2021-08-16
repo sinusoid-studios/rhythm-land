@@ -270,6 +270,40 @@ ScreenRating::
     ld      c, RATING_GRAPHIC_HEIGHT
     call    LCDMemcopyMap
     
+    ; Start the rating theme
+    ; Get pointer to music data for this rating type
+    ldh     a, [hRatingType]
+    add     a, a    ; rating type * 2 (Inst pointer)
+    ld      b, a
+    add     a, a    ; rating type * 4 (Music pointer)
+    add     a, b    ; rating type * 6 (Inst bank + Music bank)
+    add     a, LOW(RatingThemeTable)
+    ld      l, a
+    ASSERT HIGH(RatingThemeTable.end - 1) == HIGH(RatingThemeTable)
+    ld      h, HIGH(RatingThemeTable)
+    ; Prepare Insts
+    ld      a, [hli]
+    ld      c, a    ; c = bank number
+    ld      a, [hli]
+    ld      e, a
+    ; Don't use `ld d, [hl]` because the auto-increment is needed for
+    ; getting the Music pointer
+    ld      a, [hli]
+    ld      d, a
+    ; de = Inst pointer
+    push    hl  ; Save to get the Music pointer
+    call    Music_PrepareInst
+    
+    ; Play Music
+    pop     hl
+    ld      a, [hli]
+    ld      c, a    ; c = bank number
+    ld      a, [hli]
+    ld      d, [hl]
+    ld      e, a
+    ; de = Music pointer
+    call    Music_Play
+    
     ; Wait for player input
 .wait
     rst     WaitVBlank
