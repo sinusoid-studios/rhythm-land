@@ -688,8 +688,8 @@ InitializeVariables:
 	ld	[hl+],a	; wCurrentSongID
 	ld	[hl+],a	; wSongID
 	ld	[hl+],a	; wSFXID
-	ld	[hl+],a	; hPressedKeys
-	ld	[hl],a	; hNewKeys
+	ldh	[hPressedKeys],a
+	ldh	[hNewKeys],a
 	ret
 
 ;--------------------------------------------------------------
