@@ -1,7 +1,10 @@
 ; Pointer including bank number (bank, low, high)
 MACRO full_pointer
-    DB BANK(\1)
-    DW \1
+    REPT _NARG
+        DB BANK(\1)
+        DW \1
+        SHIFT
+    ENDR
 ENDM
 
 ; Load 2 separate values into the halves of a register pair at the same time
