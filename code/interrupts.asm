@@ -62,13 +62,13 @@ VBlankHandler:
     
     ; Read D-Pad
     ld      a, P1F_GET_DPAD
-    call    .readPadNibble
+    call    ReadPadNibble
     swap    a           ; Move directions to high nibble
     ld      b, a
     
     ; Read buttons
     ld      a, P1F_GET_BTN
-    call    .readPadNibble
+    call    ReadPadNibble
     xor     a, b        ; Combine buttons and directions + complement
     ld      b, a
     
@@ -107,9 +107,11 @@ VBlankHandler:
     pop     af
     ret         ; Interrupts already enabled
 
+SECTION "VBlank Interrupt Handler Joypad Reading", ROM0
+
 ; @param    a   Value to write to rP1
 ; @return   a   Reading from rP1, ignoring non-input bits (forced high)
-.readPadNibble
+ReadPadNibble:
     ldh     [rP1], a
     ; Burn 16 cycles between write and read
     call    .ret        ; 10 cycles
