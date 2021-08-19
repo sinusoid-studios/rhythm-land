@@ -55,9 +55,6 @@ hGrassMapXPos:
 hGrassSCX:
     DS 1
 
-hSidewalkScrollTimer:
-    DS 1
-
 ; The current frame the building bounce effect is on
 hBuildingBounceIndex:
     DS 1
@@ -146,10 +143,7 @@ xGameSetupSkaterDude::
     ASSERT hGrassSCX == hGrassMapXPos + 2
     ld      [hli], a
     
-    ASSERT hSidewalkScrollTimer == hGrassSCX + 1
-    ld      [hli], a
-    
-    ASSERT hBuildingBounceIndex == hSidewalkScrollTimer + 1
+    ASSERT hBuildingBounceIndex == hGrassSCX + 1
     ; Start with buildings not bouncing
     ASSERT BUILDING_NOT_BOUNCING == -1
     dec     a
@@ -451,11 +445,8 @@ xGameSkaterDude::
     ASSERT hMapSCY == hMapSCX + 1
     ld      [hl], MAP_SKATER_DUDE_GRASS_Y * 8
     
-    ; Grass scrolls 1 pixel every other frame and 2 pixels every other frame
-    ldh     a, [hFrameCounter]
-    and     a, 1    ; a = 0 or 1
-    inc     a       ; a = 1 or 2
-    ld      b, a
+    ; Grass scrolls 6 pixels every frame
+    ld      b, 6
     call    MapScrollLeft
     ; Save new position
     ldh     a, [hMapXPos.low]
@@ -487,8 +478,8 @@ xGameSkaterDude::
     ASSERT hMapSCY == hMapSCX + 1
     ld      [hl], MAP_SKATER_DUDE_ROAD_Y * 8
     
-    ; Road scrolls 1 pixel every frame
-    ld      b, 1
+    ; Road scrolls 5 pixels every frame
+    ld      b, 5
     call    MapScrollLeft
     ; Save new position
     ldh     a, [hMapXPos.low]
@@ -499,18 +490,6 @@ xGameSkaterDude::
     ldh     [hRoadSCX], a
     
     ; Scroll the sidewalk
-    ; Sidewalk scrolls 1 pixel every 5/8 frames
-    ldh     a, [hSidewalkScrollTimer]
-    ld      c, a
-    and     a, ~7
-    ld      b, a
-    ld      a, c
-    add     a, 5
-    ldh     [hSidewalkScrollTimer], a
-    and     a, ~7
-    cp      a, b
-    jr      z, .scrollBuildings
-    
     ld      hl, hMapXPos
     ld      de, hSidewalkMapXPos
     ld      a, [de]     ; hSidewalkMapXPos.low
@@ -532,7 +511,8 @@ xGameSkaterDude::
     ASSERT hMapSCY == hMapSCX + 1
     ld      [hl], MAP_SKATER_DUDE_SIDEWALK_Y * 8
     
-    ld      b, 1
+    ; Sidewalk scrolls 4 pixels every frame
+    ld      b, 4
     call    MapScrollLeft
     ; Save new position
     ldh     a, [hMapXPos.low]
@@ -542,12 +522,7 @@ xGameSkaterDude::
     ldh     a, [hMapSCX]
     ldh     [hSidewalkSCX], a
     
-.scrollBuildings
-    ; Buildings scroll 1 pixel every other frame
-    ldh     a, [hFrameCounter]
-    and     a, 1
-    ret     z
-    
+    ; Scroll the buildings
     ld      hl, hMapXPos
     ld      de, hBuildingMapXPos
     ld      a, [de]     ; hBuildingMapXPos.low
@@ -567,7 +542,8 @@ xGameSkaterDude::
     ASSERT hMapSCY == hMapSCX + 1
     ld      [hl], MAP_SKATER_DUDE_BUILDING_Y * 8
     
-    ld      b, 1
+    ; Buildings scroll 3 pixels every frame
+    ld      b, 3
     call    MapScrollLeft
     ; Save new position
     ldh     a, [hMapXPos.low]
