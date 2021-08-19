@@ -101,10 +101,8 @@ ScreenSetupMuseum::
     add     a, c
     add     a, LOW(MusicNameTable)
     ld      l, a
-    ASSERT WARN, HIGH(MusicNameTable.end - 1) != HIGH(MusicNameTable)
-    adc     a, HIGH(MusicNameTable)
-    sub     a, l
-    ld      h, a
+    ASSERT HIGH(MusicNameTable.end - 1) == HIGH(MusicNameTable)
+    ld      h, HIGH(MusicNameTable)
     
     ld      a, [hli]
     ld      b, a    ; b = bank number

@@ -337,13 +337,12 @@ xGameSkaterDude::
     ldh     [hLYCResetIndex], a
     
 .loop
-    rst     WaitVBlank
-    
     ldh     a, [hTransitionState]
     ASSERT TRANSITION_STATE_OFF == 0
     and     a, a
     jr      z, .noTransition
     
+    rst     WaitVBlank
     call    TransitionUpdate
     call    .scroll
     
@@ -359,36 +358,6 @@ xGameSkaterDude::
     jr      .loop
 
 .noTransition
-    ; Update hSCY for LY 0 if the buildings are bouncing
-    ldh     a, [hBuildingBounceIndex]
-    inc     a
-    jr      z, .noBounce
-    
-    ; Save the already incremented index for updating
-    ld      c, a
-    
-    ; Get a pointer to the SCY value to use
-    dec     a       ; Undo inc
-    add     a, a
-    ASSERT LOW(BuildingBouncePointerTable) == 0
-    ld      l, a
-    ASSERT HIGH(BuildingBouncePointerTable.end - 1) == HIGH(BuildingBouncePointerTable)
-    ld      h, HIGH(BuildingBouncePointerTable)
-    ld      a, [hli]
-    ld      h, [hl]
-    ld      l, a
-    ld      a, [hl]
-    ldh     [hSCY], a
-    
-    ; Increment the frame index
-    ld      a, c    ; c = [hBuildingBounceIndex] + 1
-    ; If the bounce is over, set the index to BUILDING_NOT_BOUNCING
-    cp      a, BUILDING_BOUNCE_DURATION
-    jr      c, .continueBouncing
-    ld      a, BUILDING_NOT_BOUNCING
-.continueBouncing
-    ldh     [hBuildingBounceIndex], a
-.noBounce
     ; Check if it's time to start the building bounce
     ld      a, [wMusicSyncData]
     ASSERT SYNC_NONE == -1
@@ -401,7 +370,37 @@ xGameSkaterDude::
     ; Reset the frame index to 0
     xor     a, a
     ldh     [hBuildingBounceIndex], a
+    jr      .updateSCY
 .noStartBounce
+    ; Update hSCY for LY 0 if the buildings are bouncing
+    ldh     a, [hBuildingBounceIndex]
+    inc     a
+    jr      z, .noBounce
+    
+    ; Move on to next frame (already incremented)
+    ; If the bounce is over, set the index to BUILDING_NOT_BOUNCING
+    cp      a, BUILDING_BOUNCE_DURATION
+    jr      nc, .stopBouncing
+    ldh     [hBuildingBounceIndex], a
+    ; Move on to next frame (already incremented)
+    ; Get a pointer to the SCY value to use
+    add     a, a
+.updateSCY
+    ASSERT LOW(BuildingBouncePointerTable) == 0
+    ld      l, a
+    ASSERT HIGH(BuildingBouncePointerTable.end - 1) == HIGH(BuildingBouncePointerTable)
+    ld      h, HIGH(BuildingBouncePointerTable)
+    ld      a, [hli]
+    ld      h, [hl]
+    ld      l, a
+    ld      a, [hl]
+    ldh     [hSCY], a
+    jr      .noBounce
+.stopBouncing
+    ld      a, BUILDING_NOT_BOUNCING
+    ldh     [hBuildingBounceIndex], a
+.noBounce
+    rst     WaitVBlank
     call    EngineUpdate
     call    ActorsUpdate
     ldh     a, [hSloMoCountdown]
