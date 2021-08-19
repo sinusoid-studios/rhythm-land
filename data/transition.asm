@@ -35,5 +35,5 @@ TransitionBlockLYCTable::
     FOR Y, 1, SCRN_Y_B
         DB Y * 8 - 1
     ENDR
-    ; Go back to the sound update interrupt after the last block
-    DB 0
+    ; Go back to the first block
+    DB 1 * 8 - 1

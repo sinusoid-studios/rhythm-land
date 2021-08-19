@@ -1,4 +1,5 @@
 INCLUDE "constants/hardware.inc"
+INCLUDE "constants/engine.inc"
 
 SECTION "Null Pointer", ROM0[$0000]
 
@@ -226,4 +227,23 @@ Multiply::
     add     hl, hl
     ret     nc
     add     hl, bc
+    ret
+
+SECTION "Sound Update", ROM0
+
+SoundUpdate::
+    ; Clear any previous music sync data
+    ld      a, SYNC_NONE
+    ld      [wMusicSyncData], a
+    
+    ; Save current bank to restore when finished
+    ldh     a, [hCurrentBank]
+    push    af
+    
+    call    SoundSystem_Process
+    
+    ; Restore bank
+    pop     af
+    ldh     [hCurrentBank], a
+    ld      [rROMB0], a
     ret

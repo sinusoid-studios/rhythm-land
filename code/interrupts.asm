@@ -1,6 +1,5 @@
 INCLUDE "constants/hardware.inc"
 INCLUDE "constants/other-hardware.inc"
-INCLUDE "constants/engine.inc"
 INCLUDE "constants/transition.inc"
 INCLUDE "constants/interrupts.inc"
 INCLUDE "macros/misc.inc"
@@ -49,6 +48,12 @@ VBlankHandler:
     ; Reset the extra LYC index
     ldh     a, [hLYCResetIndex]
     ldh     [hLYCIndex], a
+    
+    ; Set the next LYC value
+    ld      a, TRANSITION_BLOCK_HEIGHT - 1
+    push    hl
+    call    SetUpNextLYCTransition.gotBlockLYC
+    pop     hl
     
     push    bc
     
@@ -134,12 +139,8 @@ STATHandler:
     and     a, a
     jr      nz, .extraLYC
     
-    ; If this interrupt is for the sound update (LYC=0), go do that
-    ldh     a, [rLYC]
-    and     a, a
-    jp      z, UpdateSound
-    
     ; Need to set WX -> get current position
+    ldh     a, [rLYC]
     inc     a       ; LYC offset by -1
 .updateTransition
     ; Divide by 8 to get block index
@@ -229,21 +230,11 @@ STATHandler:
     and     a, %00011111
     ld      b, a    ; SetUpNextLYCTransition expects block index in b
     
-    ldh     a, [rLYC]
-    ld      c, a
     call    SetUpNextLYCTransition
-    ld      a, c
-    and     a, a
-    jr      nz, InterruptReturn
-    jp      UpdateSound.skipLYC
+    jr      InterruptReturn
 
 .setUpNextLYC
-    ldh     a, [rLYC]
-    ld      b, a
     call    SetUpNextLYC
-    ld      a, b
-    and     a, a
-    jp      z, UpdateSound.skipLYC
     ; Fall-through
 
 InterruptReturn:
@@ -288,15 +279,17 @@ InterruptReturn:
 SECTION "Set Up Next LYC Interrupt During Transition", ROM0
 
 SetUpNextLYCTransition:
-    ; Reset extra LYC interrupt flag
-    xor     a, a
-    ldh     [hLYCFlag], a
     ; Get next transition block's LYC value
     ASSERT LOW(TransitionBlockLYCTable) == 0
     ld      l, b    ; b = block index
     ld      h, HIGH(TransitionBlockLYCTable)
     ld      a, [hl]
+.gotBlockLYC
     ldh     [rLYC], a
+    
+    ; Reset extra LYC interrupt flag
+    xor     a, a
+    ldh     [hLYCFlag], a
     
     ; Check for extra LYC interrupts
     ldh     a, [hLYCIndex]
@@ -347,6 +340,7 @@ SetUpNextLYC:
     ASSERT LYC_INDEX_NONE == -1
     inc     a
     ret     z
+.getLYC::
     dec     a   ; Undo inc
     ; Get next LYC value
     ASSERT LOW(LYCTable) == 0
@@ -357,7 +351,7 @@ SetUpNextLYC:
     ld      a, [hl]
     ASSERT LYC_FRAME_END == -1
     inc     a
-    jr      z, .frameEnd
+    ret     z
     dec     a   ; Undo inc
     ldh     [rLYC], a
     ; Move on to the next LYC
@@ -368,51 +362,3 @@ SetUpNextLYC:
     dec     l
     ld      [hl], h     ; Non-zero
     ret
-
-.frameEnd
-    ; Next is the sound update
-    ; a = 0
-    ldh     [rLYC], a
-    ret
-
-SECTION "Sound Update Interrupt Handler", ROM0
-
-UpdateSound:
-    ; Check if currently transitioning
-    ldh     a, [hTransitionState]
-    ; Transition state bit 0:
-    ; 0 = off OR midway setup and delay
-    ; 1 = transitioning in OR transitioning out
-    ASSERT TRANSITION_STATE_OUT & 1 == 1 && TRANSITION_STATE_IN & 1 == 1
-    ASSERT TRANSITION_STATE_MID & 1 == 0 && TRANSITION_STATE_OFF & 1 == 0
-    rra     ; Move bit 0 to carry
-    jr      nc, .noTransition
-    ld      b, 0
-    call    SetUpNextLYCTransition
-    jr      .skipLYC
-.noTransition
-    call    SetUpNextLYC
-.skipLYC
-    ; Just updating sound, which is interruptable
-    ei
-    
-    push    de
-    
-    ; Clear any previous music sync data
-    ld      a, SYNC_NONE
-    ld      [wMusicSyncData], a
-    
-    ; Save current bank to restore when finished
-    ldh     a, [hCurrentBank]
-    push    af
-    
-    call    SoundSystem_Process
-    
-    ; Restore bank
-    pop     af
-    ldh     [hCurrentBank], a
-    ld      [rROMB0], a
-    
-    pop     de
-    di
-    jp      InterruptReturn

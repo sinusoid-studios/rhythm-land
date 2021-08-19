@@ -69,8 +69,31 @@ TransitionStart::
     ldh     a, [hLCDC]
     ASSERT LCDCF_WINON != 0 && LCDCF_WIN9C00 != 0
     or      a, LCDCF_WINON | LCDCF_WIN9C00
+    ; Don't write to hLCDC but instead write to rLCDC so if a screen
+    ; setup routine overwrites hLCDC, the window is still enabled.
+    ; Because of this, hLCDC is not copied to rLCDC during a transition.
     ldh     [rLCDC], a
     
+    ; Let the VBlank interrupt handler set up the next LYC value.
+    ; All that needs to be done here is actually enable LYC interrupts.
+    ; If LYC interrupts are already enabled, there's nothing to do.
+    ld      hl, rIE
+    bit     IEB_STAT, [hl]
+    ret     nz
+    
+    ; Need to enable LYC interrupts, but also ensure it doesn't trigger
+    ; before VBlank
+    ASSERT HIGH(rIE) > SCRN_Y
+    ld      a, h
+    ldh     [rLYC], a
+    
+    ; Clear any pending LYC interrupt
+    ld      l, LOW(rIF)
+    res     IEB_STAT, [hl]
+    ; Enable LYC interrupts
+    ASSERT LOW(rIE) == HIGH(rIF)
+    ld      l, h
+    set     IEB_STAT, [hl]
     ret
 
 SECTION "Screen Transition Update", ROM0
@@ -108,15 +131,13 @@ TransitionUpdate::
     ; The screen is now entirely covered, so setup for the next screen
     ; can be done!
     
-    ; Disable extra LYC interrupts
-    ld      a, LYC_INDEX_NONE
+    ; Disable all LYC interrupts
+    ld      hl, rIE
+    res     IEB_STAT, [hl]
+    ASSERT LOW(LYC_INDEX_NONE) == HIGH(rIE)
+    ld      a, h
     ldh     [hLYCIndex], a
     ldh     [hLYCResetIndex], a
-    
-    ; Stop updating the window mid-frame and ensure the LYC interrupt is
-    ; for the sound update
-    xor     a, a
-    ldh     [rLYC], a
     
     ; Update transition state
     ld      a, TRANSITION_STATE_MID
@@ -127,7 +148,8 @@ TransitionUpdate::
     
     ; Remove all sprites
     ; Set all actors to empty
-    ld      a, ACTOR_EMPTY
+    ASSERT LOW(ACTOR_EMPTY) == HIGH(rIE)
+    ld      a, h
     ld      hl, wActorTypeTable
     ld      c, MAX_ACTOR_COUNT
     rst     MemsetSmall
@@ -182,6 +204,14 @@ TransitionUpdate::
     ld      a, TransitionPosTable.end - TransitionPosTable - 1
     ldh     [hTransitionIndex], a
     
+    ; Clear pending LYC interrupts
+    ld      hl, rIF
+    res     IEB_STAT, [hl]
+    ; Re-enable LYC interrupts
+    ASSERT LOW(rIE) == HIGH(rIF)
+    ld      l, h
+    set     IEB_STAT, [hl]
+    
     ; Jump into the next screen's loop
     ldh     a, [hTransitionNextScreen]
     ; Switch to the next screen
@@ -224,11 +254,6 @@ TransitionUpdate::
     ret
 
 .finished
-    ; Stop updating the window mid-frame and ensure the LYC interrupt is
-    ; for the sound update
-    ; a = 0
-    ldh     [rLYC], a
-    
     ; Hide the window
     ld      a, SCRN_X + 7
     ldh     [rWX], a
@@ -237,6 +262,15 @@ TransitionUpdate::
     ASSERT TRANSITION_STATE_OFF == 0
     xor     a, a
     ldh     [hTransitionState], a
+    
+    ldh     a, [hLYCResetIndex]
+    ASSERT LYC_INDEX_NONE == -1
+    inc     a
+    jp      nz, SetUpNextLYC.getLYC
+    
+    ; No LYC interrupts -> disable them
+    ld      hl, rIE
+    res     IEB_STAT, [hl]
     ret
 
 SECTION "Music Fade Out", ROM0

@@ -177,6 +177,9 @@ ScreenTitle::
     ASSERT TITLE_SCROLL_END_POS == 0
     and     a, a
     jr      z, .scrollWindow
+    push    hl
+    call    SoundUpdate
+    pop     hl
     jr      .scrollLoop
 
 .scrollWindow
@@ -200,6 +203,9 @@ ScreenTitle::
     ldh     [rWY], a
     cp      a, TITLE_WINDOW_SCROLL_END_POS
     jr      z, .loop
+    push    hl
+    call    SoundUpdate
+    pop     hl
     jr      .windowScrollLoop
 
 .loop
@@ -210,6 +216,7 @@ ScreenTitle::
     and     a, a
     call    nz, TransitionUpdate
     
+    call    SoundUpdate
     call    ActorsUpdate
     
     ldh     a, [hFlashCountdown]
@@ -274,10 +281,8 @@ xActorTitle::
     inc     a       ; Skip actor type to get to actor position
     add     a, LOW(ActorStarDefinitions)
     ld      l, a
-    ASSERT WARN, HIGH(ActorStarDefinitions.end - 1) != HIGH(ActorStarDefinitions)
-    adc     a, HIGH(ActorStarDefinitions)
-    sub     a, l
-    ld      h, a
+    ASSERT HIGH(ActorStarDefinitions.end - 1) == HIGH(ActorStarDefinitions)
+    ld      h, HIGH(ActorStarDefinitions)
     
     ld      a, [hli]    ; a = X position
     ld      e, [hl]     ; e = Y position

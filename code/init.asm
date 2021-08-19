@@ -140,13 +140,12 @@ Initialize::
     
     ; Set up interrupts
     
-    ; Update sound at every LY 0
-    xor     a, a
-    ldh     [rLYC], a
+    ; Set the STAT interrupt source now so that it doesn't have to be
+    ; set every time LYC interrupts are needed
     ld      a, STATF_LYC
     ldh     [rSTAT], a
     
-    ld      a, IEF_VBLANK | IEF_STAT
+    ld      a, IEF_VBLANK
     ldh     [rIE], a
     ; Clear any pending interrupts
     xor     a, a

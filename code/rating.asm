@@ -204,6 +204,10 @@ SECTION "Overall Rating Screen", ROM0
 
 ScreenRating::
     ; Force the transition to end
+    ; Re-disable LYC interrupts
+    ld      hl, rIE
+    res     IEB_STAT, [hl]
+    ; Turn off transition
     ASSERT TRANSITION_STATE_OFF == 0
     xor     a, a
     ldh     [hTransitionState], a
@@ -233,6 +237,11 @@ ScreenRating::
     call    PrintVWFChar
     call    DrawVWFChars
     
+    ; Calling SoundSystem_Process directly instead of SoundUpdate
+    ; because this is in ROM0 and there is no sync data to be looking
+    ; for
+    call    SoundSystem_Process
+    
     ; Text engine sets the high byte of the source pointer to $FF when
     ; the end command (terminator) is reached
     ld      a, [wTextSrcPtr + 1]
@@ -240,10 +249,14 @@ ScreenRating::
     jr      nz, .feedbackLoop
 
     ; Text is finished -> delay a bit before drawing the rating graphic
-    ld      c, RATING_GRAPHIC_DELAY
+    ld      a, RATING_GRAPHIC_DELAY
+    ldh     [hScratch1], a
 .delayLoop
     rst     WaitVBlank
-    dec     c
+    call    SoundSystem_Process
+    ldh     a, [hScratch1]
+    dec     a
+    ldh     [hScratch1], a
     jr      nz, .delayLoop
     
     ; Draw the rating graphic
@@ -307,6 +320,7 @@ ScreenRating::
     ; Wait for player input
 .wait
     rst     WaitVBlank
+    call    SoundSystem_Process
     
     ldh     a, [hTransitionState]
     ASSERT TRANSITION_STATE_OFF == 0
