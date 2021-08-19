@@ -187,6 +187,10 @@ TransitionUpdate::
     
 .delayLoop
     rst     WaitVBlank
+    ; Calling SoundSystem_Process directly instead of SoundUpdate
+    ; because this is in ROM0 and there is no sync data to be looking
+    ; for
+    call    SoundSystem_Process
     call    MusicFadeOut
     ; Wait until the frame counter reaches
     ; Setup start frame + TRANSITION_DELAY
