@@ -86,7 +86,7 @@ MapDraw::
 SECTION "Background Map Scrolling", ROM0
 
 ; Scroll the background map to the left
-; WARNING: A scroll distance of 8 pixels or greater will not work
+; WARNING: A scroll distance of more than 8 pixels will not work
 ; properly, as only a single column of tiles is copied when a tile
 ; boundary is crossed
 ; @param    b   Scroll distance, in pixels
