@@ -15,8 +15,9 @@ TITLE := RHYTHM LAND
 bin/soundtest.gb: TITLE := SOUNDTEST
 LICENSEE := HB
 OLDLIC := 0x33
-MBC := MBC5
-SRAMSIZE := 0
+MBC := MBC5+RAM+BATTERY
+# 8 KB of SRAM, 1 bank
+SRAMSIZE := 0x02
 
 WARNINGS := all extra
 

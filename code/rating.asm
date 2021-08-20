@@ -135,9 +135,36 @@ ScreenSetupRating::
     ld      a, b
     ldh     [hRatingType], a
     
+    ; Update the save
+    ld      a, CART_SRAM_ENABLE
+    ld      [rRAMG], a
+    ; If the new rating for this game is better or worse than the
+    ; existing rating
+    ldh     a, [hCurrentScreen]
+    add     a, LOW(sRatingTable)
+    ld      l, a
+    ASSERT HIGH(sRatingTable.end - 1) == HIGH(sRatingTable)
+    ld      h, HIGH(sRatingTable)
+    ; If the new rating is worse or the same (new <= old), don't change
+    ; anything
+    ld      a, [hl]
+    cp      a, b
+    jr      nc, .notBestRating
+    ; Save this new best rating
+    ld      [hl], b
+    call    CalcSaveCheck
+    ld      a, e
+    ld      [sCheck.low], a
+    ld      a, d
+    ld      [sCheck.high], a
+.notBestRating
+    ASSERT CART_SRAM_DISABLE == 0
+    xor     a, a
+    ld      [rRAMG], a
+    
     ; Load appropriate background tiles
     ; Find pointer to tile data
-    ; a = rating type
+    ld      a, b
     add     a, a    ; rating type * 2 (Pointer)
     add     a, a    ; rating type * 4 (Length)
     add     a, b    ; rating type * 5 (+Bank)
@@ -185,8 +212,10 @@ ScreenSetupRating::
     ASSERT HIGH(RATING_TYPE_COUNT * 3 + (GAME_COUNT - 1) * 12) == 0
     add     a, LOW(RatingTextTable)
     ld      l, a
-    ASSERT HIGH(RatingTextTable.end - 1) == HIGH(RatingTextTable)
-    ld      h, HIGH(RatingTextTable)
+    ASSERT WARN, HIGH(RatingTextTable.end - 1) != HIGH(RatingTextTable)
+    adc     a, HIGH(RatingTextTable)
+    sub     a, l
+    ld      h, a
     
     ; Get pointer to text
     ld      a, [hli]
