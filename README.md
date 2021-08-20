@@ -16,15 +16,13 @@ Requirements:
 [pillow]: https://python-pillow.org
 [make]: https://www.gnu.org/software/make
 
-After cloning this repository, run `make` in the root directory of the
-repository to produce the `bin` directory, containing `rhythm-land.gb`
-along with its map and symbol files.
+Run `make` in the root directory of the repository to produce the `bin`
+directory, containing `rhythm-land.gb` along with its map and symbol
+files.
 
-```bash
-git clone https://github.com/sinusoid-studios/rhythm-land.git
-cd rhythm-land
-make
-```
+Run `make soundtest` to build the sound test ROM containing all music
+and sound effects, or `make all` to build both the game and the
+soundtest at the same time.
 
 ## Attribution
 ### SoundSystem
