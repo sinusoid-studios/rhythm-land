@@ -45,7 +45,7 @@ TransitionStart::
     ; a = 0
     ldh     [rWY], a
     ; Hide the window initially
-    ld      a, SCRN_X + 7
+    ld      a, SCRN_X + WX_OFS
     ldh     [rWX], a
     
     ; Set initial music fade delay
@@ -259,7 +259,7 @@ TransitionUpdate::
 
 .finished
     ; Hide the window
-    ld      a, SCRN_X + 7
+    ld      a, SCRN_X + WX_OFS
     ldh     [rWX], a
     
     ; Turn the transition off

@@ -1,3 +1,4 @@
+INCLUDE "constants/hardware.inc"
 INCLUDE "constants/actors.inc"
 INCLUDE "macros/actors.inc"
 

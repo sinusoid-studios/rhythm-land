@@ -211,7 +211,7 @@ ActorsUpdate::
     ld      hl, wActorXPosTable
     add     hl, bc
     ld      a, [hl]
-    ; X position offset (+8) already applied in meta-sprite data
+    ; X position offset (OAM_X_OFS) already applied in meta-sprite data
     ldh     [hActorXPos], a
     
     ; Use actor's override animation cel if an animation override is in
