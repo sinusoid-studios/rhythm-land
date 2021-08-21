@@ -18,6 +18,7 @@ OLDLIC := 0x33
 MBC := MBC5+RAM+BATTERY
 # 8 KB of SRAM, 1 bank
 SRAMSIZE := 0x02
+bin/soundtest.gb: SRAMSIZE := 0
 
 WARNINGS := all extra
 
