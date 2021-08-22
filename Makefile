@@ -16,6 +16,7 @@ bin/soundtest.gb: TITLE := SOUNDTEST
 LICENSEE := HB
 OLDLIC := 0x33
 MBC := MBC5+RAM+BATTERY
+bin/soundtest.gb: MBC := MBC5
 # 8 KB of SRAM, 1 bank
 SRAMSIZE := 0x02
 bin/soundtest.gb: SRAMSIZE := 0
