@@ -1,0 +1,178 @@
+
+INCLUDE "constants/actors.inc"
+INCLUDE "macros/actors.inc"
+
+SECTION "<Whack a Soul> <Arm & Hand> Actor Animation Data", ROMX
+
+xActor<ArmAndHand>Animation::
+    animation <ArmAndHand>
+
+SECTION "<Whack a Soul> <Arm & Hand> Actor Meta-Sprite Data", ROMX
+
+xActor<ArmAndHand>Metasprites::
+    metasprite .Intro1
+    metasprite .Idle
+    metasprite .ASwing1
+    metasprite .ASwing2
+    metasprite .ASwing3
+    metasprite .ASwing4
+    metasprite .ASwing5
+    metasprite .ASwing6
+    metasprite .ASwing7
+    metasprite .BSwing1
+    metasprite .BSwing2
+    metasprite .BSwing3
+    metasprite .BSwing4
+    metasprite .BSwing5
+    metasprite .BSwing6
+    metasprite .BSwing7
+    metasprite .BSwing8
+.Intro1
+    obj 57, 75, $00, 0
+    obj 69, 75, $26, 0
+    obj 77, 67, $4A, 0
+    obj 77, 75, $4C, 0
+    obj 78, 76, $66, 0
+    DB METASPRITE_END
+.Idle
+    obj 56, 73, $02, 0
+    obj 57, 65, $28, 0
+    obj 57, 73, $2A, 0
+    obj 44, 64, $4E, 0
+    obj 45, 72, $50, 0
+    obj 49, 64, $68, 0
+    DB METASPRITE_END
+.ASwing1
+    obj 55, 67, $06, 0
+    obj 55, 75, $08, 0
+    obj 56, 61, $2C, 0
+    obj 56, 69, $2E, 0
+    obj 45, 57, $52, 0
+    obj 45, 65, $54, 0
+    obj 50, 57, $6A, 0
+    DB METASPRITE_END
+.ASwing2
+    obj 57, 71, $0A, 0
+    obj 52, 75, $0C, 0
+    obj 60, 59, $30, 0
+    obj 60, 67, $32, 0
+    obj 49, 52, $56, 0
+    obj 49, 60, $58, 0
+    obj 55, 54, $6A, 0
+    DB METASPRITE_END
+.ASwing3
+    obj 56, 68, $0E, 0
+    obj 56, 76, $10, 0
+    obj 63, 57, $34, 0
+    obj 63, 65, $36, 0
+    obj 59, 45, $5A, 0
+    obj 59, 53, $5C, 0
+    obj 63, 53, $6E, 0
+    DB METASPRITE_END
+.ASwing4
+    obj 55, 67, $12, 0
+    obj 55, 75, $14, 0
+    obj 64, 55, $38, 0
+    obj 64, 63, $3A, 0
+    obj 66, 42, $5E, 0
+    obj 66, 50, $60, 0
+    obj 68, 51, $70, 0
+    DB METASPRITE_END
+.ASwing5
+    obj 57, 71, $0A, 0
+    obj 52, 75, $0C, 0
+    obj 65, 60, $3C, 0
+    obj 65, 68, $3E, 0
+    obj 65, 46, $5E, 0
+    obj 65, 54, $60, 0
+    obj 68, 55, $70, 0
+    DB METASPRITE_END
+.ASwing6
+    obj 57, 73, $16, 0
+    obj 49, 74, $04, 0
+    obj 59, 62, $40, 0
+    obj 59, 70, $42, 0
+    obj 48, 55, $56, 0
+    obj 48, 63, $58, 0
+    obj 54, 58, $6C, 0
+    DB METASPRITE_END
+.ASwing7
+    obj 56, 74, $02, 0
+    obj 57, 71, $44, 0
+    obj 49, 70, $04, 0
+    obj 42, 68, $4E, 0
+    obj 43, 76, $50, 0
+    obj 45, 69, $74, 0
+    DB METASPRITE_END
+.BSwing1
+    obj 56, 68, $0E, 0
+    obj 56, 76, $10, 0
+    obj 57, 64, $2E, 0
+    obj 57, 56, $2C, 0
+    obj 43, 48, $56, 0
+    obj 43, 56, $58, 0
+    obj 50, 51, $6A, 0
+    DB METASPRITE_END
+.BSwing2
+    obj 55, 66, $12, 0
+    obj 55, 74, $14, 0
+    obj 59, 46, $46, 0
+    obj 59, 54, $48, 0
+    obj 50, 29, $5A, 0
+    obj 50, 37, $5C, 0
+    obj 55, 37, $76, 0
+    DB METASPRITE_END
+.BSwing3
+    obj 53, 59, $1C, 0
+    obj 53, 67, $1E, 0
+    obj 53, 75, $20, 0
+    obj 59, 44, $34, 0
+    obj 59, 52, $36, 0
+    obj 59, 26, $5E, 0
+    obj 59, 34, $60, 0
+    obj 62, 35, $78, 0
+    DB METASPRITE_END
+.BSwing4
+    obj 54, 65, $22, 0
+    obj 54, 73, $24, 0
+    obj 64, 49, $38, 0
+    obj 64, 57, $3A, 0
+    obj 65, 31, $5E, 0
+    obj 65, 39, $60, 0
+    obj 69, 40, $70, 0
+    DB METASPRITE_END
+.BSwing5
+    obj 55, 67, $12, 0
+    obj 55, 75, $14, 0
+    obj 64, 49, $34, 0
+    obj 64, 57, $36, 0
+    obj 63, 31, $5A, 0
+    obj 63, 39, $5C, 0
+    obj 67, 40, $78, 0
+    DB METASPRITE_END
+.BSwing6
+    obj 56, 68, $0E, 0
+    obj 56, 76, $10, 0
+    obj 58, 49, $40, 0
+    obj 58, 57, $42, 0
+    obj 45, 35, $62, 0
+    obj 46, 43, $64, 0
+    obj 50, 42, $76, 0
+    DB METASPRITE_END
+.BSwing7
+    obj 56, 73, $02, 0
+    obj 65, 72, $04, 0
+    obj 58, 59, $2C, 0
+    obj 58, 67, $2E, 0
+    obj 45, 52, $56, 0
+    obj 45, 60, $58, 0
+    obj 51, 54, $6A, 0
+    DB METASPRITE_END
+.BSwing8
+    obj 57, 75, $00, 0
+    obj 57, 68, $28, 0
+    obj 57, 76, $2A, 0
+    obj 48, 68, $74, 0
+    obj 44, 68, $4E, 0
+    obj 45, 76, $50, 0
+    DB METASPRITE_END
