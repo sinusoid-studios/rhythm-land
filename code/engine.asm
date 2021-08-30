@@ -47,7 +47,7 @@ hHitRatingCounts:
 hHitBadCount::
     DS 1
 ; Number of OK hits the player made (somewhat on-time)
-hHitOkCount::
+hHitOKCount::
     DS 1
 ; Number of Perfect hits the player made (right on time)
 hHitPerfectCount::
@@ -95,9 +95,9 @@ EngineInit::
     ld      hl, hHitBadCount
     xor     a, a
     ld      [hli], a
-    ASSERT hHitOkCount == hHitBadCount + 1
+    ASSERT hHitOKCount == hHitBadCount + 1
     ld      [hli], a
-    ASSERT hHitPerfectCount == hHitOkCount + 1
+    ASSERT hHitPerfectCount == hHitOKCount + 1
     ld      [hli], a
     ; Reset hit numbers
     ASSERT hNextHitNumber == hHitPerfectCount + 1
@@ -249,12 +249,12 @@ EngineUpdate::
     ; If on-timeness is outside the Perfect window but inside the OK
     ; window, give OK
     ldh     a, [hScratch1]  ; Restore hit number
-    ASSERT hHitOkCount == hHitBadCount + 1
+    ASSERT hHitOKCount == hHitBadCount + 1
     inc     l       ; Doesn't affect carry
     jr      nc, .gotRating
     
     ; On-timeness is inside the Perfect window -> give Perfect
-    ASSERT hHitPerfectCount == hHitOkCount + 1
+    ASSERT hHitPerfectCount == hHitOKCount + 1
     inc     l
 
 .gotRating
@@ -274,7 +274,7 @@ EngineUpdate::
 .rated
     ; Set the type of rating this hit got
     ASSERT LOW(hHitBadCount) - LOW(hHitRatingCounts) == HIT_BAD
-    ASSERT LOW(hHitOkCount) - LOW(hHitRatingCounts) == HIT_OK
+    ASSERT LOW(hHitOKCount) - LOW(hHitRatingCounts) == HIT_OK
     ASSERT LOW(hHitPerfectCount) - LOW(hHitRatingCounts) == HIT_PERFECT
     ld      a, l
     sub     a, LOW(hHitRatingCounts)

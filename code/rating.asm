@@ -71,7 +71,7 @@ ScreenSetupRating::
     ; Miss: Weight -1
     ld      hl, hHitPerfectCount
     ld      a, [hld]
-    ASSERT hHitOkCount == hHitPerfectCount - 1
+    ASSERT hHitOKCount == hHitPerfectCount - 1
     add     a, [hl]
     ; a = Perfects + OKs
     cpl
@@ -86,7 +86,7 @@ ScreenSetupRating::
     ; OK: Weight 0.5
     add     a, [hl]
     
-    ASSERT hHitPerfectCount == hHitOkCount + 1
+    ASSERT hHitPerfectCount == hHitOKCount + 1
     inc     l
     ; Perfect: Weight 1
     add     a, [hl]
