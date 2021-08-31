@@ -91,9 +91,10 @@ res/%.vwf: gfx/%.png
 
 # Don't include dependencies if cleaning
 ifneq ($(MAKECMDGOALS),clean)
-ifneq ($(MAKECMDGOALS),soundtest)
+ifneq ($(findstring $(MAKECMDGOALS),game all),)
 -include $(patsubst %.asm,dep/%.mk,$(SRCS))
-else
+endif
+ifneq ($(findstring $(MAKECMDGOALS),soundtest all),)
 -include $(patsubst %.asm,dep/%.mk,$(ST_SRCS))
 endif
 endif
