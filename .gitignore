@@ -1,8 +1,8 @@
 # Resulting ROM and .sym + .map files
-/bin/
+bin/
 # Object files
-/obj/
+obj/
 # Auto-generated Make dependency files
-/dep/
+dep/
 # Converted graphics
-/res/
+res/

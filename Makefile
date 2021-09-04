@@ -12,14 +12,11 @@ PADVALUE := 0xFF
 VERSION := 0
 MFRCODE := SNSD
 TITLE := RHYTHM LAND
-bin/soundtest.gb: TITLE := SOUNDTEST
 LICENSEE := HB
 OLDLIC := 0x33
 MBC := MBC5+RAM+BATTERY
-bin/soundtest.gb: MBC := MBC5
 # 8 KB of SRAM, 1 bank
 SRAMSIZE := 0x02
-bin/soundtest.gb: SRAMSIZE := 0
 
 WARNINGS := all extra
 
@@ -33,15 +30,8 @@ GFXFLAGS := -u
 res/skater-dude/background.bg.2bpp: GFXFLAGS += -h
 
 SRCS := $(wildcard code/*.asm) $(wildcard code/*/*.asm) $(wildcard data/*.asm) $(wildcard data/*/*.asm) $(wildcard data/*/*/*.asm)
-ST_SRCS := code/SoundSystem.asm $(wildcard data/music/*.asm) data/sfx.asm soundtest/soundtest.asm
 
-game: bin/rhythm-land.gb
-.PHONY: game
-
-soundtest: bin/soundtest.gb
-.PHONY: soundtest
-
-all: game soundtest
+all: bin/rhythm-land.gb
 .PHONY: all
 
 clean:
@@ -53,16 +43,10 @@ clean:
 
 rebuild:
 	$(MAKE) clean
-	$(MAKE) game
+	$(MAKE)
 .PHONY: rebuild
 
-# Build the soundtest ROM
-bin/soundtest.gb: $(patsubst %.asm,obj/%.o,$(ST_SRCS))
-	@mkdir -p $(@D)
-	rgblink $(LDFLAGS) -o $@ $^
-	rgbfix $(FIXFLAGS) $@
-
-# Build the game, along with map and symbol files
+# Build a ROM, along with map and symbol files
 bin/%.gb bin/%.sym bin/%.map: $(patsubst %.asm,obj/%.o,$(SRCS))
 	@mkdir -p $(@D)
 	rgblink $(LDFLAGS) -m bin/$*.map -n bin/$*.sym -o bin/$*.gb $^
@@ -71,7 +55,7 @@ bin/%.gb bin/%.sym bin/%.map: $(patsubst %.asm,obj/%.o,$(SRCS))
 # Assemble an assembly file and save dependencies
 obj/%.o dep/%.mk: %.asm
 	@mkdir -p obj/$(*D) dep/$(*D)
-	rgbasm $(ASFLAGS) -i $(*D) -M dep/$*.mk -MG -MP -MQ obj/$*.o -MQ dep/$*.mk -o obj/$*.o $<
+	rgbasm $(ASFLAGS) -M dep/$*.mk -MG -MP -MQ obj/$*.o -MQ dep/$*.mk -o obj/$*.o $<
 
 # Graphics conversion
 res/%.pal.json: gfx/%.png
@@ -91,10 +75,5 @@ res/%.vwf: gfx/%.png
 
 # Don't include dependencies if cleaning
 ifneq ($(MAKECMDGOALS),clean)
-ifneq ($(findstring $(MAKECMDGOALS),game all),)
 -include $(patsubst %.asm,dep/%.mk,$(SRCS))
-endif
-ifneq ($(findstring $(MAKECMDGOALS),soundtest all),)
--include $(patsubst %.asm,dep/%.mk,$(ST_SRCS))
-endif
 endif
