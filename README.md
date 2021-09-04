@@ -17,12 +17,8 @@ Requirements:
 [make]: https://www.gnu.org/software/make
 
 Run `make` in the root directory of the repository to produce the `bin`
-directory, containing `rhythm-land.gb` along with its map and symbol
+subdirectory, containing `rhythm-land.gb` along with its map and symbol
 files.
-
-Run `make soundtest` to build the sound test ROM containing all music
-and sound effects, or `make all` to build both the game and the
-soundtest at the same time.
 
 ## Attribution
 ### SoundSystem
