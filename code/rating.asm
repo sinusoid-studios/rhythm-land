@@ -212,10 +212,8 @@ ScreenSetupRating::
     ASSERT HIGH(RATING_TYPE_COUNT * 3 + (GAME_COUNT - 1) * 12) == 0
     add     a, LOW(RatingTextTable)
     ld      l, a
-    ASSERT WARN, HIGH(RatingTextTable.end - 1) != HIGH(RatingTextTable)
-    adc     a, HIGH(RatingTextTable)
-    sub     a, l
-    ld      h, a
+    ASSERT HIGH(RatingTextTable.end - 1) == HIGH(RatingTextTable)
+    ld      h, HIGH(RatingTextTable)
     
     ; Get pointer to text
     ld      a, [hli]
@@ -297,8 +295,10 @@ ScreenRating::
     add     a, b    ; rating type * 3 (+Bank)
     add     a, LOW(RatingMapTable)
     ld      l, a
-    ASSERT HIGH(RatingMapTable.end - 1) == HIGH(RatingMapTable)
-    ld      h, HIGH(RatingMapTable)
+    ASSERT WARN, HIGH(RatingMapTable.end - 1) != HIGH(RatingMapTable)
+    adc     a, HIGH(RatingMapTable)
+    sub     a, l
+    ld      h, a
     
     ; Get pointer to map data
     ld      a, [hli]

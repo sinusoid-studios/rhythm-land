@@ -10,51 +10,61 @@ hCurrentSelection:
 SECTION "Game Select Screen Setup", ROM0
 
 ScreenSetupGameSelect::
-    ; Load tiles
-    ld      de, HexDigitTiles
+    ; Set palette
+    ld      a, GAME_SELECT_BGP
+    ldh     [hBGP], a
+    
+    ; Set appropriate LCDC flags
+    ld      a, LCDCF_ON | LCDCF_BG8800 | LCDCF_BG9800 | LCDCF_BGON
+    ldh     [hLCDC], a
+    
+    ; Load background tiles
+    ld      a, BANK(xBackgroundTiles9000)
+    ldh     [hCurrentBank], a
+    ld      [rROMB0], a
+    ld      de, xBackgroundTiles9000
     ld      hl, $9000
-    ld      bc, HexDigitTiles.end - HexDigitTiles
+    ld      bc, xBackgroundTiles9000.end - xBackgroundTiles9000
+    rst     LCDMemcopy
+    ld      a, BANK(xBackgroundTiles8800)
+    ldh     [hCurrentBank], a
+    ld      [rROMB0], a
+    ld      de, xBackgroundTiles8800
+    ld      hl, $8800
+    ld      bc, xBackgroundTiles8800.end - xBackgroundTiles8800
     rst     LCDMemcopy
     
-    ; Clear background map
+    ; Reset current selection
+    ; TODO: Set it to the previously played game. Would probably require
+    ; a separate "current/last game" variable.
+    xor     a, a
+    ldh     [hCurrentSelection], a
+    
+    ; Load background map
+    ld      a, BANK(xMap)
+    ldh     [hCurrentBank], a
+    ld      [rROMB0], a
+    ld      de, xMap
     ld      hl, _SCRN0
-    ld      de, SCRN_VX_B - SCRN_X_B
-    ld      b, SCRN_Y_B
-.rowLoop
-    DEF UNROLL = (16 - 2) / 2
-    ld      c, SCRN_X_B / UNROLL
-.tileLoop
-    ldh     a, [rSTAT]
-    and     a, STATF_BUSY
-    jr      nz, .tileLoop
-    ; 2 cycles
-    ld      a, GAME_SELECT_BLANK_TILE
-    REPT UNROLL
-    ld      [hli], a    ; 2 cycles
-    ENDR
-    dec     c
-    jr      nz, .tileLoop
-    
-.remainingTiles
-    ldh     a, [rSTAT]
-    and     a, STATF_BUSY
-    jr      nz, .remainingTiles
-    ; 2 cycles
-    ld      a, GAME_SELECT_BLANK_TILE
-    REPT SCRN_X_B % UNROLL
-    ld      [hli], a    ; 2 cycles
-    ENDR
-    
-    add     hl, de
-    dec     b
-    jr      nz, .rowLoop
-    
-    ; Set up defaults
-    ld      hl, hCurrentSelection
-    ld      [hl], 0
-    ld      de, vGameID
-    ; Draw the initial game ID
-    jp      UpdateGameID
+    ld      c, SCRN_Y_B
+    jp      LCDMemcopyMap
+
+SECTION "Game Select Screen Background Tiles for $9000", ROMX
+
+xBackgroundTiles9000:
+    INCBIN "res/game-select/background.bg.2bpp", 0, 128 * 16
+.end
+
+SECTION "Game Select Screen Background Tiles for $8800", ROMX
+
+xBackgroundTiles8800:
+    INCBIN "res/game-select/background.bg.2bpp", 128 * 16
+.end
+
+SECTION "Game Select Screen Background Map", ROMX
+
+xMap:
+    INCBIN "res/game-select/background.bg.tilemap"
 
 SECTION "Game Select Screen Loop", ROM0
 
@@ -71,74 +81,76 @@ ScreenGameSelect::
     jr      ScreenGameSelect
     
 .noTransition
-    ld      hl, hCurrentSelection
-    ld      de, vGameID
-    
+    ; Keep new keys in B (A overwritten)
     ldh     a, [hNewKeys]
-    ld      b, a        ; Save in the unmodified b register
+    ld      b, a
     
-    bit     PADB_UP, b
-    jr      nz, .increment
-    bit     PADB_RIGHT, b
-    jr      nz, .add16
+    ; $FF00 + C = hCurrentSelection
+    ld      c, LOW(hCurrentSelection)
     
-    bit     PADB_DOWN, b
-    jr      nz, .decrement
+    ; Move selection
     bit     PADB_LEFT, b
-    jr      nz, .sub16
+    call    nz, MoveLeft
+    bit     PADB_RIGHT, b
+    call    nz, MoveRight
+    bit     PADB_UP, b
+    call    nz, MoveUp
+    bit     PADB_DOWN, b
+    call    nz, MoveDown
     
-    ld      a, b
+    ; If pressed A or START, jump to the selected game
+    ld      a, b    ; New keys
     and     a, PADF_A | PADF_START
     jr      z, ScreenGameSelect
-
-    ; Jump to the selected game
-    ld      a, [hl]
+    ldh     a, [c]  ; Current selection
     call    TransitionStart
     jr      ScreenGameSelect
 
-.increment
-    inc     [hl]
-    call    UpdateGameID
-    jr      ScreenGameSelect
-.add16
-    ld      a, [hl]
-    add     a, 16
-    ld      [hl], a
-    call    UpdateGameID
-    jr      ScreenGameSelect
+SECTION "Game Select Screen Move Selection Left", ROM0
 
-.decrement
-    dec     [hl]
-    call    UpdateGameID
-    jr      ScreenGameSelect
-.sub16
-    ld      a, [hl]
-    sub     a, 16
-    ld      [hl], a
-    call    UpdateGameID
-    jr      ScreenGameSelect
+MoveLeft:
+    ldh     a, [c]
+    ; Don't move if already at the leftmost column
+    ; 2 columns wide: lefmost = bit 0 reset
+    rrca            ; Move bit 0 to carry
+    ret     nc
+    add     a, a    ; Equivalent to `rlca / dec a` when bit 0 is set
+    ldh     [c], a
+    ret
 
-SECTION "Game Select Screen Game ID Update", ROM0
+SECTION "Game Select Screen Move Selection Right", ROM0
 
-; @param    hl  Pointer to game ID
-; @param    de  Pointer to destination on map
-UpdateGameID:
-    ldh     a, [rSTAT]
-    and     a, STATF_BUSY
-    jr      nz, UpdateGameID
-    
-    ; High nibble
-    ld      a, [hl]     ; 2 cycles
-    swap    a           ; 2 cycles
-    and     a, $0F      ; 2 cycles
-    ld      [de], a     ; 2 cycles
-    inc     e           ; 1 cycle
-    ; Low nibble
-    ld      a, [hl]     ; 2 cycles
-    and     a, $0F      ; 2 cycles
-    ld      [de], a     ; 2 cycles
-    ; Total 15 cycles
-    
-    ASSERT HIGH(vGameID + 1) == HIGH(vGameID)
-    ld      e, LOW(vGameID)
+MoveRight:
+    ldh     a, [c]
+    ; Don't move if already at the rightmost column
+    ; 2 columns wide: rightmost = bit 0 set
+    rrca    ; Move bit 0 to carry
+    ret     c
+    rlca    ; Undo rrca
+    inc     a
+    ldh     [c], a
+    ret
+
+SECTION "Game Select Screen Move Selection Up", ROM0
+
+MoveUp:
+    ldh     a, [c]
+    ; Don't move if already at the topmost row
+    cp      a, 2    ; 2 columns wide, 2nd row starts with 2
+    ret     c
+    ldh     a, [c]
+    sub     a, 2    ; 2 columns wide
+    ldh     [c], a
+    ret
+
+SECTION "Game Select Screen Move Selection Down", ROM0
+
+MoveDown:
+    ldh     a, [c]
+    ; Don't move if already at the bottommost row
+    cp      a, 4    ; 2 columns wide, 3rd (last) row starts with 4
+    ret     nc
+    ldh     a, [c]
+    add     a, 2    ; 2 columns wide
+    ldh     [c], a
     ret
