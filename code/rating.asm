@@ -295,10 +295,8 @@ ScreenRating::
     add     a, b    ; rating type * 3 (+Bank)
     add     a, LOW(RatingMapTable)
     ld      l, a
-    ASSERT WARN, HIGH(RatingMapTable.end - 1) != HIGH(RatingMapTable)
-    adc     a, HIGH(RatingMapTable)
-    sub     a, l
-    ld      h, a
+    ASSERT HIGH(RatingMapTable.end - 1) == HIGH(RatingMapTable)
+    ld      h, HIGH(RatingMapTable)
     
     ; Get pointer to map data
     ld      a, [hli]
@@ -321,8 +319,10 @@ ScreenRating::
     add     a, b    ; rating type * 6 (Inst bank + Music bank)
     add     a, LOW(RatingThemeTable)
     ld      l, a
-    ASSERT HIGH(RatingThemeTable.end - 1) == HIGH(RatingThemeTable)
-    ld      h, HIGH(RatingThemeTable)
+    ASSERT WARN, HIGH(RatingThemeTable.end - 1) != HIGH(RatingThemeTable)
+    adc     a, HIGH(RatingThemeTable)
+    sub     a, l
+    ld      h, a
     ; Prepare Insts
     ld      a, [hli]
     ld      c, a    ; c = bank number
