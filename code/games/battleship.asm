@@ -24,33 +24,43 @@ xGameSetupBattleship::
     ld      bc, xBackgroundTiles.end - xBackgroundTiles
     rst     LCDMemcopy
     
+    ; Repeat the 6-tile-high ocean pattern 3 times vertically onto the
+    ; tilemap
+    ASSERT BATTLESHIP_OCEAN_SIZE * 3 == SCRN_Y_B
+    
     ; Load first background map
     ASSERT BANK(xMap1) == BANK(@)
-    ; Reuse the same part of the repeating block for the top of the
-    ; background
     ASSERT xMap1 == xBackgroundTiles.end
     ; de = xMap1
     ld      hl, _SCRN0
-    ld      c, BATTLESHIP_OCEAN_REPEAT_SIZE
+    ld      c, BATTLESHIP_OCEAN_SIZE
     call    LCDMemcopyMap
     ld      de, xMap1
-    ld      c, BATTLESHIP_OCEAN_REPEAT_SIZE
+    ld      c, BATTLESHIP_OCEAN_SIZE
     call    LCDMemcopyMap
     ld      de, xMap1
-    ld      c, (xMap1.end - xMap1) / SCRN_X_B
+    ld      c, BATTLESHIP_OCEAN_SIZE
+    call    LCDMemcopyMap
+    ; 1 extra time for scrolling
+    ld      de, xMap1
+    ld      c, BATTLESHIP_OCEAN_SIZE
     call    LCDMemcopyMap
     ; Load second background map
     ASSERT BANK(xMap2) == BANK(@)
     ASSERT xMap2 == xMap1.end
     ; de = xMap2
     ld      hl, _SCRN1
-    ld      c, BATTLESHIP_OCEAN_REPEAT_SIZE
+    ld      c, BATTLESHIP_OCEAN_SIZE
     call    LCDMemcopyMap
     ld      de, xMap2
-    ld      c, BATTLESHIP_OCEAN_REPEAT_SIZE
+    ld      c, BATTLESHIP_OCEAN_SIZE
     call    LCDMemcopyMap
     ld      de, xMap2
-    ld      c, (xMap2.end - xMap2) / SCRN_X_B
+    ld      c, BATTLESHIP_OCEAN_SIZE
+    call    LCDMemcopyMap
+    ; 1 extra time for scrolling
+    ld      de, xMap2
+    ld      c, BATTLESHIP_OCEAN_SIZE
     call    LCDMemcopyMap
     
     ; Set up game data
@@ -68,10 +78,10 @@ xBackgroundTiles:
 .end
 
 xMap1:
-    INCBIN "res/battleship/background.bg.tilemap", 0, BATTLESHIP_OCEAN_REPEAT_SIZE * 2 * SCRN_X_B
+    INCBIN "res/battleship/background.bg.tilemap", 0, BATTLESHIP_OCEAN_SIZE * SCRN_X_B
 .end
 xMap2:
-    INCBIN "res/battleship/background.bg.tilemap", BATTLESHIP_OCEAN_REPEAT_SIZE * 2 * SCRN_X_B
+    INCBIN "res/battleship/background.bg.tilemap", BATTLESHIP_OCEAN_SIZE * SCRN_X_B
 .end
 
 SECTION "Battleship Game Loop", ROMX
