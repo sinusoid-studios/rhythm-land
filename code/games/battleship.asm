@@ -20,11 +20,18 @@ xGameSetupBattleship::
     ld      bc, xBackgroundTiles.end - xBackgroundTiles
     rst     LCDMemcopy
     
-    ; Load background map
-    ASSERT BANK(xMap) == BANK(@)
-    ASSERT xMap == xBackgroundTiles.end
-    ; de = xMap
+    ; Load first background map
+    ASSERT BANK(xMap1) == BANK(@)
+    ASSERT xMap1 == xBackgroundTiles.end
+    ; de = xMap1
     ld      hl, _SCRN0
+    ld      c, SCRN_Y_B
+    call    LCDMemcopyMap
+    ; Load second background map
+    ASSERT BANK(xMap2) == BANK(@)
+    ASSERT xMap2 == xMap1.end
+    ; de = xMap2
+    ld      hl, _SCRN1
     ld      c, SCRN_Y_B
     call    LCDMemcopyMap
     
@@ -42,8 +49,11 @@ xBackgroundTiles:
     INCBIN "res/battleship/background.bg.2bpp"
 .end
 
-xMap:
-    INCBIN "res/battleship/background.bg.tilemap"
+xMap1:
+    INCBIN "res/battleship/background.bg.tilemap", 0, SCRN_X_B * SCRN_Y_B
+.end
+xMap2:
+    INCBIN "res/battleship/background.bg.tilemap", SCRN_X_B * SCRN_Y_B
 
 SECTION "Battleship Game Loop", ROMX
 
@@ -72,4 +82,13 @@ xGameBattleship::
 
 .noTransition
     call    EngineUpdate
+    
+    ; Update the background (ocean waves) every 16 frames
+    ldh     a, [hFrameCounter]
+    and     a, 15
+    jr      nz, xGameBattleship
+    ; Toggle the background tilemap
+    ldh     a, [hLCDC]
+    xor     a, LCDCF_BG9800 ^ LCDCF_BG9C00
+    ldh     [hLCDC], a
     jr      xGameBattleship
