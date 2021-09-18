@@ -1,0 +1,2 @@
+; Game palettes
+DEF BATTLESHIP_BGP EQU %11_10_01_00

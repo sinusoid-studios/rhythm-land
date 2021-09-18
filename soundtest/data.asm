@@ -5,6 +5,7 @@ SongDataTable:
     DW OKData
     DW SkaterDudeData
     DW SeagullSerenadeData
+    DW BattleshipData
 
 DEF NUM_SONGS EQU (@ - SongDataTable) / 2
 
@@ -33,6 +34,11 @@ SeagullSerenadeData:
     DW Inst_SeagullSerenade
     DB BANK(Music_SeagullSerenade)
     DW Music_SeagullSerenade
+BattleshipData:
+    DB BANK(Inst_Battleship)
+    DW Inst_Battleship
+    DB BANK(Music_Battleship)
+    DW Music_Battleship
 
 SECTION "Song Title Table", ROM0, ALIGN[8]
 SongTitleTable:
@@ -41,6 +47,7 @@ SongTitleTable:
     DW OKString
     DW SkaterDudeString
     DW SeagullSerenadeString
+    DW BattleshipString
 
 TitleString:
     DB "       Title        ",0
@@ -52,6 +59,8 @@ SkaterDudeString:
     DB "    Skater Dude     ",0
 SeagullSerenadeString:
     DB "  Seagull Serenade  ",0
+BattleshipString:
+    DB "     Battleship     ",0
 
 ; Get NUM_SFX
 INCLUDE "constants/sfx.inc"
