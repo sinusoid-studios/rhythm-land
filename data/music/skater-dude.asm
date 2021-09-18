@@ -279,7 +279,6 @@ INSTSkaterDude12_CHNL0:
     DB $05, $00, $01, $80
     DB $02
 
-
 ; Instrument Table
 
 Inst_SkaterDude::
