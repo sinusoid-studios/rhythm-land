@@ -20,14 +20,12 @@ ScreenSetupGameSelect::
     
     ; Load background tiles
     ld      a, BANK(xBackgroundTiles9000)
-    ldh     [hCurrentBank], a
     ld      [rROMB0], a
     ld      de, xBackgroundTiles9000
     ld      hl, $9000
     ld      bc, xBackgroundTiles9000.end - xBackgroundTiles9000
     rst     LCDMemcopy
     ld      a, BANK(xBackgroundTiles8800)
-    ldh     [hCurrentBank], a
     ld      [rROMB0], a
     ld      de, xBackgroundTiles8800
     ld      hl, $8800
@@ -42,7 +40,6 @@ ScreenSetupGameSelect::
     
     ; Load background map
     ld      a, BANK(xMap)
-    ldh     [hCurrentBank], a
     ld      [rROMB0], a
     ld      de, xMap
     ld      hl, _SCRN0

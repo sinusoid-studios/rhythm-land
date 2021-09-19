@@ -79,7 +79,6 @@ EngineInit::
     ; Set hit table bank
     ld      a, c
     ldh     [hHitTableBank], a
-    ldh     [hCurrentBank], a
     ld      [rROMB0], a
     ; Save this game's hit keys
     ld      a, [hli]
@@ -388,7 +387,6 @@ SetNextHit:
     
     ; Get the current position in the hit table
     ldh     a, [hHitTableBank]
-    ldh     [hCurrentBank], a
     ld      [rROMB0], a
     ld      hl, hHitTablePointer
     ld      a, [hli]

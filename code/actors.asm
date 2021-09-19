@@ -251,7 +251,6 @@ ActorsUpdate::
     
     ; Point hl to actor's type's meta-sprite table
     ld      a, [hli]
-    ldh     [hCurrentBank], a
     ld      [rROMB0], a
     ld      a, [hli]
     ld      h, [hl]
@@ -375,15 +374,16 @@ ActorNew::
     add     a, l    ; a * 3 (+Bank)
     add     a, LOW(ActorAnimationTable)
     ld      l, a
-    ASSERT HIGH(ActorAnimationTable.end - 1) == HIGH(ActorAnimationTable)
-    ld      h, HIGH(ActorAnimationTable)
+    ASSERT WARN, HIGH(ActorAnimationTable.end - 1) != HIGH(ActorAnimationTable)
+    adc     a, HIGH(ActorAnimationTable)
+    sub     a, l
+    ld      h, a
     
     ; Save current bank to restore when finished
     ldh     a, [hCurrentBank]
     push    af
     
     ld      a, [hli]
-    ldh     [hCurrentBank], a
     ld      [rROMB0], a
     ld      a, [hli]
     ld      h, [hl]
@@ -701,12 +701,13 @@ ActorGetAnimationCel:
     ldh     a, [hScratch1]  ; a = actor type * 3
     add     a, LOW(ActorAnimationTable)
     ld      l, a
-    ASSERT HIGH(ActorAnimationTable.end - 1) == HIGH(ActorAnimationTable)
-    ld      h, HIGH(ActorAnimationTable)
+    ASSERT WARN, HIGH(ActorAnimationTable.end - 1) != HIGH(ActorAnimationTable)
+    adc     a, HIGH(ActorAnimationTable)
+    sub     a, l
+    ld      h, a
     
     ; Point hl to actor's type's animation table
     ld      a, [hli]
-    ldh     [hCurrentBank], a
     ld      [rROMB0], a
     ld      a, [hli]
     ld      d, [hl]
@@ -751,12 +752,13 @@ ActorSetCel::
     ldh     a, [hScratch1]  ; a = actor type * 3
     add     a, LOW(ActorAnimationTable)
     ld      l, a
-    ASSERT HIGH(ActorAnimationTable.end - 1) == HIGH(ActorAnimationTable)
-    ld      h, HIGH(ActorAnimationTable)
+    ASSERT WARN, HIGH(ActorAnimationTable.end - 1) != HIGH(ActorAnimationTable)
+    adc     a, HIGH(ActorAnimationTable)
+    sub     a, l
+    ld      h, a
     
     ; Point hl to actor's type's animation table
     ld      a, [hli]
-    ldh     [hCurrentBank], a
     ld      [rROMB0], a
     ld      a, [hli]
     ld      d, [hl]

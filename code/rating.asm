@@ -175,7 +175,6 @@ ScreenSetupRating::
     
     ; Get pointer to tile data
     ld      a, [hli]
-    ldh     [hCurrentBank], a
     ld      [rROMB0], a
     ld      a, [hli]
     ld      e, a
@@ -300,7 +299,6 @@ ScreenRating::
     
     ; Get pointer to map data
     ld      a, [hli]
-    ldh     [hCurrentBank], a
     ld      [rROMB0], a
     ld      a, [hli]
     ld      e, a
@@ -319,10 +317,8 @@ ScreenRating::
     add     a, b    ; rating type * 6 (Inst bank + Music bank)
     add     a, LOW(RatingThemeTable)
     ld      l, a
-    ASSERT WARN, HIGH(RatingThemeTable.end - 1) != HIGH(RatingThemeTable)
-    adc     a, HIGH(RatingThemeTable)
-    sub     a, l
-    ld      h, a
+    ASSERT HIGH(RatingThemeTable.end - 1) == HIGH(RatingThemeTable)
+    ld      h, HIGH(RatingThemeTable)
     ; Prepare Insts
     ld      a, [hli]
     ld      c, a    ; c = bank number

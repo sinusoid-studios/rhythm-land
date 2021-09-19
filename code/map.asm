@@ -204,7 +204,6 @@ MapDrawColumn:
     push    af
     
     ldh     a, [hMapBank]
-    ldh     [hCurrentBank], a
     ld      [rROMB0], a
     
     ; Copy map data to the background map

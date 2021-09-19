@@ -96,8 +96,6 @@ VBlankHandler:
     ld      a, P1F_GET_NONE
     ldh     [rP1], a
     
-    ; Bank was never changed, no need to restore
-    
     pop     bc
     
     ldh     a, [hVBlankFlag]
