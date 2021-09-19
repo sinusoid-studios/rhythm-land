@@ -68,15 +68,33 @@ SECTION "Game Select Screen Loop", ROM0
 ScreenGameSelect::
     rst     WaitVBlank
     
+    ; Calling SoundSystem_Process directly instead of SoundUpdate
+    ; because this is in ROM0 and there is no sync data to be looking
+    ; for
+    call    SoundSystem_Process
+    
     ldh     a, [hTransitionState]
     ASSERT TRANSITION_STATE_OFF == 0
     and     a, a
     jr      z, .noTransition
     
     call    TransitionUpdate
-    ; Transitioning -> don't take player input
-    jr      ScreenGameSelect
     
+    ; Check if the transition just ended
+    ldh     a, [hTransitionState]
+    ASSERT TRANSITION_STATE_OFF == 0
+    and     a, a
+    jr      nz, ScreenGameSelect
+    
+    ; Start music
+    ld      c, BANK(Inst_GameSelect)
+    ld      de, Inst_GameSelect
+    call    Music_PrepareInst
+    ld      c, BANK(Music_GameSelect)
+    ld      de, Music_GameSelect
+    call    Music_Play
+    jr      ScreenGameSelect
+
 .noTransition
     ; Keep new keys in B (A overwritten)
     ldh     a, [hNewKeys]

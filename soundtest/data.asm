@@ -1,7 +1,9 @@
 SECTION "Song Data Table", ROM0, ALIGN[8]
+
 SongDataTable:
     DW TitleData
     DW FileSelectData
+    DW GameSelectData
     DW OKData
     DW SkaterDudeData
     DW SeagullSerenadeData
@@ -19,6 +21,11 @@ FileSelectData:
     DW Inst_FileSelect
     DB BANK(Music_FileSelect)
     DW Music_FileSelect
+GameSelectData:
+    DB BANK(Inst_GameSelect)
+    DW Inst_GameSelect
+    DB BANK(Music_GameSelect)
+    DW Music_GameSelect
 OKData:
     DB BANK(Inst_OK)
     DW Inst_OK
@@ -41,9 +48,11 @@ BattleshipData:
     DW Music_Battleship
 
 SECTION "Song Title Table", ROM0, ALIGN[8]
+
 SongTitleTable:
     DW TitleString
     DW FileSelectString
+    DW GameSelectString
     DW OKString
     DW SkaterDudeString
     DW SeagullSerenadeString
@@ -53,6 +62,8 @@ TitleString:
     DB "       Title        ",0
 FileSelectString:
     DB "    File Select     ",0
+GameSelectString:
+    DB "    Game Select     ",0
 OKString:
     DB "         OK         ",0
 SkaterDudeString:
