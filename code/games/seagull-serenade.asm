@@ -75,12 +75,7 @@ xGameSetupSeagullSerenade::
     ; Set up game data
     ld      c, BANK(xHitTableSeagullSerenade)
     ld      hl, xHitTableSeagullSerenade
-    call    EngineInit
-    
-    ; Prepare music
-    ld      c, BANK(Inst_SeagullSerenade)
-    ld      de, Inst_SeagullSerenade
-    jp      Music_PrepareInst
+    jp      EngineInit
 
 xActorSeagullDefinitions:
     ; Seagull 1
@@ -124,6 +119,9 @@ xGameSeagullSerenade::
     jr      nz, xGameSeagullSerenade
     
     ; Start music
+    ld      c, BANK(Inst_SeagullSerenade)
+    ld      de, Inst_SeagullSerenade
+    call    Music_PrepareInst
     ld      c, BANK(Music_SeagullSerenade)
     ld      de, Music_SeagullSerenade
     call    Music_Play

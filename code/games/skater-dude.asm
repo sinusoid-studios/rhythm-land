@@ -172,12 +172,7 @@ xGameSetupSkaterDude::
     ; Set up game data
     ld      c, BANK(xHitTableSkaterDude)
     ld      hl, xHitTableSkaterDude
-    call    EngineInit
-    
-    ; Prepare music
-    ld      c, BANK(Inst_SkaterDude)
-    ld      de, Inst_SkaterDude
-    jp      Music_PrepareInst
+    jp      EngineInit
 
 xBackgroundTiles:
     INCBIN "res/skater-dude/background.bg.2bpp"
@@ -352,6 +347,9 @@ xGameSkaterDude::
     jr      nz, .loop
     
     ; Start music
+    ld      c, BANK(Inst_SkaterDude)
+    ld      de, Inst_SkaterDude
+    call    Music_PrepareInst
     ld      c, BANK(Music_SkaterDude)
     ld      de, Music_SkaterDude
     call    Music_Play

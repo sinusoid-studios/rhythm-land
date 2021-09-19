@@ -66,12 +66,7 @@ xGameSetupBattleship::
     ; Set up game data
     ld      c, BANK(xHitTableBattleship)
     ld      hl, xHitTableBattleship
-    call    EngineInit
-    
-    ; Prepare music
-    ld      c, BANK(Inst_Battleship)
-    ld      de, Inst_Battleship
-    jp      Music_PrepareInst
+    jp      EngineInit
 
 xBackgroundTiles:
     INCBIN "res/battleship/background.bg.2bpp"
@@ -104,6 +99,9 @@ xGameBattleship::
     jr      nz, xGameBattleship
     
     ; Start music
+    ld      c, BANK(Inst_Battleship)
+    ld      de, Inst_Battleship
+    call    Music_PrepareInst
     ld      c, BANK(Music_Battleship)
     ld      de, Music_Battleship
     call    Music_Play

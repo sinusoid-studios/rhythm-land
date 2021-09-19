@@ -78,10 +78,7 @@ ScreenSetupTitle::
     ldh     [hScratch1], a
     jr      nz, .starLoop
     
-    ; Prepare music
-    ld      c, BANK(Inst_Title)
-    ld      de, Inst_Title
-    jp      Music_PrepareInst
+    ret
 
 SECTION "Title Screen Large Star Actor Definitions", ROM0
 
@@ -164,6 +161,9 @@ SECTION "Title Screen Loop", ROM0
 
 ScreenTitle::
     ; Start the music
+    ld      c, BANK(Inst_Title)
+    ld      de, Inst_Title
+    call    Music_PrepareInst
     ld      c, BANK(Music_Title)
     ld      de, Music_Title
     call    Music_Play
