@@ -520,14 +520,8 @@ BtnBPressed:
 
 BtnSelectPressed:
 	ASSERT wSongID == wCurrentSongID + 1	; make sure wSongID follows wCurrentSongID
-	ld	hl,wCurrentSongID
-	ld	a,[hl+]
-	ld	b,a
-
+	ld	hl,wSongID
 	ld	a,[hl-]	; get hSongID
-	cp	b
-	ret	z	; they're the same so there's nothing to do
-
 	; set the current song id
 	ld	[hl],a
 
