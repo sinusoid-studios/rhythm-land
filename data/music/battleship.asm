@@ -88,7 +88,15 @@ SECTION "Battleship Theme Pattern 5", ROMX
 PATTERN_Battleship5:
     DB $0A
     DB $0B, $02, $00, $02, $01, $01, $15, $06, $02, $17, $0C, $11, $37, $00, $01, $21, $10, $02, $31, $02, $06, $02, $2B, $0B, $02, $00, $0C, $02, $10, $02, $31, $02
-    DB $06, $02, $2B, $0B, $02, $00, $0C, $02, $10, $02, $31, $02, $06, $02, $0B, $0B, $02, $00, $02, $02, $00, $5C, $00, $00, $00, $00, $07
+    DB $06, $02, $2B, $0B, $02, $00, $0C, $02, $10, $02, $31, $02, $06, $02, $0B, $0B, $02, $00, $02, $02, $00, $0A, $07
+
+SECTION "Battleship Theme Pattern 6", ROMX
+
+PATTERN_Battleship6:
+    DB $0A
+    DB $0B, $02, $31, $01, $11, $06, $02, $2B, $0C, $02, $2C, $02, $31, $02, $2B, $0B, $02, $00, $02, $06, $0B, $02, $31, $02, $2B, $0C, $02, $2C, $02, $31, $02, $06
+    DB $02, $2B, $0B, $02, $00, $02, $06, $0B, $02, $31, $02, $2B, $0C, $02, $2C, $02, $31, $02, $06, $02, $2B, $0B, $02, $00, $0B, $02, $31, $02, $2B, $0B, $02, $06
+    DB $02, $17, $0B, $02, $2C, $02, $31, $01, $18, $06, $02, $0B, $0B, $02, $2C, $02, $31, $01, $17, $06, $02, $0B, $00, $0A, $07
 
 SECTION "Battleship Theme End Pattern", ROMX
 
@@ -100,7 +108,7 @@ PATTERN_BattleshipLAST:
 SECTION "Battleship Theme Pattern Table", ROMX
 
 Music_Battleship::
-    DW PATTERN_Battleship4, BANK(PATTERN_Battleship4)
+    DW PATTERN_Battleship6, BANK(PATTERN_Battleship6)
     DW PATTERN_Battleship0, BANK(PATTERN_Battleship0)
     DW PATTERN_Battleship0, BANK(PATTERN_Battleship0)
     DW PATTERN_Battleship1, BANK(PATTERN_Battleship1)
@@ -119,56 +127,57 @@ SECTION "Battleship Theme Instruments", ROMX
 INSTBattleship_CHNLOFF: DB $05, $00, $01, $80, $02
 INSTBattleship1_CHNL2:
     DB $07, $05, $20
-    DB $0A, $02, $6A, $D7
-    DB $16, $DF, $83, $06
+    DB $0A, $02, $6A, $F7
+    DB $06, $DF, $83, $06
     DB $5F, $C8, $83, $05
     DB $68, $DF, $B8, $52
-    DB $03, $27, $01, $80
+    DB $03, $2A, $01, $80
     DB $00, $03, $0A, $00
     DB $02, $45, $67, $89
     DB $AB, $CD, $EE, $FA
-    DB $40, $37, $9A, $BB
-    DB $BB, $A9, $86, $41
+    DB $40, $38, $CE, $FF
+    DB $FF, $FE, $DA, $71
     DB $01, $80, $00, $02
     DB $0A, $FF, $01, $12
     DB $23, $34, $45, $56
     DB $66, $77, $88, $99
     DB $9A, $AA, $BB, $CC
     DB $DE, $F5, $01, $80
-    DB $00, $04, $0A, $FF
+    DB $00, $03, $0A, $FF
     DB $01, $22, $33, $44
     DB $55, $66, $67, $77
     DB $88, $99, $AA, $BB
-    DB $CD, $EF, $73, $03
-    DB $01, $80, $00, $04
+    DB $CD, $EF, $70, $53
+    DB $01, $80, $00, $03
     DB $0A, $FF, $01, $23
     DB $44, $55, $66, $77
     DB $88, $99, $AA, $BC
     DB $CC, $DD, $EF, $B4
-    DB $02, $43, $01, $80
-    DB $00, $04, $0A, $FF
+    DB $08, $B6, $01, $80
+    DB $00, $03, $0A, $FF
     DB $02, $45, $67, $89
     DB $9A, $AB, $BC, $CD
     DB $DE, $EE, $EF, $D5
-    DB $01, $45, $66, $53
-    DB $01, $80, $00, $04
+    DB $05, $9B, $CC, $B8
+    DB $01, $80, $00, $03
     DB $0A, $FF, $01, $12
     DB $23, $44, $55, $67
     DB $78, $89, $AB, $CD
-    DB $EF, $93, $01, $37
-    DB $99, $74, $01, $80
-    DB $00, $04, $0A, $FF
+    DB $EF, $93, $06, $AD
+    DB $EE, $C7, $01, $80
+    DB $00, $03, $0A, $FF
     DB $01, $23, $45, $67
     DB $78, $89, $99, $AB
-    DB $CD, $EF, $C6, $01
-    DB $46, $78, $87, $52
-    DB $01, $80, $00, $04
+    DB $CD, $EF, $C6, $03
+    DB $8B, $DE, $ED, $93
+    DB $01, $80, $00, $03
     DB $0A, $00, $02, $45
     DB $67, $89, $AB, $CD
-    DB $EE, $FA, $40, $37
-    DB $9A, $BB, $BB, $A9
-    DB $86, $41, $01, $80
-    DB $00, $1C, $02
+    DB $EE, $FA, $40, $38
+    DB $CE, $FF, $FF, $FE
+    DB $DA, $71, $01, $80
+    DB $00, $0F, $05, $40
+    DB $00, $0D, $02
 INSTBattleship2_CHNL3:
     DB $07, $0A, $5C
     DB $05, $A0, $01, $80
@@ -238,7 +247,7 @@ INSTBattleship8_CHNL1:
     DB $80, $02
 INSTBattleship9_CHNL0:
     DB $07, $0B, $08
-    DB $0A, $00, $05, $AD
+    DB $0A, $00, $05, $B0
     DB $01, $80, $02
 INSTBattleship10_CHNL3:
     DB $07, $0A, $6A
@@ -251,7 +260,7 @@ INSTBattleship11_CHNL0:
     DB $04, $D4, $86, $02
 INSTBattleship12_CHNL1:
     DB $07, $0A, $80
-    DB $05, $40, $04, $B5
+    DB $05, $50, $04, $B5
     DB $87, $00, $01, $0A
     DB $40, $00, $01, $0A
     DB $00, $00, $01, $05
