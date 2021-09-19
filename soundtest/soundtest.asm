@@ -159,7 +159,6 @@ mainloop:
 	call	SoundSystem_Process
 
 	; reset the bg palette
-	WaitVRAMAvailable
 	ld	a,$E4
 	ldh	[rBGP],a
 
