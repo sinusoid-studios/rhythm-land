@@ -296,8 +296,10 @@ ScreenRating::
     add     a, b    ; rating type * 3 (+Bank)
     add     a, LOW(RatingMapTable)
     ld      l, a
-    ASSERT HIGH(RatingMapTable.end - 1) == HIGH(RatingMapTable)
-    ld      h, HIGH(RatingMapTable)
+    ASSERT WARN, HIGH(RatingMapTable.end - 1) != HIGH(RatingMapTable)
+    adc     a, HIGH(RatingMapTable)
+    sub     a, l
+    ld      h, a
     
     ; Get pointer to map data
     ld      a, [hli]
