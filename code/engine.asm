@@ -263,7 +263,11 @@ EngineUpdate::
     ldh     [hLastPlayerHitNumber], a
 .countLoop
     ; Increment count of this rating of hit for each pressed hit key
-    inc     [hl]
+    ld      a, [hl]
+    inc     a
+    ; Clamp the counter to max value (2^8-1) to prevent overflow
+    jr      z, .next
+    ld      [hl], a
 .next
     srl     b       ; b = pressed hit keys
     jr      z, .rated

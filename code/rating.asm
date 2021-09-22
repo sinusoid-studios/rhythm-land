@@ -101,8 +101,9 @@ ScreenSetupRating::
     add     a, b
     
     ; Score is negative -> go straight to Bad
-    rlca    ; Copy bit 7 (sign) to carry
     ld      b, RATING_BAD
+    jr      c, .gotRating
+    rlca    ; Copy bit 7 (sign) to carry
     jr      c, .gotRating
     
     ; Numerator must be less than denominator, but that's fine since
@@ -170,10 +171,8 @@ ScreenSetupRating::
     add     a, b    ; rating type * 5 (+Bank)
     add     a, LOW(RatingTilesTable)
     ld      l, a
-    ASSERT WARN, HIGH(RatingTilesTable.end - 1) != HIGH(RatingTilesTable)
-    adc     a, HIGH(RatingTilesTable)
-    sub     a, l
-    ld      h, a
+    ASSERT HIGH(RatingTilesTable.end - 1) == HIGH(RatingTilesTable)
+    ld      h, HIGH(RatingTilesTable)
     
     ; Get pointer to tile data
     ld      a, [hli]
