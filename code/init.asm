@@ -130,6 +130,7 @@ Initialize::
     ; If the program runs to here, the game will hopefully play
     ; accurately
     
+.ignoreBadEmu::
     ; Verify save data
     ld      a, CART_SRAM_ENABLE
     ld      [rRAMG], a

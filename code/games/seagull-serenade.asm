@@ -168,10 +168,8 @@ xGameSeagullSerenade::
     ldh     [hSquawkIndex], a
     add     a, LOW(xSquawkNoteTable)
     ld      l, a
-    ASSERT WARN, HIGH(xSquawkNoteTable.end - 1) != HIGH(xSquawkNoteTable)
-    adc     a, HIGH(xSquawkNoteTable)
-    sub     a, l
-    ld      h, a
+    ASSERT HIGH(xSquawkNoteTable.end - 1) == HIGH(xSquawkNoteTable)
+    ld      h, HIGH(xSquawkNoteTable)
     
     ld      b, SFX_SEAGULL_SQUAWK
     ld      c, [hl] ; c = note
