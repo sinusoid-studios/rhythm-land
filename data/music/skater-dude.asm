@@ -265,13 +265,8 @@ INSTSkaterDude10_CHNL0:
     DB $04, $3F, $86, $02
 INSTSkaterDude11_CHNL0:
     DB $07, $0B, $1C
-    DB $0A, $40, $05, $F1
-    DB $04, $1F, $87, $00
-    DB $03, $05, $C0, $04
-    DB $FC, $80, $00, $01
-    DB $0A, $80, $00, $03
-    DB $0B, $18, $05, $41
-    DB $04, $FC, $80, $02
+    DB $0A, $80, $05, $F1
+    DB $04, $1F, $87, $02
 INSTSkaterDude12_CHNL0:
     DB $07, $0B, $08
     DB $0A, $00, $05, $E0
