@@ -46,14 +46,14 @@ xGameSetupPancake::
     jp      EngineInit
 
 xBackgroundTiles9000:
-    INCBIN "res/pancake/background-1.bg.2bpp", 0, 128 * 16
+    INCBIN "res/pancake/background-normal.bg.2bpp", 0, 128 * 16
 .end
 xBackgroundTiles8800:
-    INCBIN "res/pancake/background-1.bg.2bpp", 128 * 16
+    INCBIN "res/pancake/background-normal.bg.2bpp", 128 * 16
 .end
 
 xMap:
-    INCBIN "res/pancake/background-1.bg.tilemap"
+    INCBIN "res/pancake/background-normal.bg.tilemap"
 
 SECTION "Pancake Game Loop", ROMX
 
