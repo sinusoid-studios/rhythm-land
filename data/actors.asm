@@ -24,6 +24,7 @@ ActorRoutineTable::
     full_pointer xActorSeagullPlayer    ; ACTOR_SEAGULL_3
     full_pointer Null   ; ACTOR_LARGE_PANCAKE
     full_pointer Null   ; ACTOR_SMALL_PANCAKE
+    full_pointer Null   ; ACTOR_CURSOR
 .end::
 
 SECTION "Actor Animation Table", ROM0
@@ -50,6 +51,7 @@ ActorAnimationTable::
     full_pointer xActorSeagull3Animation    ; ACTOR_SEAGULL_3
     full_pointer xActorLargePancakeAnimation    ; ACTOR_LARGE_PANCAKE
     full_pointer xActorSmallPancakeAnimation    ; ACTOR_SMALL_PANCAKE
+    full_pointer xActorCursorAnimation  ; ACTOR_CURSOR
 .end::
 
 SECTION "Actor Meta-Sprite Table", ROM0
@@ -76,4 +78,5 @@ ActorMetaspriteTable::
     full_pointer xActorSeagull3Metasprites  ; ACTOR_SEAGULL_3
     full_pointer xActorLargePancakeMetasprites  ; ACTOR_LARGE_PANCAKE
     full_pointer xActorSmallPancakeMetasprites  ; ACTOR_SMALL_PANCAKE
+    full_pointer xActorCursorMetasprites    ; ACTOR_CURSOR
 .end::

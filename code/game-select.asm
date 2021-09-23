@@ -1,5 +1,6 @@
 INCLUDE "constants/hardware.inc"
 INCLUDE "constants/game-select.inc"
+INCLUDE "constants/actors.inc"
 INCLUDE "constants/transition.inc"
 
 SECTION UNION "Game Variables", HRAM
@@ -15,7 +16,7 @@ ScreenSetupGameSelect::
     ldh     [hBGP], a
     
     ; Set appropriate LCDC flags
-    ld      a, LCDCF_ON | LCDCF_BG8800 | LCDCF_BG9800 | LCDCF_BGON
+    ld      a, LCDCF_ON | LCDCF_BG8800 | LCDCF_BG9800 | LCDCF_BGON | LCDCF_OBJ16 | LCDCF_OBJON
     ldh     [hLCDC], a
     
     ; Load background tiles
@@ -32,11 +33,25 @@ ScreenSetupGameSelect::
     ld      bc, xBackgroundTiles8800.end - xBackgroundTiles8800
     rst     LCDMemcopy
     
+    ; Load sprite tiles
+    ld      de, SpriteTiles
+    ld      hl, $8000
+    ld      bc, SpriteTiles.end - SpriteTiles
+    rst     LCDMemcopy
+    
     ; Reset current selection
     ; TODO: Set it to the previously played game. Would probably require
     ; a separate "current/last game" variable.
     xor     a, a
     ldh     [hCurrentSelection], a
+    
+    ; Disable tile streaming
+    ; a = 0
+    ldh     [hTileStreamingEnable], a
+    
+    ; Create cursor actor
+    ld      de, ActorCursorDefinition
+    call    ActorNew
     
     ; Load background map
     ld      a, BANK(xMap)
@@ -45,6 +60,19 @@ ScreenSetupGameSelect::
     ld      hl, _SCRN0
     ld      c, SCRN_Y_B
     jp      LCDMemcopyMap
+
+SECTION "Game Select Cursor Actor Definition", ROM0
+
+ActorCursorDefinition:
+    DB ACTOR_CURSOR
+    DB 64, 16
+    DB 0, 0
+
+SECTION "Game Select Screen Sprite Tiles", ROM0
+
+SpriteTiles:
+    INCBIN "res/game-select/cursor.obj.2bpp"
+.end
 
 SECTION "Game Select Screen Background Tiles for $9000", ROMX
 
@@ -96,6 +124,8 @@ ScreenGameSelect::
     jr      ScreenGameSelect
 
 .noTransition
+    call    ActorsUpdate
+    
     ; Keep new keys in B (A overwritten)
     ldh     a, [hNewKeys]
     ld      b, a
@@ -121,7 +151,7 @@ ScreenGameSelect::
     call    TransitionStart
     jr      ScreenGameSelect
 
-SECTION "Game Select Screen Move Selection Left", ROM0
+SECTION "Game Select Screen Selection", ROM0
 
 MoveLeft:
     ldh     a, [c]
@@ -131,9 +161,7 @@ MoveLeft:
     ret     nc
     add     a, a    ; Equivalent to `rlca / dec a` when bit 0 is set
     ldh     [c], a
-    ret
-
-SECTION "Game Select Screen Move Selection Right", ROM0
+    jr      UpdateCursor
 
 MoveRight:
     ldh     a, [c]
@@ -144,9 +172,7 @@ MoveRight:
     rlca    ; Undo rrca
     inc     a
     ldh     [c], a
-    ret
-
-SECTION "Game Select Screen Move Selection Up", ROM0
+    jr      UpdateCursor
 
 MoveUp:
     ldh     a, [c]
@@ -156,9 +182,7 @@ MoveUp:
     ldh     a, [c]
     sub     a, 2    ; 2 columns wide
     ldh     [c], a
-    ret
-
-SECTION "Game Select Screen Move Selection Down", ROM0
+    jr      UpdateCursor
 
 MoveDown:
     ldh     a, [c]
@@ -168,4 +192,29 @@ MoveDown:
     ldh     a, [c]
     add     a, 2    ; 2 columns wide
     ldh     [c], a
+    
+    ; Fall-through
+
+UpdateCursor:
+    ; Get the new selection's cursor position
+    add     a, a
+    add     a, LOW(CursorPositionTable)
+    ld      l, a
+    ASSERT HIGH(CursorPositionTable.end - 1) == HIGH(CursorPositionTable)
+    ld      h, HIGH(CursorPositionTable)
+    
+    ; Update the position of the cursor
+    ld      a, [hli]
+    ld      [wActorXPosTable], a
+    ld      a, [hli]
+    ld      [wActorYPosTable], a
     ret
+
+SECTION "Game Select Screen Cursor Position Table", ROM0
+
+CursorPositionTable:
+    ;   X,Y    X,Y
+    DB 64,16, 114,16
+    DB 64,57, 114,57
+    DB 64,98, 114,98
+.end

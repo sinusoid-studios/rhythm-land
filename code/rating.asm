@@ -171,8 +171,10 @@ ScreenSetupRating::
     add     a, b    ; rating type * 5 (+Bank)
     add     a, LOW(RatingTilesTable)
     ld      l, a
-    ASSERT HIGH(RatingTilesTable.end - 1) == HIGH(RatingTilesTable)
-    ld      h, HIGH(RatingTilesTable)
+    ASSERT WARN, HIGH(RatingTilesTable.end - 1) != HIGH(RatingTilesTable)
+    adc     a, HIGH(RatingTilesTable)
+    sub     a, l
+    ld      h, a
     
     ; Get pointer to tile data
     ld      a, [hli]
@@ -318,10 +320,8 @@ ScreenRating::
     add     a, b    ; rating type * 6 (Inst bank + Music bank)
     add     a, LOW(RatingThemeTable)
     ld      l, a
-    ASSERT WARN, HIGH(RatingThemeTable.end - 1) != HIGH(RatingThemeTable)
-    adc     a, HIGH(RatingThemeTable)
-    sub     a, l
-    ld      h, a
+    ASSERT HIGH(RatingThemeTable.end - 1) == HIGH(RatingThemeTable)
+    ld      h, HIGH(RatingThemeTable)
     ; Prepare Insts
     ld      a, [hli]
     ld      c, a    ; c = bank number
