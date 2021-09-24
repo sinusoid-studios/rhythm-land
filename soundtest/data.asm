@@ -7,6 +7,7 @@ SongDataTable:
     DW OKData
     DW SkaterDudeData
     DW SeagullSerenadeData
+    DW PancakeData
     DW BattleshipData
 
 DEF NUM_SONGS EQU (@ - SongDataTable) / 2
@@ -41,6 +42,11 @@ SeagullSerenadeData:
     DW Inst_SeagullSerenade
     DB BANK(Music_SeagullSerenade)
     DW Music_SeagullSerenade
+PancakeData:
+    DB BANK(Inst_Pancake)
+    DW Inst_Pancake
+    DB BANK(Music_Pancake)
+    DW Music_Pancake
 BattleshipData:
     DB BANK(Inst_Battleship)
     DW Inst_Battleship
@@ -56,6 +62,7 @@ SongTitleTable:
     DW OKString
     DW SkaterDudeString
     DW SeagullSerenadeString
+    DW PancakeString
     DW BattleshipString
 
 TitleString:
@@ -70,6 +77,8 @@ SkaterDudeString:
     DB "    Skater Dude     ",0
 SeagullSerenadeString:
     DB "  Seagull Serenade  ",0
+PancakeString:
+    DB "      Pancake       ",0
 BattleshipString:
     DB "     Battleship     ",0
 
