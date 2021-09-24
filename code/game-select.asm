@@ -59,13 +59,41 @@ ScreenSetupGameSelect::
     ld      de, xMap
     ld      hl, _SCRN0
     ld      c, SCRN_Y_B
-    jp      LCDMemcopyMap
+    call    LCDMemcopyMap
+    
+    ; Set up text engine for game descriptions
+    ld      a, DESC_TEXT_LINE_LENGTH * 8 - 1
+    ld      [wTextLineLength], a
+    ld      a, DESC_TEXT_LINE_COUNT
+    ld      [wTextNbLines], a
+    ; wTextRemainingLines and wNewlinesUntilFull set in DrawDescription
+    xor     a, a
+    ld      [wTextStackSize], a
+    ld      [wTextFlags], a
+    ; Delay of 0: Immediately draw all text
+    ld      [wTextLetterDelay], a
+    ; Set up text tiles
+    ld      a, DESC_TEXT_TILES_START
+    ; wTextCurTile set in DrawDescription
+    ld      [wWrapTileID], a
+    ld      a, DESC_TEXT_LAST_TILE
+    ld      [wLastTextTile], a
+    ld      a, HIGH(vDescTextTiles) & $F0
+    ld      [wTextTileBlock], a
+    
+    ; Reset current selection
+    ; TODO: Set it to the previously played game. Would probably require
+    ; a separate "current/last game" variable.
+    xor     a, a
+    ldh     [hCurrentSelection], a
+    
+    jp      UpdateSelection
 
 SECTION "Game Select Cursor Actor Definition", ROM0
 
 ActorCursorDefinition:
     DB ACTOR_CURSOR
-    DB 65, 16
+    DB 0, 0
     DB 0, 0
 
 SECTION "Game Select Screen Sprite Tiles", ROM0
@@ -161,7 +189,7 @@ MoveLeft:
     ret     nc
     add     a, a    ; Equivalent to `rlca / dec a` when bit 0 is set
     ldh     [c], a
-    jr      UpdateCursor
+    jr      UpdateSelection
 
 MoveRight:
     ldh     a, [c]
@@ -172,7 +200,7 @@ MoveRight:
     rlca    ; Undo rrca
     inc     a
     ldh     [c], a
-    jr      UpdateCursor
+    jr      UpdateSelection
 
 MoveUp:
     ldh     a, [c]
@@ -182,7 +210,7 @@ MoveUp:
     ldh     a, [c]
     sub     a, 2    ; 2 columns wide
     ldh     [c], a
-    jr      UpdateCursor
+    jr      UpdateSelection
 
 MoveDown:
     ldh     a, [c]
@@ -195,7 +223,9 @@ MoveDown:
     
     ; Fall-through
 
-UpdateCursor:
+UpdateSelection:
+    ldh     [hScratch1], a  ; Save for getting description
+    
     ; Get the new selection's cursor position
     add     a, a
     add     a, LOW(CursorPositionTable)
@@ -206,9 +236,56 @@ UpdateCursor:
     ; Update the position of the cursor
     ld      a, [hli]
     ld      [wActorXPosTable], a
-    ld      a, [hli]
+    ld      a, [hl]
     ld      [wActorYPosTable], a
-    ret
+    
+    ; Clear description box
+    ld      hl, vDescText
+    ld      de, SCRN_VX_B - DESC_TEXT_LINE_LENGTH
+    ld      b, DESC_TEXT_LINE_COUNT
+.clearLoop
+    ld      c, DESC_TEXT_LINE_LENGTH
+.clearRowLoop
+    ldh     a, [rSTAT]
+    and     a, STATF_BUSY
+    jr      nz, .clearRowLoop
+    ASSERT DESC_TEXT_BLANK_TILE == 0
+    xor     a, a
+    ld      [hli], a
+    dec     c
+    jr      nz, .clearRowLoop
+    add     hl, de
+    dec     b
+    jr      nz, .clearLoop
+    
+    ; Get pointer to description text
+    ldh     a, [hScratch1]  ; a = game number
+    ld      b, a
+    add     a, a    ; game number * 2 (Pointer)
+    add     a, b    ; game number * 3 (+Bank)
+    add     a, LOW(DescTextTable)
+    ld      l, a
+    ASSERT HIGH(DescTextTable.end - 1) == HIGH(DescTextTable)
+    ld      h, HIGH(DescTextTable)
+    ld      a, [hli]
+    ld      b, a    ; b = bank number
+    ld      a, [hli]
+    ld      h, [hl]
+    ld      l, a
+    ; hl = pointer to text
+    ld      a, TEXT_NEW_STR
+    call    PrintVWFText
+    ; Reset pen position
+    ld      a, DESC_TEXT_LINE_COUNT
+    ld      [wTextRemainingLines], a
+    ld      [wNewlinesUntilFull], a
+    ld      a, DESC_TEXT_TILES_START
+    ld      [wTextCurTile], a
+    ld      hl, vDescText
+    call    SetPenPosition
+    ; Draw text
+    call    PrintVWFChar
+    jp      DrawVWFChars
 
 SECTION "Game Select Screen Cursor Position Table", ROM0
 
