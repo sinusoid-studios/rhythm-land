@@ -8,7 +8,6 @@ endif
 
 # Project configuration
 PADVALUE := 0xFF
-
 VERSION := 0
 MFRCODE := SNSD
 TITLE := RHYTHM LAND
@@ -29,7 +28,7 @@ TILEFLAGS := -B 2 -R -T 256
 GFXFLAGS := -u
 res/skater-dude/background.bg.2bpp: GFXFLAGS += -h
 
-SRCS := $(wildcard code/*.asm) $(wildcard code/*/*.asm) $(wildcard data/*.asm) $(wildcard data/*/*.asm) $(wildcard data/*/*/*.asm)
+SRCS := $(wildcard code/*.asm) $(wildcard code/*/*.asm) $(wildcard data/*.asm) $(wildcard data/*/*.asm)
 
 all: bin/rhythm-land.gb
 .PHONY: all

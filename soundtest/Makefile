@@ -2,7 +2,6 @@
 
 # Project configuration
 PADVALUE := 0xFF
-
 VERSION := 0
 MFRCODE := SNSD
 TITLE := SOUNDTEST
