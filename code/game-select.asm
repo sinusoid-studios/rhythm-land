@@ -65,7 +65,7 @@ SECTION "Game Select Cursor Actor Definition", ROM0
 
 ActorCursorDefinition:
     DB ACTOR_CURSOR
-    DB 64, 16
+    DB 65, 16
     DB 0, 0
 
 SECTION "Game Select Screen Sprite Tiles", ROM0
@@ -214,7 +214,7 @@ SECTION "Game Select Screen Cursor Position Table", ROM0
 
 CursorPositionTable:
     ;   X,Y    X,Y
-    DB 64,16, 114,16
-    DB 64,57, 114,57
-    DB 64,98, 114,98
+    DB 65,16, 114,16
+    DB 65,57, 114,57
+    DB 65,98, 114,98
 .end
