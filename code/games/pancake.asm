@@ -1,4 +1,5 @@
 INCLUDE "constants/hardware.inc"
+INCLUDE "constants/actors.inc"
 INCLUDE "constants/transition.inc"
 INCLUDE "constants/games/pancake.inc"
 
@@ -60,14 +61,79 @@ SECTION "Pancake Game Loop", ROMX
 xGamePancake::
     rst     WaitVBlank
     
+    ; Check if currently transitioning to another screen
     ldh     a, [hTransitionState]
     ASSERT TRANSITION_STATE_OFF == 0
     and     a, a
     jr      z, .noTransition
     
     call    TransitionUpdate
-    jr      xGamePancake
     
+    ; Check if the transition just ended
+    ldh     a, [hTransitionState]
+    ASSERT TRANSITION_STATE_OFF == 0
+    and     a, a
+    jr      nz, xGamePancake
+    
+    ; Start music
+    ld      c, BANK(Inst_Pancake)
+    ld      de, Inst_Pancake
+    call    Music_PrepareInst
+    ld      c, BANK(Music_Pancake)
+    ld      de, Music_Pancake
+    call    Music_Play
+    jr      xGamePancake
+
 .noTransition
     call    EngineUpdate
+    call    ActorsUpdate
     jr      xGamePancake
+
+SECTION "Large Pancake Cue", ROMX
+
+xCueLargePancake::
+    ; Create a Large Pancake actor
+    ASSERT BANK(xActorLargePancakeDefinition) == BANK(@)
+    ld      de, xActorLargePancakeDefinition
+    jp      ActorNew
+
+xActorLargePancakeDefinition:
+    DB ACTOR_LARGE_PANCAKE
+    DB PANCAKE_X, PANCAKE_START_Y
+    DB 0, PANCAKE_FALL_SPEED
+
+SECTION "Small Pancake Cue", ROMX
+
+xCueSmallPancake::
+    ; Create a Small Pancake actor
+    ASSERT BANK(xActorSmallPancakeDefinition) == BANK(@)
+    ld      de, xActorSmallPancakeDefinition
+    jp      ActorNew
+
+xActorSmallPancakeDefinition:
+    DB ACTOR_SMALL_PANCAKE
+    DB PANCAKE_X, PANCAKE_START_Y
+    DB 0, PANCAKE_FALL_SPEED
+
+SECTION "Pancake Actor", ROMX
+
+xActorPancake::
+    ; Check if the pancake is finish falling (landed on the pan)
+    ld      hl, wActorYPosTable
+    add     hl, bc
+    ; Negative -> still above the pan
+    bit     7, [hl]
+    ret     nz
+    ld      a, [hl]
+    ; Add 1 to check for <= instead of <
+    cp      a, PANCAKE_Y + 1
+    ret     c
+    
+    ; Ensure the position is correct before resetting speed
+    ld      [hl], PANCAKE_Y
+    ; Land on the pan -> stop falling
+    ld      hl, wActorYSpeedTable
+    add     hl, bc
+    ASSERT HIGH(MAX_ACTOR_COUNT - 1) == 0
+    ld      [hl], b     ; b = 0
+    ret

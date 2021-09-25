@@ -22,8 +22,8 @@ ActorRoutineTable::
     full_pointer xActorSeagull  ; ACTOR_SEAGULL_1
     full_pointer xActorSeagull  ; ACTOR_SEAGULL_2
     full_pointer xActorSeagullPlayer    ; ACTOR_SEAGULL_3
-    full_pointer Null   ; ACTOR_LARGE_PANCAKE
-    full_pointer Null   ; ACTOR_SMALL_PANCAKE
+    full_pointer xActorPancake  ; ACTOR_LARGE_PANCAKE
+    full_pointer xActorPancake  ; ACTOR_SMALL_PANCAKE
     full_pointer Null   ; ACTOR_CURSOR
 .end::
 
