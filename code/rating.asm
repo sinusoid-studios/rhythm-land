@@ -212,8 +212,10 @@ ScreenSetupRating::
     ASSERT HIGH(RATING_TYPE_COUNT * 3 + (GAME_COUNT - 1) * 12) == 0
     add     a, LOW(RatingTextTable)
     ld      l, a
-    ASSERT HIGH(RatingTextTable.end - 1) == HIGH(RatingTextTable)
-    ld      h, HIGH(RatingTextTable)
+    ASSERT WARN, HIGH(RatingTextTable.end - 1) != HIGH(RatingTextTable)
+    adc     a, HIGH(RatingTextTable)
+    sub     a, l
+    ld      h, a
     
     ; Get pointer to text
     ld      a, [hli]
@@ -318,10 +320,8 @@ ScreenRating::
     add     a, b    ; rating type * 6 (Inst bank + Music bank)
     add     a, LOW(RatingThemeTable)
     ld      l, a
-    ASSERT WARN, HIGH(RatingThemeTable.end - 1) != HIGH(RatingThemeTable)
-    adc     a, HIGH(RatingThemeTable)
-    sub     a, l
-    ld      h, a
+    ASSERT HIGH(RatingThemeTable.end - 1) == HIGH(RatingThemeTable)
+    ld      h, HIGH(RatingThemeTable)
     ; Prepare Insts
     ld      a, [hli]
     ld      c, a    ; c = bank number

@@ -155,34 +155,32 @@ ScreenGameSelect::
 .noTransition
     call    ActorsUpdate
     
-    ; Keep new keys in B (A overwritten)
-    ldh     a, [hNewKeys]
-    ld      b, a
-    
-    ; $FF00 + C = hCurrentSelection
-    ld      c, LOW(hCurrentSelection)
-    
     ; Move selection
-    bit     PADB_LEFT, b
+    ldh     a, [hNewKeys]
+    bit     PADB_LEFT, a
     call    nz, MoveLeft
-    bit     PADB_RIGHT, b
+    ldh     a, [hNewKeys]
+    bit     PADB_RIGHT, a
     call    nz, MoveRight
-    bit     PADB_UP, b
+    ldh     a, [hNewKeys]
+    bit     PADB_UP, a
     call    nz, MoveUp
-    bit     PADB_DOWN, b
+    ldh     a, [hNewKeys]
+    bit     PADB_DOWN, a
     call    nz, MoveDown
     
     ; If pressed A or START, jump to the selected game
-    ld      a, b    ; New keys
+    ldh     a, [hNewKeys]
     and     a, PADF_A | PADF_START
     jr      z, ScreenGameSelect
-    ldh     a, [c]  ; Current selection
+    ldh     a, [hCurrentSelection]
     call    TransitionStart
     jr      ScreenGameSelect
 
 SECTION "Game Select Screen Selection", ROM0
 
 MoveLeft:
+    ld      c, LOW(hCurrentSelection)
     ldh     a, [c]
     cp      a, SCREEN_JUKEBOX
     ret     nc
@@ -200,6 +198,7 @@ MoveLeft:
     jr      UpdateSelection
 
 MoveRight:
+    ld      c, LOW(hCurrentSelection)
     ldh     a, [c]
     cp      a, SCREEN_JUKEBOX
     jr      nc, .jukebox
@@ -221,6 +220,7 @@ MoveRight:
     jr      UpdateSelection
 
 MoveUp:
+    ld      c, LOW(hCurrentSelection)
     ldh     a, [c]
     cp      a, SCREEN_JUKEBOX
     ret     nc
@@ -233,6 +233,7 @@ MoveUp:
     jr      UpdateSelection
 
 MoveDown:
+    ld      c, LOW(hCurrentSelection)
     ldh     a, [c]
     ; Don't move if already at the bottommost row of games or jukebox
     ; 2 columns wide
