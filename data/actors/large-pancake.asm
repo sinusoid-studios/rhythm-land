@@ -56,13 +56,13 @@ xActorLargePancakeMetasprites::
     metasprite .flip23Pal1
 
 .falling1
-    obj 0, 0, $00, 0
-    obj 0, 8, $02, 0
+    obj 14, 8, $00, 0
+    obj 14, 16, $02, 0
     DB METASPRITE_END
 .falling2
-    obj 0, 0, $04, 0
-    obj 0, 8, $06, 0
-    obj 0, 16, $08, 0
+    obj 14, 4, $04, 0
+    obj 14, 12, $06, 0
+    obj 14, 20, $08, 0
     DB METASPRITE_END
 .cooking
     ; Used by "very undercooked", "undercooked", "perfect", and

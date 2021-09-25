@@ -54,37 +54,37 @@ xActorSmallPancakeMetasprites::
     metasprite .flip1Pal1
 
 .falling1
-    obj 0, 0, $00, 0
+    obj 9, 12, $00, 0
     DB METASPRITE_END
 .falling2
-    obj 0, 0, $02, 0
-    obj 0, 8, $04, 0
+    obj 9, 8, $02, 0
+    obj 9, 16, $04, 0
     DB METASPRITE_END
 .cookingFlip23
     ; Used by "very undercooked", "undercooked", "perfect",
     ; "overcooked", and "flip [23] (undercooked|perfect)"
-    obj 0, 0, $00, 0
-    obj 0, 8, $02, 0
-    obj 0, 16, $04, 0
+    obj 12, 4, $00, 0
+    obj 12, 12, $02, 0
+    obj 12, 20, $04, 0
     DB METASPRITE_END
 .cookingFlip23Pal1
     ; Used by "very overcooked", "burnt", and "flip [23] overcooked"
-    obj 0, 0, $00, OAMF_PAL1
-    obj 0, 8, $02, OAMF_PAL1
-    obj 0, 16, $04, OAMF_PAL1
+    obj 12, 4, $00, OAMF_PAL1
+    obj 12, 12, $02, OAMF_PAL1
+    obj 12, 20, $04, OAMF_PAL1
     DB METASPRITE_END
 
 .flip1
-    obj 0, 4, $00, 0
-    obj 0, 12, $02, 0
-    obj 16, 0, $04, 0
-    obj 16, 8, $06, 0
-    obj 16, 16, $08, 0
+    obj 12, 8, $00, 0
+    obj 12, 16, $02, 0
+    obj 28, 4, $04, 0
+    obj 28, 12, $06, 0
+    obj 28, 20, $08, 0
     DB METASPRITE_END
 .flip1Pal1
-    obj 0, 4, $00, OAMF_PAL1
-    obj 0, 12, $02, OAMF_PAL1
-    obj 16, 0, $04, OAMF_PAL1
-    obj 16, 8, $06, OAMF_PAL1
-    obj 16, 16, $08, OAMF_PAL1
+    obj 12, 8, $00, OAMF_PAL1
+    obj 12, 16, $02, OAMF_PAL1
+    obj 28, 4, $04, OAMF_PAL1
+    obj 28, 12, $06, OAMF_PAL1
+    obj 28, 20, $08, OAMF_PAL1
     DB METASPRITE_END
