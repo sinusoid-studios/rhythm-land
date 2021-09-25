@@ -183,10 +183,8 @@ ActorsUpdate::
     ldh     a, [hScratch1]  ; a = actor type
     add     a, LOW(ActorRoutineTable)
     ld      l, a
-    ASSERT WARN, HIGH(ActorRoutineTable.end - 1) != HIGH(ActorRoutineTable)
-    adc     a, HIGH(ActorRoutineTable)
-    sub     a, l
-    ld      h, a
+    ASSERT HIGH(ActorRoutineTable.end - 1) == HIGH(ActorRoutineTable)
+    ld      h, HIGH(ActorRoutineTable)
     
     ld      a, [hli]
     and     a, a

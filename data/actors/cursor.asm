@@ -21,13 +21,13 @@ xActorCursorMetasprites::
 
 .out
     obj -1, -1, $00, 0
-    obj -1, 39, $02, 0
-    obj 21, -1, $04, 0
-    obj 21, 39, $06, 0
+    obj -1, 39, $00, OAMF_XFLIP
+    obj 21, -1, $00, OAMF_YFLIP
+    obj 21, 39, $00, OAMF_XFLIP | OAMF_YFLIP
     DB METASPRITE_END
 .in
     obj 0, 0, $00, 0
-    obj 0, 38, $02, 0
-    obj 20, 0, $04, 0
-    obj 20, 38, $06, 0
+    obj 0, 38, $00, OAMF_XFLIP
+    obj 20, 0, $00, OAMF_YFLIP
+    obj 20, 38, $00, OAMF_XFLIP | OAMF_YFLIP
     DB METASPRITE_END
