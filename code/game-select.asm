@@ -246,7 +246,7 @@ MoveDown:
     ; Fall-through
 
 UpdateSelection:
-    ldh     [hScratch3], a  ; Save for getting description
+    ldh     [hScratch1], a  ; Save for getting description
     ld      b, a            ; Save for setting cursor size
     
     ; Get the new selection's cursor position
@@ -263,18 +263,25 @@ UpdateSelection:
     ld      [wActorYPosTable], a
     
     ; Use the correct cursor size
-    ld      a, ACTOR_CURSOR * 3
-    ldh     [hScratch1], a
+    ld      hl, wActorCelTable
     ld      a, b
     cp      a, SCREEN_JUKEBOX
-    ld      a, CEL_CURSOR_JUKEBOX
+    ld      a, [hl]
     jr      z, .jukebox
-    ASSERT CEL_CURSOR_GAME == 0
-    xor     a, a
+    and     a, ~1
+    jr      z, .doneCel
+    ld      a, [hl]
+    sub     a, CEL_CURSOR_JUKEBOX - CEL_CURSOR_GAME
+    jr      .setCel
 .jukebox
-    ld      bc, 0
-    call    ActorSetCel
+    and     a, ~1
+    jr      nz, .doneCel
+    ld      a, [hl]
+    add     a, CEL_CURSOR_JUKEBOX - CEL_CURSOR_GAME
+.setCel
+    ld      [hl], a
     
+.doneCel
     ; Clear description box
     ld      hl, vDescText
     ld      de, SCRN_VX_B - DESC_TEXT_LINE_LENGTH
@@ -295,7 +302,7 @@ UpdateSelection:
     jr      nz, .clearLoop
     
     ; Get pointer to description text
-    ldh     a, [hScratch3]  ; a = game number
+    ldh     a, [hScratch1]  ; a = game number
     ld      b, a
     add     a, a    ; game number * 2 (Pointer)
     add     a, b    ; game number * 3 (+Bank)
