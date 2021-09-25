@@ -28,8 +28,6 @@ Initialize::
     ldh     [rSCX], a
     ldh     [hSCY], a
     ldh     [rSCY], a
-    ; TODO: Use a player-reliant seed
-    ldh     [hRandomNumber], a
     ASSERT TRANSITION_STATE_OFF == 0
     ldh     [hTransitionState], a
     
@@ -162,6 +160,13 @@ Initialize::
     ld      a, d
     ld      [sCheck.high], a
 .saveOK
+    ; Seed the random number with the save data check value
+    cpl
+    sub     a, e
+    rla
+    ldh     [hRandomNumber], a
+    
+    ; Finished with SRAM for now
     ASSERT CART_SRAM_DISABLE == 0
     xor     a, a
     ld      [rRAMG], a
