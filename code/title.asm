@@ -57,12 +57,6 @@ ScreenSetupTitle::
     ld      c, SCRN_Y_B
     call    LCDMemcopyMap
     
-    ; Copy "press start" to window
-    ld      de, MapWindowTitle
-    ld      hl, _SCRN1
-    ld      c, MAP_TITLE_PRESS_START_HEIGHT
-    call    LCDMemcopyMap
-    
     ; No tile streaming on this screen
     xor     a, a
     ldh     [hTileStreamingEnable], a
@@ -150,12 +144,7 @@ SpriteTilesTitle:
 SECTION "Title Screen Background Map", ROM0
 
 MapTitle:
-    INCBIN "res/title/background.bg.tilemap", 0, 20 * 18
-
-SECTION "Title Screen Window Map", ROM0
-
-MapWindowTitle:
-    INCBIN "res/title/background.bg.tilemap", 20 * 18
+    INCBIN "res/title/background.bg.tilemap"
 
 SECTION "Title Screen Loop", ROM0
 
@@ -176,37 +165,11 @@ ScreenTitle::
     ldh     [hSCY], a
     ASSERT TITLE_SCROLL_END_POS == 0
     and     a, a
-    jr      z, .scrollWindow
-    push    hl
-    call    SoundUpdate
-    pop     hl
-    jr      .scrollLoop
-
-.scrollWindow
-    ; Reset window position to below the screen
-    ld      a, 0 + 7
-    ldh     [rWX], a
-    ld      a, TITLE_WINDOW_SCROLL_START_POS
-    ldh     [rWY], a
-    
-    ; Enable the window
-    ldh     a, [hLCDC]
-    ASSERT LCDCF_WINON != 0 && LCDCF_WIN9C00 != 0
-    or      a, LCDCF_WINON | LCDCF_WIN9C00
-    ldh     [hLCDC], a
-    
-    ld      hl, TitleWindowScrollPosTable
-.windowScrollLoop
-    rst     WaitVBlank
-    ; Move to the next scroll position
-    ld      a, [hli]
-    ldh     [rWY], a
-    cp      a, TITLE_WINDOW_SCROLL_END_POS
     jr      z, .loop
     push    hl
     call    SoundUpdate
     pop     hl
-    jr      .windowScrollLoop
+    jr      .scrollLoop
 
 .loop
     rst     WaitVBlank

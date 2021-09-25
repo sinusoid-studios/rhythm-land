@@ -48,23 +48,3 @@ TitleScrollPosTable::
         ENDC
     ENDR
     DB TITLE_SCROLL_END_POS
-
-SECTION "Title Screen Window Scroll Position Table", ROM0
-
-DEF WINDOW_CHANGE EQU (TITLE_WINDOW_SCROLL_END_POS - TITLE_WINDOW_SCROLL_START_POS) << 16
-DEF WINDOW_START EQU TITLE_WINDOW_SCROLL_START_POS << 16
-
-; Quartic ease-out
-; Formula from <https://gizma.com/easing>
-TitleWindowScrollPosTable::
-    FOR TIME, 1, TITLE_WINDOW_SCROLL_DURATION + 1
-        DEF TIME_FRACTION = DIV(TIME << 16, TITLE_SCROLL_DURATION << 16) - 1.0
-        DEF VALUE = (MUL(-WINDOW_CHANGE, POW(TIME_FRACTION, 4.0) - 1.0) + WINDOW_START) >> 16
-        ; Since the start and end positions are set before and after the
-        ; scroll anyway, it's not necessary to include them in this
-        ; table.
-        IF VALUE != TITLE_WINDOW_SCROLL_START_POS && VALUE != TITLE_WINDOW_SCROLL_END_POS
-            DB VALUE
-        ENDC
-    ENDR
-    DB TITLE_WINDOW_SCROLL_END_POS

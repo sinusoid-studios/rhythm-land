@@ -17,12 +17,5 @@ DEF TITLE_SCROLL_DURATION EQU 10 + 10 + 10 + 9
 DEF TITLE_SCROLL_START_POS EQU LOW(-SCRN_Y)
 DEF TITLE_SCROLL_END_POS EQU 0
 
-; Number of frames the "press start" window scroll lasts (1/2 beat)
-DEF TITLE_WINDOW_SCROLL_DURATION EQU 9 + 9
-
-; WY value at the beginning and end of the window scroll
-DEF TITLE_WINDOW_SCROLL_START_POS EQU SCRN_Y
-DEF TITLE_WINDOW_SCROLL_END_POS EQU 14 * 8
-
 ; Number of frames a flash lasts
 DEF TITLE_FLASH_DURATION EQU 5
