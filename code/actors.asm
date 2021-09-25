@@ -603,15 +603,7 @@ ActorUpdateAnimation:
     ld      hl, wActorCelTable
     add     hl, bc
     ld      [hl], a
-    
-    ; Use this new cel's duration instead
-    add     a, a    ; a * 2 (Meta-sprite + Duration)
-    add     a, e
-    ld      l, a
-    adc     a, d
-    sub     a, l
-    ld      h, a
-    jr      .setCountdown
+    jr      .advanceAnimation
 
 SECTION "Actor Kill", ROM0
 
