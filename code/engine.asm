@@ -91,8 +91,11 @@ EngineInit::
     call    SetNextHit.skip
     
     ; Reset hit rating counts
-    ld      hl, hHitBadCount
+    ld      hl, hLastHitRating
+    ASSERT HIT_BAD == 0
     xor     a, a
+    ld      [hli], a
+    ASSERT hHitBadCount == hLastHitRating + 1
     ld      [hli], a
     ASSERT hHitOKCount == hHitBadCount + 1
     ld      [hli], a
@@ -298,6 +301,7 @@ EngineUpdate::
     ; No wrong keys
     jr      z, .noHit
     
+    ld      b, a    ; b = wrong keys
     ; Set last player hit number
     ldh     a, [hScratch1]  ; This hit's number
     ldh     [hLastPlayerHitNumber], a
@@ -306,7 +310,7 @@ EngineUpdate::
 .wrongCountLoop
     inc     [hl]
 .wrongNext
-    srl     a
+    srl     b   ; b = wrong keys
     jr      z, .noHit
     jr      nc, .wrongNext
     jr      .wrongCountLoop
