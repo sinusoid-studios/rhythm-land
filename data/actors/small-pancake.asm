@@ -10,21 +10,21 @@ xActorSmallPancakeAnimation::
 
     ; Falling and cookingFlip23 sequence
     set_tiles falling, 6
-    cel falling1, MUSIC_PANCAKE_SPEED
-    cel falling2, MUSIC_PANCAKE_SPEED
+    cel falling1, SMALL_PANCAKE_COOK_TIME / 8
+    cel falling2, SMALL_PANCAKE_COOK_TIME / 8
 .cook
     set_tiles landed, 6
-    cel cookingFlip23, MUSIC_PANCAKE_SPEED
+    cel cookingFlip23, SMALL_PANCAKE_COOK_TIME / 8
     set_tiles veryUndercooked, 6
-    cel cookingFlip23, MUSIC_PANCAKE_SPEED
+    cel cookingFlip23, SMALL_PANCAKE_COOK_TIME / 8
     set_tiles undercooked, 6
-    cel cookingFlip23, MUSIC_PANCAKE_SPEED
+    cel cookingFlip23, SMALL_PANCAKE_COOK_TIME / 8
     set_tiles perfect, 6
-    cel cookingFlip23, MUSIC_PANCAKE_SPEED
+    cel cookingFlip23, SMALL_PANCAKE_COOK_TIME / 8
     set_tiles overcooked, 6
-    cel cookingFlip23, MUSIC_PANCAKE_SPEED
+    cel cookingFlip23, SMALL_PANCAKE_COOK_TIME / 8
     set_tiles veryOvercooked, 6
-    cel cookingFlip23Pal1, MUSIC_PANCAKE_SPEED
+    cel cookingFlip23Pal1, SMALL_PANCAKE_COOK_TIME / 8
     set_tiles burnt, 6
     cel cookingFlip23Pal1, ANIMATION_DURATION_FOREVER
 

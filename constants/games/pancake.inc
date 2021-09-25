@@ -1,7 +1,11 @@
 INCLUDE "constants/other-hardware.inc"
 
 ; Number of frames per tick in the theme
-DEF MUSIC_PANCAKE_SPEED EQU 11
+DEF MUSIC_PANCAKE_SPEED EQU 10
+
+; Number of frames it takes for a raw pancake to become burnt
+DEF LARGE_PANCAKE_COOK_TIME EQU MUSIC_PANCAKE_SPEED * 16
+DEF SMALL_PANCAKE_COOK_TIME EQU MUSIC_PANCAKE_SPEED * 8
 
 ; Game palettes
 DEF BGP_PANCAKE EQU %11_10_01_00

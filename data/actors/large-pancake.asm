@@ -10,21 +10,21 @@ xActorLargePancakeAnimation::
 
     ; Falling and cooking sequence
     set_tiles falling, 10
-    cel falling1, MUSIC_PANCAKE_SPEED
-    cel falling2, MUSIC_PANCAKE_SPEED
+    cel falling1, LARGE_PANCAKE_COOK_TIME / 8
+    cel falling2, LARGE_PANCAKE_COOK_TIME / 8
 .cook
     set_tiles landed, 12
-    cel cooking, MUSIC_PANCAKE_SPEED
+    cel cooking, LARGE_PANCAKE_COOK_TIME / 8
     set_tiles veryUndercooked, 12
-    cel cooking, MUSIC_PANCAKE_SPEED
+    cel cooking, LARGE_PANCAKE_COOK_TIME / 8
     set_tiles undercooked, 12
-    cel cooking, MUSIC_PANCAKE_SPEED
+    cel cooking, LARGE_PANCAKE_COOK_TIME / 8
     set_tiles perfect, 12
-    cel cooking, MUSIC_PANCAKE_SPEED
+    cel cooking, LARGE_PANCAKE_COOK_TIME / 8
     set_tiles overcooked, 12
-    cel cooking, MUSIC_PANCAKE_SPEED
+    cel cooking, LARGE_PANCAKE_COOK_TIME / 8
     set_tiles veryOvercooked, 12
-    cel cookingPal1, MUSIC_PANCAKE_SPEED
+    cel cookingPal1, LARGE_PANCAKE_COOK_TIME / 8
     set_tiles burnt, 12
     cel cookingPal1, ANIMATION_DURATION_FOREVER
 
