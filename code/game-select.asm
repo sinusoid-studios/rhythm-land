@@ -71,7 +71,8 @@ ScreenSetupGameSelect::
     xor     a, a
     ld      [wTextStackSize], a
     ld      [wTextFlags], a
-    ; Delay of 0: Immediately draw all text
+    ASSERT DESC_TEXT_SPEED == 1
+    inc     a
     ld      [wTextLetterDelay], a
     ; Set up text tiles
     ld      a, DESC_TEXT_TILES_START
@@ -125,24 +126,38 @@ SECTION "Game Select Screen Loop", ROM0
 ScreenGameSelect::
     rst     WaitVBlank
     
+    ldh     a, [hTransitionState]
+    ldh     [hScratch1], a
+    ASSERT TRANSITION_STATE_OFF == 0
+    and     a, a
+    call    nz, TransitionUpdate
+    
     ; Calling SoundSystem_Process directly instead of SoundUpdate
     ; because this is in ROM0 and there is no sync data to be looking
     ; for
     call    SoundSystem_Process
     
-    ldh     a, [hTransitionState]
-    ASSERT TRANSITION_STATE_OFF == 0
-    and     a, a
-    jr      z, .noTransition
-    
-    call    TransitionUpdate
+    ; Draw 2 characters per frame
+    ASSERT DESC_TEXT_SPEED < 2
+    call    PrintVWFChar
+    call    DrawVWFChars
+    call    PrintVWFChar
+    call    DrawVWFChars
     
     ; Check if the transition just ended
+    ldh     a, [hScratch1]  ; Old transition state
+    ld      b, a
     ldh     a, [hTransitionState]
+    ; Transition state will only go from transition in to off here
+    cp      a, b
+    jr      nz, .transitionEnd
+    ; Run the body of the game loop if the transition is off
     ASSERT TRANSITION_STATE_OFF == 0
-    and     a, a
-    jr      nz, ScreenGameSelect
-    
+    or      a, b
+    jr      z, .noTransition
+    jr      ScreenGameSelect
+
+.transitionEnd
     ; Start music
     ld      c, BANK(Inst_GameSelect)
     ld      de, Inst_GameSelect
@@ -326,10 +341,7 @@ UpdateSelection:
     ld      a, DESC_TEXT_TILES_START
     ld      [wTextCurTile], a
     ld      hl, vDescText
-    call    SetPenPosition
-    ; Draw text
-    call    PrintVWFChar
-    jp      DrawVWFChars
+    jp      SetPenPosition
 
 SECTION "Game Select Screen Cursor Position Table", ROM0
 
