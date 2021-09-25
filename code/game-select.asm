@@ -184,11 +184,20 @@ ScreenGameSelect::
     bit     PADB_DOWN, a
     call    nz, MoveDown
     
-    ; If pressed A or START, jump to the selected game
     ldh     a, [hNewKeys]
+    ; B goes back to title screen
+    bit     PADB_B, a
+    jr      nz, .back
+    
+    ; If pressed A or START, jump to the selected game
     and     a, PADF_A | PADF_START
     jr      z, ScreenGameSelect
     ldh     a, [hCurrentSelection]
+    call    TransitionStart
+    jr      ScreenGameSelect
+
+.back
+    ld      a, SCREEN_TITLE
     call    TransitionStart
     jr      ScreenGameSelect
 

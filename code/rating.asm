@@ -212,10 +212,8 @@ ScreenSetupRating::
     ASSERT HIGH(RATING_TYPE_COUNT * 3 + (GAME_COUNT - 1) * 12) == 0
     add     a, LOW(RatingTextTable)
     ld      l, a
-    ASSERT WARN, HIGH(RatingTextTable.end - 1) != HIGH(RatingTextTable)
-    adc     a, HIGH(RatingTextTable)
-    sub     a, l
-    ld      h, a
+    ASSERT HIGH(RatingTextTable.end - 1) == HIGH(RatingTextTable)
+    ld      h, HIGH(RatingTextTable)
     
     ; Get pointer to text
     ld      a, [hli]
