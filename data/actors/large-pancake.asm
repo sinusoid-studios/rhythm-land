@@ -6,7 +6,7 @@ INCLUDE "macros/actors.inc"
 SECTION "Large Pancake Actor Animation Data", ROMX
 
 xActorLargePancakeAnimation::
-    animation LargePancake, LARGE_PANCAKE
+    animation LargePancake, PANCAKE
 
     ; Falling and cooking sequence
     set_tiles falling, 10
@@ -37,12 +37,12 @@ xActorLargePancakeAnimation::
     cel flip23, 3
     goto_cel .cook
 
-.flipPerfect
-    set_tiles flip1Perfect, 14
+.flipOK
+    set_tiles flip1OK, 14
     cel flip1, 4
-    set_tiles flip2Perfect, 8
+    set_tiles flip2OK, 8
     cel flip23, 4
-    set_tiles flip3Perfect, 8
+    set_tiles flip3OK, 8
     cel flip23, 3
     goto_cel .cook
 
@@ -57,7 +57,7 @@ xActorLargePancakeAnimation::
 
     ; Cel constant definitions
     def_cel .flipUndercooked, FLIP_UNDERCOOKED
-    def_cel .flipPerfect, FLIP_PERFECT
+    def_cel .flipOK, FLIP_OK
     def_cel .flipOvercooked, FLIP_OVERCOOKED
 
 xActorLargePancakeTiles::
@@ -79,20 +79,20 @@ xActorLargePancakeTiles::
     INCBIN "res/pancake/large-pancake/burnt.obj.2bpp", 2 * 16
 .flip1Undercooked
     INCBIN "res/pancake/large-pancake/flip-1-undercooked.obj.2bpp", 2 * 16
-.flip1Perfect
-    INCBIN "res/pancake/large-pancake/flip-1-perfect.obj.2bpp", 2 * 16
+.flip1OK
+    INCBIN "res/pancake/large-pancake/flip-1-ok.obj.2bpp", 2 * 16
 .flip1Overcooked
     INCBIN "res/pancake/large-pancake/flip-1-overcooked.obj.2bpp", 2 * 16
 .flip2Undercooked
     INCBIN "res/pancake/large-pancake/flip-2-undercooked.obj.2bpp"
-.flip2Perfect
-    INCBIN "res/pancake/large-pancake/flip-2-perfect.obj.2bpp"
+.flip2OK
+    INCBIN "res/pancake/large-pancake/flip-2-ok.obj.2bpp"
 .flip2Overcooked
     INCBIN "res/pancake/large-pancake/flip-2-overcooked.obj.2bpp"
 .flip3Undercooked
     INCBIN "res/pancake/large-pancake/flip-3-undercooked.obj.2bpp"
-.flip3Perfect
-    INCBIN "res/pancake/large-pancake/flip-3-perfect.obj.2bpp"
+.flip3OK
+    INCBIN "res/pancake/large-pancake/flip-3-ok.obj.2bpp"
 .flip3Overcooked
     INCBIN "res/pancake/large-pancake/flip-3-overcooked.obj.2bpp"
 

@@ -37,12 +37,12 @@ xActorSmallPancakeAnimation::
     cel cookingFlip23, 3
     goto_cel .cook
 
-.flipPerfect
-    set_tiles flip1Perfect, 10
+.flipOK
+    set_tiles flip1OK, 10
     cel flip1, 4
-    set_tiles flip2Perfect, 6
+    set_tiles flip2OK, 6
     cel cookingFlip23, 4
-    set_tiles flip3Perfect, 6
+    set_tiles flip3OK, 6
     cel cookingFlip23, 3
     goto_cel .cook
 
@@ -74,20 +74,20 @@ xActorSmallPancakeTiles::
     INCBIN "res/pancake/small-pancake/burnt.obj.2bpp"
 .flip1Undercooked
     INCBIN "res/pancake/small-pancake/flip-1-undercooked.obj.2bpp", 2 * 16
-.flip1Perfect
-    INCBIN "res/pancake/small-pancake/flip-1-perfect.obj.2bpp", 2 * 16
+.flip1OK
+    INCBIN "res/pancake/small-pancake/flip-1-ok.obj.2bpp", 2 * 16
 .flip1Overcooked
     INCBIN "res/pancake/small-pancake/flip-1-overcooked.obj.2bpp", 2 * 16
 .flip2Undercooked
     INCBIN "res/pancake/small-pancake/flip-2-undercooked.obj.2bpp"
-.flip2Perfect
-    INCBIN "res/pancake/small-pancake/flip-2-perfect.obj.2bpp"
+.flip2OK
+    INCBIN "res/pancake/small-pancake/flip-2-ok.obj.2bpp"
 .flip2Overcooked
     INCBIN "res/pancake/small-pancake/flip-2-overcooked.obj.2bpp"
 .flip3Undercooked
     INCBIN "res/pancake/small-pancake/flip-3-undercooked.obj.2bpp"
-.flip3Perfect
-    INCBIN "res/pancake/small-pancake/flip-3-perfect.obj.2bpp"
+.flip3OK
+    INCBIN "res/pancake/small-pancake/flip-3-ok.obj.2bpp"
 .flip3Overcooked
     INCBIN "res/pancake/small-pancake/flip-3-overcooked.obj.2bpp"
 
