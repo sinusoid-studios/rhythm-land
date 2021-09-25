@@ -6,18 +6,29 @@ INCLUDE "macros/actors.inc"
 SECTION "Game Select Cursor Actor Animation Data", ROMX
 
 xActorCursorAnimation::
-    animation Cursor
+    animation Cursor, CURSOR
 
-.loop
+.game
     cel out, MUSIC_GAME_SELECT_SPEED * 2
     cel in, MUSIC_GAME_SELECT_SPEED * 2
-    goto_cel .loop
+    goto_cel .game
+
+.jukebox
+    cel outJukebox, MUSIC_GAME_SELECT_SPEED * 2
+    cel inJukebox, MUSIC_GAME_SELECT_SPEED * 2
+    goto_cel .jukebox
+
+    ; Cel constant definitions
+    def_cel .game, GAME
+    def_cel .jukebox, JUKEBOX
 
 SECTION "Game Select Cursor Actor Meta-Sprite Data", ROMX
 
 xActorCursorMetasprites::
     metasprite .out
     metasprite .in
+    metasprite .outJukebox
+    metasprite .inJukebox
 
 .out
     obj -1, -1, $00, 0
@@ -30,4 +41,17 @@ xActorCursorMetasprites::
     obj 0, 38, $00, OAMF_XFLIP
     obj 20, 0, $00, OAMF_YFLIP
     obj 20, 38, $00, OAMF_XFLIP | OAMF_YFLIP
+    DB METASPRITE_END
+
+.outJukebox
+    obj -1, -1, $00, 0
+    obj -1, 47, $00, OAMF_XFLIP
+    obj 4, -1, $00, OAMF_YFLIP
+    obj 4, 47, $00, OAMF_XFLIP | OAMF_YFLIP
+    DB METASPRITE_END
+.inJukebox
+    obj 0, 0, $00, 0
+    obj 0, 46, $00, OAMF_XFLIP
+    obj 3, 0, $00, OAMF_YFLIP
+    obj 3, 46, $00, OAMF_XFLIP | OAMF_YFLIP
     DB METASPRITE_END

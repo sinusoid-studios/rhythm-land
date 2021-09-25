@@ -2,6 +2,7 @@ INCLUDE "constants/hardware.inc"
 INCLUDE "constants/game-select.inc"
 INCLUDE "constants/actors.inc"
 INCLUDE "constants/transition.inc"
+INCLUDE "constants/screens.inc"
 
 SECTION UNION "Game Variables", HRAM
 
@@ -183,27 +184,46 @@ SECTION "Game Select Screen Selection", ROM0
 
 MoveLeft:
     ldh     a, [c]
-    ; Don't move if already at the leftmost column
+    cp      a, SCREEN_JUKEBOX
+    ret     nc
+    ; Move to jukebox if at the leftmost column of games
     ; 2 columns wide: lefmost = bit 0 reset
     rrca            ; Move bit 0 to carry
-    ret     nc
+    jr      nc, .jukebox
     add     a, a    ; Equivalent to `rlca / dec a` when bit 0 is set
+    ldh     [c], a
+    jr      UpdateSelection
+
+.jukebox
+    ld      a, SCREEN_JUKEBOX
     ldh     [c], a
     jr      UpdateSelection
 
 MoveRight:
     ldh     a, [c]
-    ; Don't move if already at the rightmost column
+    cp      a, SCREEN_JUKEBOX
+    jr      nc, .jukebox
+    ; Don't move if at the rightmost column of games or at last game
     ; 2 columns wide: rightmost = bit 0 set
     rrca    ; Move bit 0 to carry
     ret     c
     rlca    ; Undo rrca
+    cp      a, GAME_COUNT - 1
+    ret     z
     inc     a
+    ldh     [c], a
+    jr      UpdateSelection
+
+.jukebox
+    ; Go back to the first game
+    xor     a, a
     ldh     [c], a
     jr      UpdateSelection
 
 MoveUp:
     ldh     a, [c]
+    cp      a, SCREEN_JUKEBOX
+    ret     nc
     ; Don't move if already at the topmost row
     cp      a, 2    ; 2 columns wide, 2nd row starts with 2
     ret     c
@@ -214,8 +234,10 @@ MoveUp:
 
 MoveDown:
     ldh     a, [c]
-    ; Don't move if already at the bottommost row
-    cp      a, 4    ; 2 columns wide, 3rd (last) row starts with 4
+    ; Don't move if already at the bottommost row of games or jukebox
+    ; 2 columns wide
+    ASSERT SCREEN_JUKEBOX > GAME_COUNT - 2
+    cp      a, GAME_COUNT - 2
     ret     nc
     ldh     a, [c]
     add     a, 2    ; 2 columns wide
@@ -224,7 +246,8 @@ MoveDown:
     ; Fall-through
 
 UpdateSelection:
-    ldh     [hScratch1], a  ; Save for getting description
+    ldh     [hScratch3], a  ; Save for getting description
+    ld      b, a            ; Save for setting cursor size
     
     ; Get the new selection's cursor position
     add     a, a
@@ -238,6 +261,19 @@ UpdateSelection:
     ld      [wActorXPosTable], a
     ld      a, [hl]
     ld      [wActorYPosTable], a
+    
+    ; Use the correct cursor size
+    ld      a, ACTOR_CURSOR * 3
+    ldh     [hScratch1], a
+    ld      a, b
+    cp      a, SCREEN_JUKEBOX
+    ld      a, CEL_CURSOR_JUKEBOX
+    jr      z, .jukebox
+    ASSERT CEL_CURSOR_GAME == 0
+    xor     a, a
+.jukebox
+    ld      bc, 0
+    call    ActorSetCel
     
     ; Clear description box
     ld      hl, vDescText
@@ -259,7 +295,7 @@ UpdateSelection:
     jr      nz, .clearLoop
     
     ; Get pointer to description text
-    ldh     a, [hScratch1]  ; a = game number
+    ldh     a, [hScratch3]  ; a = game number
     ld      b, a
     add     a, a    ; game number * 2 (Pointer)
     add     a, b    ; game number * 3 (+Bank)
@@ -293,5 +329,7 @@ CursorPositionTable:
     ;   X,Y    X,Y
     DB 65,16, 114,16
     DB 65,57, 114,57
-    DB 65,98, 114,98
+    DB 65,98
+    ; Jukebox
+    DB 5, 116
 .end

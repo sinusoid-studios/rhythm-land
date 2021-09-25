@@ -9,6 +9,7 @@ DescTextTable::
     full_pointer xTextDescBartender
     full_pointer xTextDescPancake
     full_pointer xTextDescBattleship
+    full_pointer xTextDescJukebox
 .end::
 
 SECTION "Skater Dude Game Description", ROMX
@@ -45,3 +46,10 @@ xTextDescBattleship:
     DB "Battleship\n"
     DB "\n"
     DB "unfinished<END>"
+
+SECTION "Jukebox Description", ROMX
+
+xTextDescJukebox:
+    DB "Jukebox\n"
+    DB "\n"
+    DB "Listen to the tunes used in this game!<END>"
