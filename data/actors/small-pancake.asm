@@ -1,4 +1,5 @@
 INCLUDE "constants/hardware.inc"
+INCLUDE "constants/games/pancake.inc"
 INCLUDE "constants/actors.inc"
 INCLUDE "macros/actors.inc"
 
@@ -6,6 +7,53 @@ SECTION "Small Pancake Actor Animation Data", ROMX
 
 xActorSmallPancakeAnimation::
     animation SmallPancake
+
+    ; Falling and cookingFlip23 sequence
+    set_tiles falling, 6
+    cel falling1, MUSIC_PANCAKE_SPEED
+    cel falling2, MUSIC_PANCAKE_SPEED
+.cook
+    set_tiles landed, 6
+    cel cookingFlip23, MUSIC_PANCAKE_SPEED
+    set_tiles veryUndercooked, 6
+    cel cookingFlip23, MUSIC_PANCAKE_SPEED
+    set_tiles undercooked, 6
+    cel cookingFlip23, MUSIC_PANCAKE_SPEED
+    set_tiles perfect, 6
+    cel cookingFlip23, MUSIC_PANCAKE_SPEED
+    set_tiles overcooked, 6
+    cel cookingFlip23, MUSIC_PANCAKE_SPEED
+    set_tiles veryOvercooked, 6
+    cel cookingFlip23Pal1, MUSIC_PANCAKE_SPEED
+    set_tiles burnt, 6
+    cel cookingFlip23Pal1, ANIMATION_DURATION_FOREVER
+
+.flipUndercooked
+    set_tiles flip1Undercooked, 10
+    cel flip1, 4
+    set_tiles flip2Undercooked, 6
+    cel cookingFlip23, 4
+    set_tiles flip3Undercooked, 6
+    cel cookingFlip23, 3
+    goto_cel .cook
+
+.flipPerfect
+    set_tiles flip1Perfect, 10
+    cel flip1, 4
+    set_tiles flip2Perfect, 6
+    cel cookingFlip23, 4
+    set_tiles flip3Perfect, 6
+    cel cookingFlip23, 3
+    goto_cel .cook
+
+.flipOvercooked
+    set_tiles flip1Overcooked, 10
+    cel flip1Pal1, 4
+    set_tiles flip2Overcooked, 6
+    cel cookingFlip23Pal1, 4
+    set_tiles flip3Overcooked, 6
+    cel cookingFlip23Pal1, 3
+    goto_cel .cook
 
 xActorSmallPancakeTiles::
 .falling
