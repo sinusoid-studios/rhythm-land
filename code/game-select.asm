@@ -1,6 +1,7 @@
 INCLUDE "constants/hardware.inc"
 INCLUDE "constants/game-select.inc"
 INCLUDE "constants/actors.inc"
+INCLUDE "constants/sfx.inc"
 INCLUDE "constants/transition.inc"
 INCLUDE "constants/screens.inc"
 
@@ -192,6 +193,11 @@ ScreenGameSelect::
     ; If pressed A or START, jump to the selected game
     and     a, PADF_A | PADF_START
     jr      z, ScreenGameSelect
+    
+    ; Play start sound effect
+    ld      b, SFX_START
+    call    SFX_Play
+    ; Transition to selected game
     ldh     a, [hCurrentSelection]
     call    TransitionStart
     jr      ScreenGameSelect
@@ -305,8 +311,11 @@ UpdateSelection:
     add     a, CEL_CURSOR_JUKEBOX - CEL_CURSOR_GAME
 .setCel
     ld      [hl], a
-    
 .doneCel
+    ; Play the selection sound effect
+    ld      b, SFX_SELECT
+    call    SFX_Play
+    
     ; Clear description box
     ld      hl, vDescText
     ld      de, SCRN_VX_B - DESC_TEXT_LINE_LENGTH

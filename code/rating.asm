@@ -171,10 +171,8 @@ ScreenSetupRating::
     add     a, b    ; rating type * 5 (+Bank)
     add     a, LOW(RatingTilesTable)
     ld      l, a
-    ASSERT WARN, HIGH(RatingTilesTable.end - 1) != HIGH(RatingTilesTable)
-    adc     a, HIGH(RatingTilesTable)
-    sub     a, l
-    ld      h, a
+    ASSERT HIGH(RatingTilesTable.end - 1) == HIGH(RatingTilesTable)
+    ld      h, HIGH(RatingTilesTable)
     
     ; Get pointer to tile data
     ld      a, [hli]
