@@ -1,4 +1,5 @@
 INCLUDE "constants/hardware.inc"
+INCLUDE "constants/other-hardware.inc"
 INCLUDE "constants/game-select.inc"
 INCLUDE "constants/actors.inc"
 INCLUDE "constants/sfx.inc"
@@ -28,16 +29,16 @@ ScreenSetupGameSelect::
     ld      hl, $9000
     ld      bc, xBackgroundTiles9000.end - xBackgroundTiles9000
     rst     LCDMemcopy
-    ld      a, BANK(xBackgroundTiles8800)
+    ld      a, BANK(xBackgroundTiles8000)
     ld      [rROMB0], a
-    ld      de, xBackgroundTiles8800
-    ld      hl, $8800
-    ld      bc, xBackgroundTiles8800.end - xBackgroundTiles8800
+    ld      de, xBackgroundTiles8000
+    ld      hl, $8000
+    ld      bc, xBackgroundTiles8000.end - xBackgroundTiles8000
     rst     LCDMemcopy
     
     ; Load sprite tiles
     ld      de, SpriteTiles
-    ld      hl, $8000
+    ld      hl, $8800
     ld      bc, SpriteTiles.end - SpriteTiles
     rst     LCDMemcopy
     
@@ -108,23 +109,45 @@ SpriteTiles:
 SECTION "Game Select Screen Background Tiles for $9000", ROMX
 
 xBackgroundTiles9000:
-    INCBIN "res/game-select/background.bg.2bpp", 0, 128 * 16
+    INCBIN "res/game-select/background-1.bg.2bpp"
 .end
 
-SECTION "Game Select Screen Background Tiles for $8800", ROMX
+SECTION "Game Select Screen Background Tiles for $8000", ROMX
 
-xBackgroundTiles8800:
-    INCBIN "res/game-select/background.bg.2bpp", 128 * 16
+xBackgroundTiles8000:
+    INCBIN "res/game-select/background-2.bg.2bpp"
 .end
 
 SECTION "Game Select Screen Background Map", ROMX
 
 xMap:
-    INCBIN "res/game-select/background.bg.tilemap"
+    INCBIN "res/game-select/background-1.bg.tilemap"
+    INCBIN "res/game-select/background-2.bg.tilemap"
+
+SECTION "Game Select Screen Extra LYC Interrupt Handler", ROM0
+
+LYCHandlerGameSelect::
+    ld      hl, rLCDC
+    
+.waitHBlank
+    ldh     a, [rSTAT]
+    ASSERT STATF_HBL == 0
+    and     a, STAT_MODE_MASK
+    jr      nz, .waitHBlank
+    
+    ; Switch tiles
+    ASSERT LCDCF_BG8000 != 0
+    set     LCDCB_BGTILE, [hl]
+    ret
 
 SECTION "Game Select Screen Loop", ROM0
 
 ScreenGameSelect::
+    ; Set up extra LYC interrupts
+    ld      a, LYCTable.gameSelect - LYCTable
+    ldh     [hLYCResetIndex], a
+    
+.loop
     rst     WaitVBlank
     
     ldh     a, [hTransitionState]

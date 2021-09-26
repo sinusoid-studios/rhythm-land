@@ -5,10 +5,10 @@ SECTION "Game Description Text Table", ROM0
 
 DescTextTable::
     full_pointer xTextDescSkaterDude
-    full_pointer xTextDescSeagullSerenade
-    full_pointer xTextDescBartender
     full_pointer xTextDescPancake
     full_pointer xTextDescBattleship
+    full_pointer xTextDescSeagullSerenade
+    full_pointer xTextDescNothing
     full_pointer xTextDescJukebox
 .end::
 
@@ -18,20 +18,6 @@ xTextDescSkaterDude:
     DB "Skater Dude\n"
     DB "\n"
     DB "Show off gnarly skateboard tricks on the road by jumping in time.<END>"
-
-SECTION "Seagull Serenade Game Description", ROMX
-
-xTextDescSeagullSerenade:
-    DB "Seagull Serenade\n"
-    DB "\n"
-    DB "Squawk to the music while staying in tune in your seagull trio!<END>"
-
-SECTION "Bartender Game Description", ROMX
-
-xTextDescBartender:
-    DB "Bartender\n"
-    DB "\n"
-    DB "unfinished<END>"
 
 SECTION "Pancake Game Description", ROMX
 
@@ -46,6 +32,20 @@ xTextDescBattleship:
     DB "Battleship\n"
     DB "\n"
     DB "unfinished<END>"
+
+SECTION "Seagull Serenade Game Description", ROMX
+
+xTextDescSeagullSerenade:
+    DB "Seagull Serenade\n"
+    DB "\n"
+    DB "Squawk to the music while staying in tune with your seagull trio!<END>"
+
+SECTION "Nothing Description", ROMX
+
+xTextDescNothing:
+    DB "Sorry! :(\n"
+    DB "\n"
+    DB "There wasn't enough time to finish this game before the compo deadline.<END>"
 
 SECTION "Jukebox Description", ROMX
 

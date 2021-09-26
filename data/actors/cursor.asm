@@ -31,27 +31,27 @@ xActorCursorMetasprites::
     metasprite .inJukebox
 
 .out
-    obj -1, -1, $00, 0
-    obj -1, 39, $00, OAMF_XFLIP
-    obj 21, -1, $00, OAMF_YFLIP
-    obj 21, 39, $00, OAMF_XFLIP | OAMF_YFLIP
+    obj -1, -1, $80, 0
+    obj -1, 39, $80, OAMF_XFLIP
+    obj 21, -1, $80, OAMF_YFLIP
+    obj 21, 39, $80, OAMF_XFLIP | OAMF_YFLIP
     DB METASPRITE_END
 .in
-    obj 0, 0, $00, 0
-    obj 0, 38, $00, OAMF_XFLIP
-    obj 20, 0, $00, OAMF_YFLIP
-    obj 20, 38, $00, OAMF_XFLIP | OAMF_YFLIP
+    obj 0, 0, $80, 0
+    obj 0, 38, $80, OAMF_XFLIP
+    obj 20, 0, $80, OAMF_YFLIP
+    obj 20, 38, $80, OAMF_XFLIP | OAMF_YFLIP
     DB METASPRITE_END
 
 .outJukebox
-    obj -1, -1, $00, 0
-    obj -1, 47, $00, OAMF_XFLIP
-    obj 4, -1, $00, OAMF_YFLIP
-    obj 4, 47, $00, OAMF_XFLIP | OAMF_YFLIP
+    obj -1, -1, $80, 0
+    obj -1, 47, $80, OAMF_XFLIP
+    obj 4, -1, $80, OAMF_YFLIP
+    obj 4, 47, $80, OAMF_XFLIP | OAMF_YFLIP
     DB METASPRITE_END
 .inJukebox
-    obj 0, 0, $00, 0
-    obj 0, 46, $00, OAMF_XFLIP
-    obj 3, 0, $00, OAMF_YFLIP
-    obj 3, 46, $00, OAMF_XFLIP | OAMF_YFLIP
+    obj 0, 0, $80, 0
+    obj 0, 46, $80, OAMF_XFLIP
+    obj 3, 0, $80, OAMF_YFLIP
+    obj 3, 46, $80, OAMF_XFLIP | OAMF_YFLIP
     DB METASPRITE_END
