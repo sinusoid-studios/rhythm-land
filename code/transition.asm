@@ -65,15 +65,6 @@ TransitionStart::
     ld      c, SCRN_Y_B
     call    LCDMemsetMap
     
-    ; Enable the window
-    ldh     a, [hLCDC]
-    ASSERT LCDCF_WINON != 0 && LCDCF_WIN9C00 != 0
-    or      a, LCDCF_WINON | LCDCF_WIN9C00
-    ; Don't write to hLCDC but instead write to rLCDC so if a screen
-    ; setup routine overwrites hLCDC, the window is still enabled.
-    ; Because of this, hLCDC is not copied to rLCDC during a transition.
-    ldh     [rLCDC], a
-    
     ; Let the VBlank interrupt handler set up the next LYC value.
     ; All that needs to be done here is actually enable LYC interrupts.
     ; If LYC interrupts are already enabled, there's nothing to do.

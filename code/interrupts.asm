@@ -29,10 +29,13 @@ VBlankHandler:
     ldh     a, [hTransitionState]
     ASSERT TRANSITION_STATE_OFF == 0
     and     a, a
-    jr      nz, .transition
     ldh     a, [hLCDC]
+    jr      z, .noTransition
+    ; Enable the window
+    ASSERT LCDCF_WINON != 0 && LCDCF_WIN9C00 != 0
+    or      a, LCDCF_WINON | LCDCF_WIN9C00
+.noTransition
     ldh     [rLCDC], a
-.transition
     ldh     a, [hBGP]
     ldh     [rBGP], a
     ldh     a, [hOBP0]
