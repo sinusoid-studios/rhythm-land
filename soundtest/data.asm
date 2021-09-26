@@ -5,6 +5,7 @@ SongDataTable:
     DW FileSelectData
     DW GameSelectData
     DW OKData
+    DW GreatData
     DW SkaterDudeData
     DW SeagullSerenadeData
     DW PancakeData
@@ -32,6 +33,11 @@ OKData:
     DW Inst_OK
     DB BANK(Music_OK)
     DW Music_OK
+GreatData:
+    DB BANK(Inst_Great)
+    DW Inst_Great
+    DB BANK(Music_Great)
+    DW Music_Great
 SkaterDudeData:
     DB BANK(Inst_SkaterDude)
     DW Inst_SkaterDude
@@ -60,6 +66,7 @@ SongTitleTable:
     DW FileSelectString
     DW GameSelectString
     DW OKString
+    DW GreatString
     DW SkaterDudeString
     DW SeagullSerenadeString
     DW PancakeString
@@ -73,6 +80,8 @@ GameSelectString:
     DB "    Game Select     ",0
 OKString:
     DB "         OK         ",0
+GreatString:
+    DB "       Great        ",0
 SkaterDudeString:
     DB "    Skater Dude     ",0
 SeagullSerenadeString:

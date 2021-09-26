@@ -16,15 +16,14 @@ RatingTilesTable::
 SECTION "Rating Screen Theme Table", ROM0
 
 RatingThemeTable::
-    ; TODO: Make Bad, Great, and Perfect themes
+    ; TODO: Make Bad and Perfect themes
     ; For now just use the file select theme because I don't know what
     ; else to use. It's only temporary.
     
     ; full_pointer Inst_Bad, Music_Bad
     full_pointer Inst_FileSelect, Music_FileSelect
     full_pointer Inst_OK, Music_OK
-    ; full_pointer Inst_Great, Music_Great
-    full_pointer Inst_FileSelect, Music_FileSelect
+    full_pointer Inst_Great, Music_Great
     ; full_pointer Inst_Perfect, Music_Perfect
     full_pointer Inst_FileSelect, Music_FileSelect
 .end::
