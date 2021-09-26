@@ -1,8 +1,17 @@
+; Number of frames per tick in the theme
+DEF MUSIC_BATTLESHIP_SPEED EQU 11
+
 ; Game palettes
 DEF BATTLESHIP_BGP EQU %11_10_01_00
+DEF BATTLESHIP_OBP0 EQU %10_01_00_00   ; Dark gray, Light gray, White
+DEF BATTLESHIP_OBP1 EQU %11_01_00_00   ; Black, Light gray, White
 
 ; Number of tiles wide and high the repeating ocean background is
 DEF BATTLESHIP_OCEAN_SIZE EQU 6
 
 ; Initial value for SCY
 DEF BATTLESHIP_INITIAL_Y EQU BATTLESHIP_OCEAN_SIZE * 8
+
+; Ship actor
+DEF BATTLESHIP_SHIP_X EQU SCRN_X / 2 - 48 / 2
+DEF BATTLESHIP_SHIP_Y EQU SCRN_Y - 48

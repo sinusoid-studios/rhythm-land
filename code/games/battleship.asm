@@ -1,16 +1,23 @@
 INCLUDE "constants/hardware.inc"
 INCLUDE "constants/transition.inc"
 INCLUDE "constants/games/battleship.inc"
+INCLUDE "constants/actors.inc"
+INCLUDE "constants/sfx.inc"
+INCLUDE "constants/engine.inc"
 
 SECTION "Battleship Game Setup", ROMX
 
 xGameSetupBattleship::
-    ; Set palette
+    ; Set palettes
     ld      a, BATTLESHIP_BGP
     ldh     [hBGP], a
+    ld      a, BATTLESHIP_OBP0
+    ldh     [hOBP0], a
+    ld      a, BATTLESHIP_OBP1
+    ldh     [hOBP1], a
     
     ; Set appropriate LCDC flags
-    ld      a, LCDCF_ON | LCDCF_BG8800 | LCDCF_BG9800 | LCDCF_BGON
+    ld      a, LCDCF_ON | LCDCF_BG8800 | LCDCF_BG9800 | LCDCF_BGON | LCDCF_OBJ16 | LCDCF_OBJON
     ldh     [hLCDC], a
     
     ; Set initial Y scroll
@@ -24,13 +31,21 @@ xGameSetupBattleship::
     ld      bc, xBackgroundTiles.end - xBackgroundTiles
     rst     LCDMemcopy
     
+    ; Load sprite tiles
+    ASSERT BANK(xSpriteTiles) == BANK(@)
+    ASSERT xSpriteTiles == xBackgroundTiles.end
+    ; de = xSpriteTiles
+    ld      hl, $8000
+    ld      bc, xSpriteTiles.end - xSpriteTiles
+    rst     LCDMemcopy
+    
     ; Repeat the 6-tile-high ocean pattern 3 times vertically onto the
     ; tilemap
     ASSERT BATTLESHIP_OCEAN_SIZE * 3 == SCRN_Y_B
     
     ; Load first background map
     ASSERT BANK(xMap1) == BANK(@)
-    ASSERT xMap1 == xBackgroundTiles.end
+    ASSERT xMap1 == xSpriteTiles.end
     ; de = xMap1
     ld      hl, _SCRN0
     ld      c, BATTLESHIP_OCEAN_SIZE
@@ -63,6 +78,11 @@ xGameSetupBattleship::
     ld      c, BATTLESHIP_OCEAN_SIZE
     call    LCDMemcopyMap
     
+    ; Create the Ship actor
+    ASSERT BANK(xActorShipDefinition) == BANK(@)
+    ld      de, xActorShipDefinition
+    call    ActorNew
+    
     ; Set up game data
     ld      c, BANK(xHitTableBattleship)
     ld      hl, xHitTableBattleship
@@ -72,12 +92,24 @@ xBackgroundTiles:
     INCBIN "res/battleship/background.bg.2bpp"
 .end
 
+xSpriteTiles:
+    ; Remove the first 2 tiles which are blank on purpose to get rid of
+    ; any blank objects in the image
+    INCBIN "res/battleship/ship-obp0.obj.2bpp"
+    INCBIN "res/battleship/ship-obp1.obj.2bpp"
+.end
+
 xMap1:
     INCBIN "res/battleship/background.bg.tilemap", 0, BATTLESHIP_OCEAN_SIZE * SCRN_X_B
 .end
 xMap2:
     INCBIN "res/battleship/background.bg.tilemap", BATTLESHIP_OCEAN_SIZE * SCRN_X_B
 .end
+
+xActorShipDefinition:
+    DB ACTOR_SHIP
+    DB BATTLESHIP_SHIP_X, BATTLESHIP_SHIP_Y
+    DB 0, 0
 
 SECTION "Battleship Game Loop", ROMX
 
@@ -109,6 +141,7 @@ xGameBattleship::
 
 .noTransition
     call    EngineUpdate
+    call    ActorsUpdate
     
     ; Scroll the background
     ld      hl, hSCY
