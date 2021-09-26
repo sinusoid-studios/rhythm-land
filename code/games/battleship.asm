@@ -151,9 +151,33 @@ xGameBattleship::
     jr      xGameBattleship
 
 .noTransition
+    ; All directions perform the same action -> combine them into the
+    ; Left bit
+    ldh     a, [hNewKeys]
+    ld      b, a
+    and     a, PADF_RIGHT | PADF_UP | PADF_DOWN
+    jr      z, .noChange
+    ld      a, b
+    and     a, LOW(~(PADF_RIGHT | PADF_UP | PADF_DOWN))
+    set     PADB_LEFT, a
+    ldh     [hNewKeys], a
+.noChange
+    
     call    EngineUpdate
     call    ActorsUpdate
     
+    ld      a, [wMusicSyncData]
+    ASSERT SYNC_NONE == -1
+    inc     a
+    jr      z, .noBoat
+    dec     a   ; Undo inc
+    ASSERT BATTLESHIP_BOATB_LEFT == 0
+    rra     ; Move bit 0 into carry
+    call    c, .boatLeft
+    ld      a, [wMusicSyncData]
+    bit     BATTLESHIP_BOATB_RIGHT, a
+    call    nz, .boatRight
+.noBoat
     ; Scroll the background
     ld      hl, hSCY
     dec     [hl]
@@ -169,3 +193,28 @@ xGameBattleship::
     xor     a, LCDCF_BG9800 ^ LCDCF_BG9C00
     ldh     [hLCDC], a
     jr      xGameBattleship
+
+.boatLeft
+    ASSERT BANK(xActorBoatLeftDefinition) == BANK(@)
+    ld      de, xActorBoatLeftDefinition
+    jp      ActorNew
+    ASSERT CEL_BOAT_LEFT == 0
+    ; No need to modify cel
+.boatRight
+    ASSERT BANK(xActorBoatRightDefinition) == BANK(@)
+    ld      de, xActorBoatRightDefinition
+    call    ActorNew
+    ; Use right-turning animation
+    ld      hl, wActorCelTable
+    add     hl, bc
+    ld      [hl], CEL_BOAT_RIGHT
+    ret
+
+xActorBoatLeftDefinition:
+    DB ACTOR_BOAT
+    DB BOAT_LEFT_X, BOAT_Y
+    DB BOAT_SPEED_X, BOAT_SPEED_Y
+xActorBoatRightDefinition:
+    DB ACTOR_BOAT
+    DB BOAT_RIGHT_X, BOAT_Y
+    DB BOAT_SPEED_X, BOAT_SPEED_Y
