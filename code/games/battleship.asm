@@ -97,10 +97,12 @@ xBackgroundTiles:
 .end
 
 xSpriteTiles:
-    ; Remove the first 2 tiles which are blank on purpose to get rid of
-    ; any blank objects in the image
     INCBIN "res/battleship/ship-obp0.obj.2bpp"
     INCBIN "res/battleship/ship-obp1.obj.2bpp"
+    ; Remove the first 2 tiles which are blank on purpose to get rid of
+    ; any blank objects in the image
+    INCBIN "res/battleship/boat.obj.2bpp", 16 * 2
+    INCBIN "res/battleship/boat-motor.obj.2bpp"
 .end
 
 xMap1:

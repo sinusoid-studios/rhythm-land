@@ -27,6 +27,7 @@ ActorRoutineTable::
     full_pointer Null   ; ACTOR_CURSOR
     full_pointer Null   ; ACTOR_SHIP
     full_pointer Null   ; ACTOR_SHIP_CANNON
+    full_pointer Null   ; ACTOR_BOAT
 .end::
 
 SECTION "Actor Animation Table", ROM0
@@ -56,6 +57,7 @@ ActorAnimationTable::
     full_pointer xActorCursorAnimation  ; ACTOR_CURSOR
     full_pointer xActorShipAnimation    ; ACTOR_SHIP
     full_pointer xActorShipCannonAnimation  ; ACTOR_SHIP_CANNON
+    full_pointer xActorBoatAnimation    ; ACTOR_BOAT
 .end::
 
 SECTION "Actor Meta-Sprite Table", ROM0
@@ -85,4 +87,5 @@ ActorMetaspriteTable::
     full_pointer xActorCursorMetasprites    ; ACTOR_CURSOR
     full_pointer xActorShipMetasprites  ; ACTOR_SHIP
     full_pointer xActorShipCannonMetasprites    ; ACTOR_SHIP_CANNON
+    full_pointer xActorBoatMetasprites  ; ACTOR_BOAT
 .end::
