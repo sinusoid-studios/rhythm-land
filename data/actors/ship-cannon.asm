@@ -7,22 +7,24 @@ SECTION "Battleship Ship Cannon Actor Animation Data", ROMX
 xActorShipCannonAnimation::
     animation ShipCannon
 
-SECTION "Battleship Ship Cannon Actor Meta-Sprite Data", ROMX
-	
-xActorShipCannonMetasprites::
-	metasprite .cannonNorth
-    metasprite .cannonNorthwest
-    metasprite .cannonNortheast
+    cel forward, ANIMATION_DURATION_FOREVER
 
-.cannonNorth
-    obj 0, 0, $00, 0
-    obj 0, 8, $02, 0
+SECTION "Battleship Ship Cannon Actor Meta-Sprite Data", ROMX
+
+xActorShipCannonMetasprites::
+    metasprite .forward
+    metasprite .left
+    metasprite .right
+
+.forward
+    obj 0, 0, $2A, OAMF_PAL1
+    obj 0, 8, $2C, OAMF_PAL1
     DB METASPRITE_END
-.cannonNorthwest
-    obj 0, 0, $04, 0
-    obj 0, 8, $06, 0
+.left
+    obj 0, 0, $2E, OAMF_PAL1
+    obj 0, 8, $30, OAMF_PAL1
     DB METASPRITE_END
-.cannonNortheast
-    obj 0, 0, $08, 0
-    obj 0, 8, $0A, 0
+.right
+    obj 0, 0, $32, OAMF_PAL1
+    obj 0, 8, $34, OAMF_PAL1
     DB METASPRITE_END

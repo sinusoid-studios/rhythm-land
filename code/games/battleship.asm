@@ -79,8 +79,12 @@ xGameSetupBattleship::
     call    LCDMemcopyMap
     
     ; Create the Ship actor
+    ASSERT BANK(xActorShipCannonDefinition) == BANK(@)
+    ld      de, xActorShipCannonDefinition
+    call    ActorNew
     ASSERT BANK(xActorShipDefinition) == BANK(@)
-    ld      de, xActorShipDefinition
+    ASSERT xActorShipDefinition == xActorShipCannonDefinition.end
+    ; de = xActorShipDefinition
     call    ActorNew
     
     ; Set up game data
@@ -106,6 +110,11 @@ xMap2:
     INCBIN "res/battleship/background.bg.tilemap", BATTLESHIP_OCEAN_SIZE * SCRN_X_B
 .end
 
+xActorShipCannonDefinition:
+    DB ACTOR_SHIP_CANNON
+    DB BATTLESHIP_CANNON_X, BATTLESHIP_CANNON_Y
+    DB 0, 0
+.end
 xActorShipDefinition:
     DB ACTOR_SHIP
     DB BATTLESHIP_SHIP_X, BATTLESHIP_SHIP_Y
