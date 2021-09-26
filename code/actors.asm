@@ -171,8 +171,10 @@ ActorsUpdate::
     ldh     a, [hScratch1]  ; a = actor type
     add     a, LOW(ActorMetaspriteTable)
     ld      l, a
-    ASSERT HIGH(ActorMetaspriteTable.end - 1) == HIGH(ActorMetaspriteTable)
-    ld      h, HIGH(ActorMetaspriteTable)
+    ASSERT WARN, HIGH(ActorMetaspriteTable.end - 1) != HIGH(ActorMetaspriteTable)
+    adc     a, HIGH(ActorMetaspriteTable)
+    sub     a, l
+    ld      h, a
     
     ; Point hl to actor's type's meta-sprite table
     ld      a, [hli]
@@ -374,10 +376,8 @@ ActorNew::
     add     a, l    ; a * 3 (+Bank)
     add     a, LOW(ActorAnimationTable)
     ld      l, a
-    ASSERT WARN, HIGH(ActorAnimationTable.end - 1) != HIGH(ActorAnimationTable)
-    adc     a, HIGH(ActorAnimationTable)
-    sub     a, l
-    ld      h, a
+    ASSERT HIGH(ActorAnimationTable.end - 1) == HIGH(ActorAnimationTable)
+    ld      h, HIGH(ActorAnimationTable)
     
     ; Save current bank to restore when finished
     ldh     a, [hCurrentBank]
@@ -693,10 +693,8 @@ ActorGetAnimationCel:
     ldh     a, [hScratch1]  ; a = actor type * 3
     add     a, LOW(ActorAnimationTable)
     ld      l, a
-    ASSERT WARN, HIGH(ActorAnimationTable.end - 1) != HIGH(ActorAnimationTable)
-    adc     a, HIGH(ActorAnimationTable)
-    sub     a, l
-    ld      h, a
+    ASSERT HIGH(ActorAnimationTable.end - 1) == HIGH(ActorAnimationTable)
+    ld      h, HIGH(ActorAnimationTable)
     
     ; Point hl to actor's type's animation table
     ld      a, [hli]
@@ -744,10 +742,8 @@ ActorSetCel::
     ldh     a, [hScratch1]  ; a = actor type * 3
     add     a, LOW(ActorAnimationTable)
     ld      l, a
-    ASSERT WARN, HIGH(ActorAnimationTable.end - 1) != HIGH(ActorAnimationTable)
-    adc     a, HIGH(ActorAnimationTable)
-    sub     a, l
-    ld      h, a
+    ASSERT HIGH(ActorAnimationTable.end - 1) == HIGH(ActorAnimationTable)
+    ld      h, HIGH(ActorAnimationTable)
     
     ; Point hl to actor's type's animation table
     ld      a, [hli]

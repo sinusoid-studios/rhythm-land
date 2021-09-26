@@ -365,8 +365,10 @@ UpdateSelection:
     add     a, b    ; game number * 3 (+Bank)
     add     a, LOW(DescTextTable)
     ld      l, a
-    ASSERT HIGH(DescTextTable.end - 1) == HIGH(DescTextTable)
-    ld      h, HIGH(DescTextTable)
+    ASSERT WARN, HIGH(DescTextTable.end - 1) != HIGH(DescTextTable)
+    adc     a, HIGH(DescTextTable)
+    sub     a, l
+    ld      h, a
     ld      a, [hli]
     ld      b, a    ; b = bank number
     ld      a, [hli]

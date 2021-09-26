@@ -8,7 +8,7 @@ ScreenTable::
     full_pointer xGameBattleship
     full_pointer xGameSeagullSerenade
     full_pointer Null
-    full_pointer ScreenMuseum
+    full_pointer ScreenJukebox
     full_pointer ScreenTitle
     full_pointer ScreenGameSelect
     full_pointer ScreenRating
@@ -22,7 +22,7 @@ ScreenSetupTable::
     full_pointer xGameSetupBattleship
     full_pointer xGameSetupSeagullSerenade
     full_pointer Null
-    full_pointer ScreenSetupMuseum
+    full_pointer ScreenSetupJukebox
     full_pointer ScreenSetupTitle
     full_pointer ScreenSetupGameSelect
     full_pointer ScreenSetupRating
