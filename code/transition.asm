@@ -65,6 +65,15 @@ TransitionStart::
     ld      c, SCRN_Y_B
     call    LCDMemsetMap
     
+    ; Remove all sprites
+    ; Set all actors to empty
+    ld      a, ACTOR_EMPTY
+    ld      hl, wActorTypeTable
+    ld      c, MAX_ACTOR_COUNT
+    rst     MemsetSmall
+    ; Hide all existing objects
+    call    HideAllObjects
+    
     ; Let the VBlank interrupt handler set up the next LYC value.
     ; All that needs to be done here is actually enable LYC interrupts.
     ; If LYC interrupts are already enabled, there's nothing to do.
@@ -136,16 +145,6 @@ TransitionUpdate::
     
     ; Discard return address (switching screens)
     pop     af
-    
-    ; Remove all sprites
-    ; Set all actors to empty
-    ASSERT LOW(ACTOR_EMPTY) == HIGH(rIE)
-    ld      a, h
-    ld      hl, wActorTypeTable
-    ld      c, MAX_ACTOR_COUNT
-    rst     MemsetSmall
-    ; Hide all existing objects
-    call    HideAllObjects
     
     ; Get next screen's ID
     ldh     a, [hTransitionNextScreen]
