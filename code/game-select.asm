@@ -316,10 +316,8 @@ UpdateSelection:
     add     a, a
     add     a, LOW(CursorPositionTable)
     ld      l, a
-    ASSERT WARN, HIGH(CursorPositionTable.end - 1) != HIGH(CursorPositionTable)
-    adc     a, HIGH(CursorPositionTable)
-    sub     a, l
-    ld      h, a
+    ASSERT HIGH(CursorPositionTable.end - 1) == HIGH(CursorPositionTable)
+    ld      h, HIGH(CursorPositionTable)
     
     ; Update the position of the cursor
     ld      a, [hli]

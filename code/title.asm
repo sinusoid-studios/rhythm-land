@@ -61,17 +61,6 @@ ScreenSetupTitle::
     xor     a, a
     ldh     [hTileStreamingEnable], a
     
-    ; Create star actors
-    ld      de, ActorStarDefinitions
-    ld      a, STAR_COUNT
-    ldh     [hScratch1], a
-.starLoop
-    call    ActorNew
-    ldh     a, [hScratch1]
-    dec     a
-    ldh     [hScratch1], a
-    jr      nz, .starLoop
-    
     ret
 
 SECTION "Title Screen Large Star Actor Definitions", ROM0
@@ -194,11 +183,10 @@ ScreenTitle::
     ldh     [hBGP], a
 .checkSync
     ld      a, [wMusicSyncData]
-    ASSERT SYNC_TITLE_BEAT == 1
-    dec     a
-    jr      z, .beat
-    ASSERT SYNC_TITLE_FLASH == 2
-    dec     a
+    ASSERT SYNC_TITLE_STARS == 0
+    and     a, a
+    jr      z, .stars
+    cp      a, SYNC_TITLE_FLASH
     jr      nz, .noSyncData
     ; Flash
     ld      a, LOW(TITLE_BGP << 2)  ; One shade lighter than normal
@@ -207,8 +195,17 @@ ScreenTitle::
     ld      a, TITLE_FLASH_DURATION
     ldh     [hFlashCountdown], a
     jr      .noSyncData
-.beat
-    ; TODO: Fancy bouncing
+.stars
+    ; Create star actors
+    ld      de, ActorStarDefinitions
+    ld      a, STAR_COUNT
+    ldh     [hScratch1], a
+.starLoop
+    call    ActorNew
+    ldh     a, [hScratch1]
+    dec     a
+    ldh     [hScratch1], a
+    jr      nz, .starLoop
 .noSyncData
     ; Transitioning -> don't take player input
     ldh     a, [hTransitionState]
