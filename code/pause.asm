@@ -7,6 +7,7 @@ SECTION "Pause", ROM0
 
 Pause::
     call    Music_Pause
+    call    SFX_Stop
     
 .loop
     rst     WaitVBlank
