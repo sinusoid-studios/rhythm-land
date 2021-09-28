@@ -179,7 +179,7 @@ ScreenGameSelect::
     ASSERT TRANSITION_STATE_OFF == 0
     or      a, b
     jr      z, .noTransition
-    jr      ScreenGameSelect
+    jr      .loop
 
 .transitionEnd
     ; Start music
@@ -189,7 +189,7 @@ ScreenGameSelect::
     ld      c, BANK(Music_GameSelect)
     ld      de, Music_GameSelect
     call    Music_Play
-    jr      ScreenGameSelect
+    jr      .loop
 
 .noTransition
     call    ActorsUpdate
@@ -215,7 +215,7 @@ ScreenGameSelect::
     
     ; If pressed A or START, jump to the selected game
     and     a, PADF_A | PADF_START
-    jr      z, ScreenGameSelect
+    jr      z, .loop
     
     ; Play start sound effect
     ld      b, SFX_START
@@ -223,12 +223,12 @@ ScreenGameSelect::
     ; Transition to selected game
     ldh     a, [hCurrentSelection]
     call    TransitionStart
-    jr      ScreenGameSelect
+    jr      .loop
 
 .back
     ld      a, SCREEN_TITLE
     call    TransitionStart
-    jr      ScreenGameSelect
+    jr      .loop
 
 SECTION "Game Select Screen Selection", ROM0
 
