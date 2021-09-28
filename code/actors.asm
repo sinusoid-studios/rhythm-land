@@ -171,8 +171,10 @@ ActorsUpdate::
     ldh     a, [hScratch1]  ; a = actor type
     add     a, LOW(ActorMetaspriteTable)
     ld      l, a
-    ASSERT HIGH(ActorMetaspriteTable.end - 1) == HIGH(ActorMetaspriteTable)
-    ld      h, HIGH(ActorMetaspriteTable)
+    ASSERT WARN, HIGH(ActorMetaspriteTable.end - 1) != HIGH(ActorMetaspriteTable)
+    adc     a, HIGH(ActorMetaspriteTable)
+    sub     a, l
+    ld      h, a
     
     ; Point hl to actor's type's meta-sprite table
     ld      a, [hli]

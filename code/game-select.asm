@@ -96,7 +96,9 @@ ScreenSetupGameSelect::
     xor     a, a
     ldh     [hCurrentSelection], a
     
-    jp      UpdateSelection
+    ; UpdateSelection expects game number in hScratch1
+    ldh     [hScratch1], a
+    jp      UpdateSelection.initial
 
 SECTION "Game Select Cursor Actor Definition", ROM0
 
@@ -309,10 +311,34 @@ MoveDown:
     ; Fall-through
 
 UpdateSelection:
-    ldh     [hScratch1], a  ; Save for getting description
-    ld      b, a            ; Save for setting cursor size
+    ldh     [hScratch1], a
+    
+    ; Play the selection sound effect
+    ld      b, SFX_SELECT
+    call    SFX_Play
+    
+    ; Clear description box
+    ld      hl, vDescText
+    ld      de, SCRN_VX_B - DESC_TEXT_LINE_LENGTH
+    ld      b, DESC_TEXT_LINE_COUNT
+.clearLoop
+    ld      c, DESC_TEXT_LINE_LENGTH
+.clearRowLoop
+    ldh     a, [rSTAT]
+    and     a, STATF_BUSY
+    jr      nz, .clearRowLoop
+    ASSERT DESC_TEXT_BLANK_TILE == 0
+    xor     a, a
+    ld      [hli], a
+    dec     c
+    jr      nz, .clearRowLoop
+    add     hl, de
+    dec     b
+    jr      nz, .clearLoop
     
     ; Get the new selection's cursor position
+    ldh     a, [hScratch1]  ; a = game number
+.initial
     add     a, a
     add     a, LOW(CursorPositionTable)
     ld      l, a
@@ -344,28 +370,6 @@ UpdateSelection:
 .setCel
     ld      [hl], a
 .doneCel
-    ; Play the selection sound effect
-    ld      b, SFX_SELECT
-    call    SFX_Play
-    
-    ; Clear description box
-    ld      hl, vDescText
-    ld      de, SCRN_VX_B - DESC_TEXT_LINE_LENGTH
-    ld      b, DESC_TEXT_LINE_COUNT
-.clearLoop
-    ld      c, DESC_TEXT_LINE_LENGTH
-.clearRowLoop
-    ldh     a, [rSTAT]
-    and     a, STATF_BUSY
-    jr      nz, .clearRowLoop
-    ASSERT DESC_TEXT_BLANK_TILE == 0
-    xor     a, a
-    ld      [hli], a
-    dec     c
-    jr      nz, .clearRowLoop
-    add     hl, de
-    dec     b
-    jr      nz, .clearLoop
     
     ; Get pointer to description text
     ldh     a, [hScratch1]  ; a = game number
