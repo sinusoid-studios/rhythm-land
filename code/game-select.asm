@@ -217,6 +217,10 @@ ScreenGameSelect::
     and     a, PADF_A | PADF_START
     jr      z, .loop
     
+    ; Don't allow starting the non-existent game
+    ldh     a, [hCurrentSelection]
+    cp      a, GAME_NOTHING
+    jr      z, ScreenGameSelect
     ; Play start sound effect
     ld      b, SFX_START
     call    SFX_Play
@@ -365,10 +369,8 @@ UpdateSelection:
     add     a, b    ; game number * 3 (+Bank)
     add     a, LOW(DescTextTable)
     ld      l, a
-    ASSERT WARN, HIGH(DescTextTable.end - 1) != HIGH(DescTextTable)
-    adc     a, HIGH(DescTextTable)
-    sub     a, l
-    ld      h, a
+    ASSERT HIGH(DescTextTable.end - 1) == HIGH(DescTextTable)
+    ld      h, HIGH(DescTextTable)
     ld      a, [hli]
     ld      b, a    ; b = bank number
     ld      a, [hli]
