@@ -59,7 +59,7 @@ hSidewalkScrollTimer:
     DS 1
 
 ; The current frame the building bounce effect is on
-hBuildingBounceIndex:
+hBuildingBounceIndex::
     DS 1
 
 SECTION "Skater Dude Game Setup", ROMX

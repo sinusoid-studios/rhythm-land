@@ -18,6 +18,11 @@ ScreenSetupGameSelect::
     ld      a, GAME_SELECT_BGP
     ldh     [hBGP], a
     
+    ; Reset scroll
+    xor     a, a
+    ldh     [hSCX], a
+    ldh     [hSCY], a
+    
     ; Set appropriate LCDC flags
     ld      a, LCDCF_ON | LCDCF_BG8800 | LCDCF_BG9800 | LCDCF_BGON | LCDCF_OBJ16 | LCDCF_OBJON
     ldh     [hLCDC], a
@@ -311,8 +316,10 @@ UpdateSelection:
     add     a, a
     add     a, LOW(CursorPositionTable)
     ld      l, a
-    ASSERT HIGH(CursorPositionTable.end - 1) == HIGH(CursorPositionTable)
-    ld      h, HIGH(CursorPositionTable)
+    ASSERT WARN, HIGH(CursorPositionTable.end - 1) != HIGH(CursorPositionTable)
+    adc     a, HIGH(CursorPositionTable)
+    sub     a, l
+    ld      h, a
     
     ; Update the position of the cursor
     ld      a, [hli]

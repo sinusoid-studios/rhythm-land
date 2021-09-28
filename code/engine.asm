@@ -117,6 +117,11 @@ SECTION "Engine Update", ROM0
 ; Update music and SFX, advance a frame in the hit table, rate any hits
 ; the player makes, and call cue handlers
 EngineUpdate::
+    ; Check for game pause
+    ldh     a, [hNewKeys]
+    bit     PADB_START, a
+    call    nz, Pause
+    
     call    SoundUpdate
     
     ldh     a, [hNewKeys]
