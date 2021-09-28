@@ -166,8 +166,13 @@ ScreenTitle::
     ldh     a, [hTransitionState]
     ASSERT TRANSITION_STATE_OFF == 0
     and     a, a
-    call    nz, TransitionUpdate
+    jr      z, .noTransition
     
+    call    TransitionUpdate
+    call    SoundUpdate
+    jr      .loop
+    
+.noTransition
     call    SoundUpdate
     call    ActorsUpdate
     
@@ -207,12 +212,6 @@ ScreenTitle::
     ldh     [hScratch1], a
     jr      nz, .starLoop
 .noSyncData
-    ; Transitioning -> don't take player input
-    ldh     a, [hTransitionState]
-    ASSERT TRANSITION_STATE_OFF == 0
-    and     a, a
-    jr      nz, .loop
-    
     ldh     a, [hNewKeys]
     and     a, PADF_A | PADF_START
     jr      z, .loop
