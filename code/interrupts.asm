@@ -99,8 +99,6 @@ VBlankHandler:
     jr      nz, .copyLoop
     
     pop     de
-    ld      a, -1
-    ldh     [hActorNewTileLength], a
     
 .noNewTiles
     pop     hl
@@ -151,8 +149,19 @@ VBlankHandler:
     ; af trashed (becomes return address)
     pop     af
 .finished
+    ; Copying actor tiles would have run out of VBlank
+    ldh     a, [hActorNewTileLength]
+    inc     a
+    jr      nz, .copiedTiles
     pop     af
     ret         ; Interrupts already enabled
+
+.copiedTiles
+    ; Reset tile count (no new tiles)
+    ld      a, -1
+    ldh     [hActorNewTileLength], a
+    ; Return during VRAM accessibility
+    jp      InterruptReturn.waitMode3
 
 SECTION "VBlank Interrupt Handler Joypad Reading", ROM0
 
