@@ -123,6 +123,81 @@ ActorsUpdate::
     add     a, [hl] ; a * 3 (+Bank)
     ldh     [hScratch1], a
     
+    ; Update actor's regular animation
+    call    ActorUpdateAnimation
+    
+    ; Check for override animation
+    ld      hl, wActorCelOverrideTable
+    add     hl, bc
+    ld      a, [hl]
+    ASSERT ANIMATION_OVERRIDE_NONE == -1
+    inc     a
+    jr      z, .updatePosition
+    
+    ; Check for slo-mo
+    ; Don't update the override animation during slo-mo
+    ldh     a, [hCurrentScreen]
+    cp      a, GAME_SKATER_DUDE
+    jr      nz, .updateOverrideAnimation
+    ldh     a, [hSloMoCountdown]
+    ; No slo-mo is non-zero in the update bits, adjust for that
+    ASSERT SKATER_DUDE_NO_SLO_MO + 1 & SKATER_DUDE_SLO_MO_UPDATE_MASK == 0
+    inc     a
+    and     a, SKATER_DUDE_SLO_MO_UPDATE_MASK
+    jr      nz, .updatePosition
+.updateOverrideAnimation
+    ; Update actor's override animation
+    ASSERT wActorCelOverrideTable == wActorCelTable + MAX_ACTOR_COUNT
+    ASSERT wActorCelOverrideCountdownTable == wActorCelCountdownTable + MAX_ACTOR_COUNT
+    ; Override animation tables directly follow the regular animation
+    ; tables, so MAX_ACTOR_COUNT (the tables' sizes) can simply be added
+    ; to the entity index in bc
+    push    bc
+    ASSERT HIGH(MAX_ACTOR_COUNT * 2) == HIGH(MAX_ACTOR_COUNT)
+    ld      a, c
+    add     a, MAX_ACTOR_COUNT
+    ld      c, a
+    call    ActorUpdateAnimation
+    pop     bc
+    
+.updatePosition
+    ; Update the actor's position
+    ; X position
+    call    ActorAddSpeedToPos
+    ; Y position
+    ASSERT wActorYSpeedTable == wActorXSpeedTable + MAX_ACTOR_COUNT
+    ASSERT wActorYSpeedAccTable == wActorXSpeedAccTable + MAX_ACTOR_COUNT
+    ; Y speed tables directly follow the X speed tables, so
+    ; MAX_ACTOR_COUNT (the tables' sizes) can simply be added to the
+    ; entity index in bc
+    push    bc
+    ASSERT HIGH(MAX_ACTOR_COUNT * 2) == HIGH(MAX_ACTOR_COUNT)
+    ld      a, c
+    add     a, MAX_ACTOR_COUNT
+    ld      c, a
+    call    ActorAddSpeedToPos
+    pop     bc
+    
+.skipPositionUpdate
+    ; Call the actor's update routine
+    ldh     a, [hScratch1]  ; a = actor type
+    add     a, LOW(ActorRoutineTable)
+    ld      l, a
+    ASSERT HIGH(ActorRoutineTable.end - 1) == HIGH(ActorRoutineTable)
+    ld      h, HIGH(ActorRoutineTable)
+    
+    ld      a, [hli]
+    and     a, a
+    ; If the bank number is 0, the actor has no update routine
+    jr      z, .noUpdate
+    ldh     [hCurrentBank], a
+    ld      [rROMB0], a
+    ld      a, [hli]
+    ld      h, [hl]
+    ld      l, a
+    rst     JP_HL
+.noUpdate
+    
     ; Render this actor
     
     ; Save actor's Y position for use in meta-sprites
@@ -256,81 +331,6 @@ ActorsUpdate::
 .metaspriteEnd
     ; Get back the actor index
     pop     bc
-    
-    ; Update actor's regular animation
-    call    ActorUpdateAnimation
-    
-    ; Check for override animation
-    ld      hl, wActorCelOverrideTable
-    add     hl, bc
-    ld      a, [hl]
-    ASSERT ANIMATION_OVERRIDE_NONE == -1
-    inc     a
-    jr      z, .updatePosition
-    
-    ; Check for slo-mo
-    ; Don't update the override animation during slo-mo
-    ldh     a, [hCurrentScreen]
-    cp      a, GAME_SKATER_DUDE
-    jr      nz, .updateOverrideAnimation
-    ldh     a, [hSloMoCountdown]
-    ; No slo-mo is non-zero in the update bits, adjust for that
-    ASSERT SKATER_DUDE_NO_SLO_MO + 1 & SKATER_DUDE_SLO_MO_UPDATE_MASK == 0
-    inc     a
-    and     a, SKATER_DUDE_SLO_MO_UPDATE_MASK
-    jr      nz, .updatePosition
-.updateOverrideAnimation
-    ; Update actor's override animation
-    ASSERT wActorCelOverrideTable == wActorCelTable + MAX_ACTOR_COUNT
-    ASSERT wActorCelOverrideCountdownTable == wActorCelCountdownTable + MAX_ACTOR_COUNT
-    ; Override animation tables directly follow the regular animation
-    ; tables, so MAX_ACTOR_COUNT (the tables' sizes) can simply be added
-    ; to the entity index in bc
-    push    bc
-    ASSERT HIGH(MAX_ACTOR_COUNT * 2) == HIGH(MAX_ACTOR_COUNT)
-    ld      a, c
-    add     a, MAX_ACTOR_COUNT
-    ld      c, a
-    call    ActorUpdateAnimation
-    pop     bc
-    
-.updatePosition
-    ; Update the actor's position
-    ; X position
-    call    ActorAddSpeedToPos
-    ; Y position
-    ASSERT wActorYSpeedTable == wActorXSpeedTable + MAX_ACTOR_COUNT
-    ASSERT wActorYSpeedAccTable == wActorXSpeedAccTable + MAX_ACTOR_COUNT
-    ; Y speed tables directly follow the X speed tables, so
-    ; MAX_ACTOR_COUNT (the tables' sizes) can simply be added to the
-    ; entity index in bc
-    push    bc
-    ASSERT HIGH(MAX_ACTOR_COUNT * 2) == HIGH(MAX_ACTOR_COUNT)
-    ld      a, c
-    add     a, MAX_ACTOR_COUNT
-    ld      c, a
-    call    ActorAddSpeedToPos
-    pop     bc
-    
-.skipPositionUpdate
-    ; Call the actor's update routine
-    ldh     a, [hScratch1]  ; a = actor type
-    add     a, LOW(ActorRoutineTable)
-    ld      l, a
-    ASSERT HIGH(ActorRoutineTable.end - 1) == HIGH(ActorRoutineTable)
-    ld      h, HIGH(ActorRoutineTable)
-    
-    ld      a, [hli]
-    and     a, a
-    ; If the bank number is 0, the actor has no update routine
-    jp      z, .next
-    ldh     [hCurrentBank], a
-    ld      [rROMB0], a
-    ld      a, [hli]
-    ld      h, [hl]
-    ld      l, a
-    rst     JP_HL
-    
     ; Move to next actor
     jp      .next
 
