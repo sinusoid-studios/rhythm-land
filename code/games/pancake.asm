@@ -123,11 +123,11 @@ xActorPancake::
     add     hl, bc
     ; Negative -> still above the pan
     bit     7, [hl]
-    ret     nz
+    jr      nz, .noLand
     ld      a, [hl]
     ; Add 1 to check for <= instead of <
     cp      a, PANCAKE_Y + 1
-    ret     c
+    jr      c, .noLand
     
     ; Ensure the position is correct before resetting speed
     ld      [hl], PANCAKE_Y
@@ -136,4 +136,28 @@ xActorPancake::
     add     hl, bc
     ASSERT HIGH(MAX_ACTOR_COUNT - 1) == 0
     ld      [hl], b     ; b = 0
-    ret
+    
+.noLand
+    ; Check if the pancake is being flipped
+    ldh     a, [hNewKeys]
+    ASSERT PADB_A == 0
+    rra     ; Move bit 0 to carry
+    ret     nc
+    
+    ; Decide how cooked the pancake is
+    ld      hl, wActorCelTable
+    add     hl, bc
+    ld      a, [hl]
+    cp      a, CEL_PANCAKE_OK
+    jr      c, .undercooked
+    cp      a, CEL_PANCAKE_OVERCOOKED
+    jr      nc, .overcooked
+    ; OK
+    ld      a, CEL_PANCAKE_FLIP_OK
+    jp      ActorSetCel
+.undercooked
+    ld      a, CEL_PANCAKE_FLIP_UNDERCOOKED
+    jp      ActorSetCel
+.overcooked
+    ld      a, CEL_PANCAKE_FLIP_OVERCOOKED
+    jp      ActorSetCel

@@ -15,6 +15,7 @@ xActorLargePancakeAnimation::
 .cook
     set_tiles landed, 12
     cel cooking, LARGE_PANCAKE_COOK_TIME / 8
+.OK
     set_tiles veryUndercooked, 12
     cel cooking, LARGE_PANCAKE_COOK_TIME / 8
     set_tiles undercooked, 12
@@ -23,6 +24,7 @@ xActorLargePancakeAnimation::
     cel cooking, LARGE_PANCAKE_COOK_TIME / 8
     set_tiles overcooked, 12
     cel cooking, LARGE_PANCAKE_COOK_TIME / 8
+.overcooked
     set_tiles veryOvercooked, 12
     cel cookingPal1, LARGE_PANCAKE_COOK_TIME / 8
     set_tiles burnt, 12
@@ -56,6 +58,8 @@ xActorLargePancakeAnimation::
     goto_cel .cook
 
     ; Cel constant definitions
+    def_cel .OK, OK
+    def_cel .overcooked, OVERCOOKED
     def_cel .flipUndercooked, FLIP_UNDERCOOKED
     def_cel .flipOK, FLIP_OK
     def_cel .flipOvercooked, FLIP_OVERCOOKED
