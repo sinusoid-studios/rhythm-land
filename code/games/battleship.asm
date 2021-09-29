@@ -103,6 +103,7 @@ xSpriteTiles:
     ; any blank objects in the image
     INCBIN "res/battleship/boat.obj.2bpp", 16 * 2
     INCBIN "res/battleship/boat-motor.obj.2bpp"
+    INCBIN "res/battleship/projectile.obj.2bpp"
 .end
 
 xMap1:
@@ -178,6 +179,17 @@ xGameBattleship::
     bit     BATTLESHIP_BOATB_RIGHT, a
     call    nz, .boatRight
 .noBoat
+    
+    ; Check for shooting the cannon
+    ldh     a, [hNewKeys]
+    bit     PADB_LEFT, a
+    jr      nz, .shootLeft
+.retShootLeft
+    ASSERT PADB_A == 0
+    rra     ; Move bit 0 into carry
+    jr      c, .shootRight
+.retShootRight
+    
     ; Scroll the background
     ld      hl, hSCY
     dec     [hl]
@@ -210,6 +222,23 @@ xGameBattleship::
     ld      [hl], CEL_BOAT_RIGHT
     ret
 
+.shootLeft
+    ld      de, xActorProjectileLeftDefinition
+    call    ActorNew
+    ASSERT CEL_BOAT_LEFT == 0
+    ; No need to modify cel
+    
+    ; Restore A with hNewKeys for checking shoot right
+    ldh     a, [hNewKeys]
+    jr      .retShootLeft
+.shootRight
+    ld      de, xActorProjectileRightDefinition
+    call    ActorNew
+    ld      hl, wActorCelTable
+    add     hl, bc
+    ld      [hl], CEL_PROJECTILE_RIGHT
+    jr      .retShootRight
+
 xActorBoatLeftDefinition:
     DB ACTOR_BOAT
     DB BOAT_LEFT_X, BOAT_Y
@@ -218,3 +247,12 @@ xActorBoatRightDefinition:
     DB ACTOR_BOAT
     DB BOAT_RIGHT_X, BOAT_Y
     DB BOAT_SPEED_X, BOAT_SPEED_Y
+
+xActorProjectileLeftDefinition:
+    DB ACTOR_PROJECTILE
+    DB PROJECTILE_X, PROJECTILE_Y
+    DB PROJECTILE_LEFT_SPEED_X, PROJECTILE_SPEED_Y
+xActorProjectileRightDefinition:
+    DB ACTOR_PROJECTILE
+    DB PROJECTILE_X, PROJECTILE_Y
+    DB PROJECTILE_RIGHT_SPEED_X, PROJECTILE_SPEED_Y
