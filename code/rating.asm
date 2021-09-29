@@ -350,7 +350,6 @@ ScreenRating::
     ; Wait for player input
 .wait
     rst     WaitVBlank
-    call    SoundSystem_Process
     
     ldh     a, [hTransitionState]
     ASSERT TRANSITION_STATE_OFF == 0
@@ -358,10 +357,12 @@ ScreenRating::
     jr      z, .noTransition
     
     call    TransitionUpdate
+    call    SoundSystem_Process
     ; Transitioning -> don't take player input
     jr      .wait
     
 .noTransition
+    call    SoundSystem_Process
     ldh     a, [hNewKeys]
     and     a, PADF_A | PADF_START
     jr      z, .wait
