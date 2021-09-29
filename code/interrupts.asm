@@ -52,17 +52,58 @@ VBlankHandler:
     ldh     a, [hLYCResetIndex]
     ldh     [hLYCIndex], a
     
+    push    bc
+    push    hl
+    
     ; Set the next LYC value
     ld      a, TRANSITION_BLOCK_HEIGHT - 1
-    push    hl
     call    SetUpNextLYCTransition.gotBlockLYC
-    pop     hl
-    
-    push    bc
     
     ld      a, HIGH(wShadowOAM)
     lb      bc, (OAM_COUNT * sizeof_OAM_ATTRS) / DMA_LOOP_CYCLES + 1, LOW(rDMA)
     call    hOAMDMA
+    
+    ; Copy any actors' new tiles to VRAM
+    ldh     a, [hActorNewTileLength]
+    ld      b, a    ; Save in B in case it will be used
+    inc     a
+    jr      z, .noNewTiles
+    
+    ; Get desination
+    ld      hl, hActorTileDest
+    ld      a, [hli]
+    ld      h, [hl]
+    ld      l, a
+    
+    push    de
+    ld      de, wActorTileBuffer
+    
+    ; Copy the tiles to VRAM
+    ; de = source
+    ; hl = destination
+    ; b = length / 2
+.copyLoop
+    ldh     a, [rSTAT]
+    and     a, STATF_BUSY
+    jr      nz, .copyLoop
+    ld      a, [de]     ; 2 cycles
+    ld      [hli], a    ; 2 cycles
+    inc     de          ; 2 cycles
+    ld      a, [de]     ; 2 cycles
+    ld      [hli], a    ; 2 cycles
+    ; Total 10 cycles
+    ; Can't copy 3 bytes at a time because the byte count won't always
+    ; be divisible by 3
+    inc     de
+    dec     b
+    jr      nz, .copyLoop
+    
+    pop     de
+    ld      a, -1
+    ldh     [hActorNewTileLength], a
+    
+.noNewTiles
+    pop     hl
     
     ei      ; Timing-insensitive stuff follows
     

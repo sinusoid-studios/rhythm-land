@@ -41,6 +41,9 @@ Initialize::
     ldh     [hLYCIndex], a
     ldh     [hLYCResetIndex], a
     
+    ; No new actor tiles
+    ldh     [hActorNewTileLength], a
+    
     ; Reset frame counter
     xor     a, a
     ldh     [hFrameCounter], a

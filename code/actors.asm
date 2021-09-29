@@ -82,6 +82,27 @@ wActorCelCountdownTable::
 wActorCelOverrideCountdownTable::
     DS MAX_ACTOR_COUNT
 
+SECTION "Actor Tile Copy Buffer", WRAM0
+
+; Tile data to be copied to VRAM during VBlank to avoid prematurely
+; using new tiles
+wActorTileBuffer::
+    DS ACTOR_RESERVED_TILE_COUNT * 16
+
+SECTION "Actor New Tiles Variables", HRAM
+
+; Half the number of bytes to copy from wActorTileBuffer to VRAM for the
+; VBlank interrupt handler, -1 for none
+hActorNewTileLength::
+    DS 1
+
+; Desination of new tile data for the VBlank interrupt handler
+hActorTileDest::
+.low
+    DS 1
+.high
+    DS 1
+
 SECTION "Actor Update", ROM0
 
 ActorsUpdate::
@@ -657,14 +678,44 @@ ActorSetTiles:
     add     hl, hl  ; actor index * 8
     add     hl, hl  ; actor index * 16
     
-    ; Copy the tiles
+    ; If another actor is already using the tile buffer, copy directly
+    ; to VRAM
+    ldh     a, [hActorNewTileLength]
+    inc     a
+    jr      nz, .copyVRAMLoop
+    
+    ; Save the destination address and data size for the VBlank
+    ; interrupt handler
+    ld      a, l
+    ldh     [hActorTileDest.low], a
+    ld      a, h
+    ldh     [hActorTileDest.high], a
+    ld      a, b
+    ldh     [hActorNewTileLength], a
+    
+    ; Copy tile data to copy buffer to be written to VRAM during VBlank
+    ld      hl, wActorTileBuffer
+.copyLoop
+    ld      a, [de]
+    ld      [hli], a
+    inc     de
+    ld      a, [de]
+    ld      [hli], a
+    inc     de
+    dec     b
+    jr      nz, .copyLoop
+    
+    pop     bc
+    ret
+
+    ; Copy the tiles to VRAM
     ; de = source
     ; hl = destination
     ; b = length / 2
-.copyLoop
+.copyVRAMLoop
     ldh     a, [rSTAT]
     and     a, STATF_BUSY
-    jr      nz, .copyLoop
+    jr      nz, .copyVRAMLoop
     
     ld      a, [de]     ; 2 cycles
     ld      [hli], a    ; 2 cycles
@@ -676,7 +727,7 @@ ActorSetTiles:
     ; be divisible by 3
     inc     de
     dec     b
-    jr      nz, .copyLoop
+    jr      nz, .copyVRAMLoop
     
     pop     bc
     ret
