@@ -95,9 +95,6 @@ ScreenSetupGameSelect::
     ; a separate "current/last game" variable.
     xor     a, a
     ldh     [hCurrentSelection], a
-    
-    ; UpdateSelection expects game number in hScratch1
-    ldh     [hScratch1], a
     jp      UpdateSelection.initial
 
 SECTION "Game Select Cursor Actor Definition", ROM0
@@ -311,8 +308,6 @@ MoveDown:
     ; Fall-through
 
 UpdateSelection:
-    ldh     [hScratch1], a
-    
     ; Play the selection sound effect
     ld      b, SFX_SELECT
     call    SFX_Play
@@ -337,7 +332,7 @@ UpdateSelection:
     jr      nz, .clearLoop
     
     ; Get the new selection's cursor position
-    ldh     a, [hScratch1]  ; a = game number
+    ldh     a, [hCurrentSelection]
 .initial
     add     a, a
     add     a, LOW(CursorPositionTable)
@@ -353,7 +348,8 @@ UpdateSelection:
     
     ; Use the correct cursor size
     ld      hl, wActorCelTable
-    ld      a, b
+    ldh     a, [hCurrentSelection]
+    ld      b, a    ; Save for getting description
     cp      a, SCREEN_JUKEBOX
     ld      a, [hl]
     jr      z, .jukebox
@@ -372,8 +368,7 @@ UpdateSelection:
 .doneCel
     
     ; Get pointer to description text
-    ldh     a, [hScratch1]  ; a = game number
-    ld      b, a
+    ld      a, b    ; a = game number
     add     a, a    ; game number * 2 (Pointer)
     add     a, b    ; game number * 3 (+Bank)
     add     a, LOW(DescTextTable)
