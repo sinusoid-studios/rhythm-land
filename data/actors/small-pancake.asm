@@ -10,21 +10,23 @@ xActorSmallPancakeAnimation::
 
     ; Falling and cooking sequence
     set_tiles falling, 6
-    cel falling1, SMALL_PANCAKE_COOK_TIME / 8
-    cel falling2, SMALL_PANCAKE_COOK_TIME / 8
+    cel falling1, 10
+    cel falling2, 10
 .cook
+    DEF COOK_CEL_TIME EQU (SMALL_PANCAKE_COOK_TIME - 10 * 2) / 6
+    
     set_tiles landed, 6
-    cel cooking, SMALL_PANCAKE_COOK_TIME / 8
+    cel cooking, SMALL_PANCAKE_COOK_TIME / 6
     set_tiles veryUndercooked, 6
-    cel cooking, SMALL_PANCAKE_COOK_TIME / 8
+    cel cooking, SMALL_PANCAKE_COOK_TIME / 6
     set_tiles undercooked, 6
-    cel cooking, SMALL_PANCAKE_COOK_TIME / 8
+    cel cooking, SMALL_PANCAKE_COOK_TIME / 6
     set_tiles perfect, 6
-    cel cooking, SMALL_PANCAKE_COOK_TIME / 8
+    cel cooking, SMALL_PANCAKE_COOK_TIME / 6
     set_tiles overcooked, 6
-    cel cooking, SMALL_PANCAKE_COOK_TIME / 8
+    cel cooking, SMALL_PANCAKE_COOK_TIME / 6
     set_tiles veryOvercooked, 6
-    cel cookingPal1, SMALL_PANCAKE_COOK_TIME / 8
+    cel cookingPal1, SMALL_PANCAKE_COOK_TIME / 6
     set_tiles burnt, 6
     cel cookingPal1, 40
     DB ANIMATION_KILL_ACTOR

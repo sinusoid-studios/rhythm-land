@@ -10,24 +10,26 @@ xActorLargePancakeAnimation::
 
     ; Falling and cooking sequence
     set_tiles falling, 10
-    cel falling1, LARGE_PANCAKE_COOK_TIME / 8
-    cel falling2, LARGE_PANCAKE_COOK_TIME / 8
+    cel falling1, 10
+    cel falling2, 10
 .cook
+    DEF COOK_CEL_TIME EQU (LARGE_PANCAKE_COOK_TIME - 10 * 2) / 6
+    
     set_tiles landed, 12
-    cel cooking, LARGE_PANCAKE_COOK_TIME / 8
+    cel cooking, COOK_CEL_TIME
 .OK
     set_tiles veryUndercooked, 12
-    cel cooking, LARGE_PANCAKE_COOK_TIME / 8
+    cel cooking, COOK_CEL_TIME
     set_tiles undercooked, 12
-    cel cooking, LARGE_PANCAKE_COOK_TIME / 8
+    cel cooking, COOK_CEL_TIME
 .cookedOK
     set_tiles perfect, 12
-    cel cooking, LARGE_PANCAKE_COOK_TIME / 8
+    cel cooking, COOK_CEL_TIME
     set_tiles overcooked, 12
-    cel cooking, LARGE_PANCAKE_COOK_TIME / 8
+    cel cooking, COOK_CEL_TIME
 .overcooked
     set_tiles veryOvercooked, 12
-    cel cookingPal1, LARGE_PANCAKE_COOK_TIME / 8
+    cel cookingPal1, COOK_CEL_TIME
     set_tiles burnt, 12
     cel cookingPal1, 40
     DB ANIMATION_KILL_ACTOR
