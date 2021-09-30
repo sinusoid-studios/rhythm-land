@@ -3,6 +3,17 @@ INCLUDE "constants/actors.inc"
 INCLUDE "constants/transition.inc"
 INCLUDE "constants/games/pancake.inc"
 
+SECTION UNION "Game Variables", HRAM
+
+; How cooked the last pancake was, for using an appropriate cel after
+; flipped onto the counter
+hLastPancakeCooked:
+    DS 1
+
+; Number of frames to keep the pancake on the counter for longer
+hCounterCountdown:
+    DS 1
+
 SECTION "Pancake Game Setup", ROMX
 
 xGameSetupPancake::
@@ -40,6 +51,10 @@ xGameSetupPancake::
     ; Enable tile streaming
     ; a = 1
     ldh     [hTileStreamingEnable], a
+    
+    ; No pancake is waiting on the counter
+    ld      a, -1
+    ldh     [hCounterCountdown], a
     
     ; Set up game data
     ld      c, BANK(xHitTablePancake)
@@ -144,7 +159,7 @@ xActorPancake::
     ld      a, [hl]
     ; Add 1 to check for <= instead of <
     cp      a, PANCAKE_COUNTER_X + 1
-    jr      c, .noCounter
+    jr      c, .noLandCounter
     
     ; Ensure the position is correct before resetting speed
     ld      [hl], PANCAKE_COUNTER_X
@@ -154,11 +169,28 @@ xActorPancake::
     ASSERT HIGH(MAX_ACTOR_COUNT - 1) == 0
     ld      [hl], b     ; b = 0
     ; The pancake is no longer cooking -> stop (freeze) the animation
+    ldh     a, [hLastPancakeCooked]
+    call    ActorSetCel
     ld      hl, wActorCelCountdownTable
     add     hl, bc
     ld      [hl], ANIMATION_DURATION_FOREVER
     
-.noCounter
+    ; Set the counter countdown -> only keep the pancake on the counter
+    ; for so long
+    ld      a, PANCAKE_COUNTER_TIME
+    ldh     [hCounterCountdown], a
+    
+.noLandCounter
+    ; If pancake is done staying on the counter, kill it
+    ld      hl, hCounterCountdown
+    ; If countdown is -1, the pancake is not waiting on the counter
+    ld      a, [hl]
+    inc     a
+    jr      z, .notOnCounter
+    dec     [hl]
+    jp      z, ActorKill
+    
+.notOnCounter
     ; Check if the pancake is being flipped
     ldh     a, [hNewKeys]
     ASSERT PADB_A == 0
@@ -186,11 +218,17 @@ xActorPancake::
     cp      a, CEL_PANCAKE_OVERCOOKED
     jr      nc, .overcooked
     ; OK
+    ld      a, CEL_PANCAKE_COOKED_OK
+    ldh     [hLastPancakeCooked], a
     ld      a, CEL_PANCAKE_FLIP_OK
     jp      ActorSetCel
 .undercooked
+    ld      a, CEL_PANCAKE_COOKED_UNDERCOOKED
+    ldh     [hLastPancakeCooked], a
     ld      a, CEL_PANCAKE_FLIP_UNDERCOOKED
     jp      ActorSetCel
 .overcooked
+    ld      a, CEL_PANCAKE_COOKED_OVERCOOKED
+    ldh     [hLastPancakeCooked], a
     ld      a, CEL_PANCAKE_FLIP_OVERCOOKED
     jp      ActorSetCel

@@ -22,5 +22,8 @@ DEF PANCAKE_START_Y EQU -14
 DEF PANCAKE_FALL_SPEED EQU 6.0f
 
 ; Flipped off of the pan and onto the counter
-DEF PANCAKE_DONE_X_SPEED EQU 5.0f
+DEF PANCAKE_DONE_X_SPEED EQU 6.0f
 DEF PANCAKE_COUNTER_X EQU 120
+
+; Number of frames to wait on the counter before disappearing
+DEF PANCAKE_COUNTER_TIME EQU 50

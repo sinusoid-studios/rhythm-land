@@ -20,6 +20,7 @@ xActorLargePancakeAnimation::
     cel cooking, LARGE_PANCAKE_COOK_TIME / 8
     set_tiles undercooked, 12
     cel cooking, LARGE_PANCAKE_COOK_TIME / 8
+.cookedOK
     set_tiles perfect, 12
     cel cooking, LARGE_PANCAKE_COOK_TIME / 8
     set_tiles overcooked, 12
@@ -63,6 +64,9 @@ xActorLargePancakeAnimation::
     def_cel .flipUndercooked, FLIP_UNDERCOOKED
     def_cel .flipOK, FLIP_OK
     def_cel .flipOvercooked, FLIP_OVERCOOKED
+    def_cel .OK, COOKED_UNDERCOOKED
+    def_cel .cookedOK, COOKED_OK
+    def_cel .overcooked, COOKED_OVERCOOKED
 
 xActorLargePancakeTiles::
 .falling
