@@ -65,7 +65,7 @@ xTextOKPancake:
 SECTION "Pancake Game Great Rating Text", ROMX
 
 xTextGreatPancake:
-    feedback "Reminds me of my mothers cooking."
+    feedback "Reminds me of my mother's cooking."
     feedback_last "These are some pretty tasty pancakes!"
 
 SECTION "Pancake Game Perfect Rating Text", ROMX
