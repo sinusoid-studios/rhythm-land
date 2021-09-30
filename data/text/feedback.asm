@@ -79,22 +79,26 @@ xTextPerfectPancake:
 SECTION "Battleship Game Bad Rating Text", ROMX
 
 xTextBadBattleship:
-    feedback_last "placeholder"
+    feedback "What a waste of amunitions."
+    feedback_last "I doubt you could hit the broad side of a barn."
 
 SECTION "Battleship Game OK Rating Text", ROMX
 
 xTextOKBattleship:
-    feedback_last "placeholder"
+    feedback "Not exceptional by any means..."
+    feedback_last "I've been better shooting, but I've also seen worse."
 
 SECTION "Battleship Game Great Rating Text", ROMX
 
 xTextGreatBattleship:
-    feedback_last "placeholder"
+    feedback "Artillery seems to be a specialty of yours."
+    feedback_last "Looks like you have quite the good aim with that thing!"
 
 SECTION "Battleship Game Perfect Rating Text", ROMX
 
 xTextPerfectBattleship:
-    feedback_last "placeholder"
+    feedback "That right there should be the gold standard for naval combat!"
+    feedback_last "Such accuracy and speed... it brings a tear to my eye."
 
 ; Seagull Serenade
 
