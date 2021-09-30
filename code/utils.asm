@@ -5,8 +5,9 @@ SECTION "Null Pointer", ROM0[$0000]
 
 ; Don't use this unless the code responsible for jumping to the pointer
 ; checks for this!
-; The only part of the game that does is the ActorsUpdate function when
-; calling an actor's update routine.
+; The only parts of the game that do are the ActorsUpdate function when
+; calling an actor's update routine and TransitionUpdate for setup
+; routines.
 Null::
 
 SECTION "Jump to HL", ROM0[$0000]

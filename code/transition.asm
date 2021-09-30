@@ -173,6 +173,11 @@ TransitionUpdate::
     add     a, TRANSITION_DELAY
     ldh     [hTransitionIndex], a
     
+    ; If the setup routine is Null, don't call it
+    ld      a, l
+    or      a, h
+    jr      z, .delayLoop
+    
     rst     JP_HL
     
 .delayLoop

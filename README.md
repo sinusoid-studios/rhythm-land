@@ -27,8 +27,8 @@ Files:
 - [constants/SoundSystem.def](/constants/SoundSystem.def)
 - [constants/SoundSystem.inc](/constants/SoundSystem.inc)
 - [constants/SoundSystemNotes.inc](/constants/SoundSystemNotes.inc)
-- [soundtest/soundtest.asm](/soundtest/soundtest.asm)
-- [soundtest/font.bin](/soundtest/font.bin)
+- [code/jukebox.asm](/code/jukebox.asm)
+- [data/jukebox-font.bin](/data/jukebox-font.bin)
 
 The files listed above are originally from Bob Koon's [SoundSystem
 Driver][soundsystem-versionused]. It is licensed under the MIT License, a copy of
@@ -36,7 +36,8 @@ which can be found in [LICENSE.SoundSystem](/LICENSE.SoundSystem). Note,
 however, that [SoundSystem.asm](/code/SoundSystem.asm) has been modified
 from the original to work better with Rhythm Land, and
 [SoundSystem.def](/constants/SoundSystem.def) contains driver
-configuration specifically for Rhythm Land.
+configuration specifically for Rhythm Land. [jukebox.asm](/code/jukebox.asm)
+has also been modified to use in the game.
 
 [soundsystem-versionused]: https://github.com/BlitterObjectBob/GBSoundSystem/tree/a8468d766b1f32fa31ab206f291bc71d3c5b133e
 

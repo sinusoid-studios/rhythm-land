@@ -22,7 +22,7 @@ ScreenSetupTable::
     full_pointer xGameSetupBattleship
     full_pointer xGameSetupSeagullSerenade
     full_pointer Null
-    full_pointer ScreenSetupJukebox
+    full_pointer Null
     full_pointer ScreenSetupTitle
     full_pointer ScreenSetupGameSelect
     full_pointer ScreenSetupRating
