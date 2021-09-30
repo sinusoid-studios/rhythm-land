@@ -102,7 +102,7 @@ ScreenSetupRating::
     
     ; Score is negative -> go straight to Bad
     ld      b, RATING_BAD
-    jr      c, .gotRating
+    jr      nc, .gotRating
     rlca    ; Copy bit 7 (sign) to carry
     jr      c, .gotRating
     
