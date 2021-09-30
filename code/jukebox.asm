@@ -107,10 +107,8 @@ ScreenJukebox::
     add     a, b    ; song * 6 (Inst bank + Music bank)
     add     a, LOW(SongDataTable)
     ld      l, a
-    ASSERT WARN, HIGH(SongDataTable.end - 1) != HIGH(SongDataTable)
-    adc     a, HIGH(SongDataTable)
-    sub     a, l
-    ld      h, a
+    ASSERT HIGH(SongDataTable.end - 1) == HIGH(SongDataTable)
+    ld      h, HIGH(SongDataTable)
     ; Prepare Insts
     ld      a, [hli]
     ld      c, a    ; c = bank number

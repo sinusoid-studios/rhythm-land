@@ -96,6 +96,11 @@ SECTION "Actor New Tiles Variables", HRAM
 hActorNewTileLength::
     DS 1
 
+; Actor index of the actor using wActorTileBuffer, so that the same one
+; can overwrite it
+hNewTileActorIndex:
+    DS 1
+
 ; Desination of new tile data for the VBlank interrupt handler
 hActorTileDest::
 .low
@@ -682,8 +687,12 @@ ActorSetTiles:
     ; to VRAM
     ldh     a, [hActorNewTileLength]
     inc     a
+    jr      z, .useBuffer
+    ; If the actor using it is this actor, overwrite the buffer
+    ldh     a, [hNewTileActorIndex]
+    cp      a, c
     jr      nz, .copyVRAMLoop
-    
+.useBuffer
     ; Save the destination address and data size for the VBlank
     ; interrupt handler
     ld      a, l
@@ -692,6 +701,8 @@ ActorSetTiles:
     ldh     [hActorTileDest.high], a
     ld      a, b
     ldh     [hActorNewTileLength], a
+    ld      a, c
+    ldh     [hNewTileActorIndex], a
     
     ; Copy tile data to copy buffer to be written to VRAM during VBlank
     ld      hl, wActorTileBuffer
