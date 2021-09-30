@@ -73,17 +73,22 @@ ScreenSetupRating::
     ld      a, [hld]
     ASSERT hHitOKCount == hHitPerfectCount - 1
     add     a, [hl]
-    ; a = Perfects + OKs
+    ASSERT hHitBadCount == hHitOKCount - 1
+    dec     l
+    add     a, [hl]
+    ; a = Perfects + OKs + Bads
     cpl
     inc     a
-    ; a = -(Perfects + OKs)
+    ; a = -(Perfects + OKs + Bads)
     add     a, d
-    ; a = Total - Perfects - OKs = Misses
+    ; a = Total - Perfects - OKs - Bads = Misses
     add     a, a    ; Weight 1
     cpl
     inc     a       ; Weight -1
     
     ; OK: Weight 0.5
+    ASSERT hHitOKCount == hHitBadCount + 1
+    inc     l
     add     a, [hl]
     
     ASSERT hHitPerfectCount == hHitOKCount + 1
