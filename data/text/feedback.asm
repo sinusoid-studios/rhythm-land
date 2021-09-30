@@ -53,22 +53,26 @@ xTextPerfectSkaterDude:
 SECTION "Pancake Game Bad Rating Text", ROMX
 
 xTextBadPancake:
-    feedback_last "placeholder"
+    feedback "Pftew! That tasted really awful!"
+    feedback_last "Don't quit your day job to take up cooking."
 
 SECTION "Pancake Game OK Rating Text", ROMX
 
 xTextOKPancake:
-    feedback_last "placeholder"
+    feedback "Well, it's not terrible..."
+    feedback_last "I guess it's edible."
 
 SECTION "Pancake Game Great Rating Text", ROMX
 
 xTextGreatPancake:
-    feedback_last "placeholder"
+    feedback "Reminds me of my mothers cooking."
+    feedback_last "These are some pretty tasty pancakes!"
 
 SECTION "Pancake Game Perfect Rating Text", ROMX
 
 xTextPerfectPancake:
-    feedback_last "placeholder"
+    feedback "Deliciously fluffy and cooked to perfection."
+    feedback_last "Excellent pancakes, my compliments to the chef!"
 
 ; Battleship
 
