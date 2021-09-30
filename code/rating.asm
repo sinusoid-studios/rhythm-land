@@ -98,11 +98,16 @@ ScreenSetupRating::
     ld      a, [hld]
     cpl
     inc     a
+    jr      z, .noCarry
     add     a, b
-    
-    ; Score is negative -> go straight to Bad
+    ; Check for negative underflow
     ld      b, RATING_BAD
     jr      nc, .gotRating
+    jr      .noUnderflow
+.noCarry
+    add     a, b
+.noUnderflow
+    ; Score is negative -> go straight to Bad
     rlca    ; Copy bit 7 (sign) to carry
     jr      c, .gotRating
     
