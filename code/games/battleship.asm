@@ -1,9 +1,16 @@
 INCLUDE "constants/hardware.inc"
 INCLUDE "constants/transition.inc"
+INCLUDE "constants/screens.inc"
 INCLUDE "constants/games/battleship.inc"
 INCLUDE "constants/actors.inc"
 INCLUDE "constants/sfx.inc"
+INCLUDE "constants/SoundSystem.inc"
 INCLUDE "constants/engine.inc"
+
+SECTION UNION "Game Variables", HRAM
+
+hEndDelay:
+    DS 1
 
 SECTION "Battleship Game Setup", ROMX
 
@@ -86,6 +93,10 @@ xGameSetupBattleship::
     ASSERT xActorShipDefinition == xActorShipCannonDefinition.end
     ; de = xActorShipDefinition
     call    ActorNew
+    
+    ; Delay after the music ends
+    ld      a, END_DELAY
+    ldh     [hEndDelay], a
     
     ; Set up game data
     ld      c, BANK(xHitTableBattleship)
@@ -197,6 +208,21 @@ xGameBattleship::
     jr      nz, .noReset
     ld      [hl], BATTLESHIP_INITIAL_Y
 .noReset
+    ; Check if the game is over
+    ld      a, [wMusicPlayState]
+    ASSERT MUSIC_STATE_STOPPED == 0
+    and     a, a
+    jr      nz, .notOver
+    ld      hl, hEndDelay
+    dec     [hl]
+    jr      nz, .notOver
+    
+    ; Game is over -> go to the overall rating screen
+    ld      a, SCREEN_RATING
+    call    TransitionStart
+    jr      xGameBattleship
+
+.notOver
     ; Update the background (ocean waves) every 16 frames
     ldh     a, [hFrameCounter]
     and     a, 15
