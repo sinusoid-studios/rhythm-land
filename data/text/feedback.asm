@@ -14,6 +14,8 @@ SECTION "Overall Rating Text Table", ROM0
 
 RatingTextTable::
     rating_text SkaterDude
+    rating_text Pancake
+    rating_text Battleship
     rating_text SeagullSerenade
 .end::
 
@@ -45,6 +47,50 @@ xTextPerfectSkaterDude:
     feedback "Woah, that dude was super cool!"
     feedback "Unfazed by the heavy traffic!"
     feedback_last "Those were some crazy gnarly tricks!"
+
+; Pancake
+
+SECTION "Pancake Game Bad Rating Text", ROMX
+
+xTextBadPancake:
+    feedback_last "placeholder"
+
+SECTION "Pancake Game OK Rating Text", ROMX
+
+xTextOKPancake:
+    feedback_last "placeholder"
+
+SECTION "Pancake Game Great Rating Text", ROMX
+
+xTextGreatPancake:
+    feedback_last "placeholder"
+
+SECTION "Pancake Game Perfect Rating Text", ROMX
+
+xTextPerfectPancake:
+    feedback_last "placeholder"
+
+; Battleship
+
+SECTION "Battleship Game Bad Rating Text", ROMX
+
+xTextBadBattleship:
+    feedback_last "placeholder"
+
+SECTION "Battleship Game OK Rating Text", ROMX
+
+xTextOKBattleship:
+    feedback_last "placeholder"
+
+SECTION "Battleship Game Great Rating Text", ROMX
+
+xTextGreatBattleship:
+    feedback_last "placeholder"
+
+SECTION "Battleship Game Perfect Rating Text", ROMX
+
+xTextPerfectBattleship:
+    feedback_last "placeholder"
 
 ; Seagull Serenade
 
