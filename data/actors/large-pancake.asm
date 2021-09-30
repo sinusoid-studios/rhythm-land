@@ -29,8 +29,11 @@ xActorLargePancakeAnimation::
     set_tiles veryOvercooked, 12
     cel cookingPal1, LARGE_PANCAKE_COOK_TIME / 8
     set_tiles burnt, 12
-    cel cookingPal1, ANIMATION_DURATION_FOREVER
+    cel cookingPal1, 40
+    DB ANIMATION_KILL_ACTOR
 
+    ; Fix alignment
+    DS 1
 .flipUndercooked
     set_tiles flip1Undercooked, 14
     cel flip1, 4

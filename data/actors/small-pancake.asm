@@ -8,7 +8,7 @@ SECTION "Small Pancake Actor Animation Data", ROMX
 xActorSmallPancakeAnimation::
     animation SmallPancake
 
-    ; Falling and cookingFlip23 sequence
+    ; Falling and cooking sequence
     set_tiles falling, 6
     cel falling1, SMALL_PANCAKE_COOK_TIME / 8
     cel falling2, SMALL_PANCAKE_COOK_TIME / 8
@@ -26,8 +26,11 @@ xActorSmallPancakeAnimation::
     set_tiles veryOvercooked, 6
     cel cookingPal1, SMALL_PANCAKE_COOK_TIME / 8
     set_tiles burnt, 6
-    cel cookingPal1, ANIMATION_DURATION_FOREVER
+    cel cookingPal1, 40
+    DB ANIMATION_KILL_ACTOR
 
+    ; Fix alignment
+    DS 1
 .flipUndercooked
     set_tiles flip1Undercooked, 10
     cel flip1, 4
