@@ -28,8 +28,10 @@ xActorProjectileMetasprites::
     metasprite .right
 
 .left
-    obj 0, 0, $AE, 0
+    obj 0, 0, $AE, OAMF_PAL1
+    obj 0, 8, $B0, OAMF_PAL1
     DB METASPRITE_END
 .right
-    obj 0, 0, $AE, OAMF_XFLIP
+    obj 0, 0, $B0, OAMF_PAL1 | OAMF_XFLIP
+    obj 0, 8, $AE, OAMF_PAL1 | OAMF_XFLIP
     DB METASPRITE_END
