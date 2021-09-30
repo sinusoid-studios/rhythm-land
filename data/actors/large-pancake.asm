@@ -142,33 +142,33 @@ xActorLargePancakeMetasprites::
     DB METASPRITE_END
 
 .flip1
-    obj 0, 4, $00, 0
-    obj 0, 12, $02, 0
-    obj 0, 20, $04, 0
-    obj 16, 0, $06, 0
-    obj 16, 8, $08, 0
-    obj 16, 16, $0A, 0
-    obj 16, 24, $0C, 0
+    obj -6, 4, $00, 0
+    obj -6, 12, $02, 0
+    obj -6, 20, $04, 0
+    obj 10, 0, $06, 0
+    obj 10, 8, $08, 0
+    obj 10, 16, $0A, 0
+    obj 10, 24, $0C, 0
     DB METASPRITE_END
 .flip1Pal1
-    obj 0, 4, $00, OAMF_PAL1
-    obj 0, 12, $02, OAMF_PAL1
-    obj 0, 20, $04, OAMF_PAL1
-    obj 16, 0, $06, OAMF_PAL1
-    obj 16, 8, $08, OAMF_PAL1
-    obj 16, 16, $0A, OAMF_PAL1
-    obj 16, 24, $0C, OAMF_PAL1
+    obj -6, 4, $00, OAMF_PAL1
+    obj -6, 12, $02, OAMF_PAL1
+    obj -6, 20, $04, OAMF_PAL1
+    obj 10, 0, $06, OAMF_PAL1
+    obj 10, 8, $08, OAMF_PAL1
+    obj 10, 16, $0A, OAMF_PAL1
+    obj 10, 24, $0C, OAMF_PAL1
     DB METASPRITE_END
 .flip23
     ; Used for both the 2nd and 3rd flip cels
-    obj 0, 0, $00, 0
-    obj 0, 8, $02, 0
-    obj 0, 16, $04, 0
-    obj 0, 24, $06, 0
+    obj -10, 0, $00, 0
+    obj -10, 8, $02, 0
+    obj -10, 16, $04, 0
+    obj -10, 24, $06, 0
     DB METASPRITE_END
 .flip23Pal1
-    obj 0, 0, $00, OAMF_PAL1
-    obj 0, 8, $02, OAMF_PAL1
-    obj 0, 16, $04, OAMF_PAL1
-    obj 0, 24, $06, OAMF_PAL1
+    obj -10, 0, $00, OAMF_PAL1
+    obj -10, 8, $02, OAMF_PAL1
+    obj -10, 16, $04, OAMF_PAL1
+    obj -10, 24, $06, OAMF_PAL1
     DB METASPRITE_END
