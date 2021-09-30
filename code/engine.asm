@@ -249,6 +249,7 @@ EngineUpdate::
     cp      a, HIT_OK_WINDOW / 2
     ; If on-timeness is outside the OK window, give Bad
     ; hl = hHitBadCount
+    ldh     a, [hScratch1]  ; Restore hit number
     jr      nc, .gotRatingBad
     
     ; Check for OK
