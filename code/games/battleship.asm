@@ -104,6 +104,7 @@ xSpriteTiles:
     INCBIN "res/battleship/boat.obj.2bpp", 16 * 2
     INCBIN "res/battleship/boat-motor.obj.2bpp"
     INCBIN "res/battleship/projectile.obj.2bpp"
+    INCBIN "res/battleship/small-explosion.obj.2bpp"
 .end
 
 xMap1:
@@ -223,6 +224,7 @@ xGameBattleship::
     ret
 
 .shootLeft
+    ASSERT BANK(xActorProjectileLeftDefinition) == BANK(@)
     ld      de, xActorProjectileLeftDefinition
     call    ActorNew
     ASSERT CEL_BOAT_LEFT == 0
@@ -232,19 +234,21 @@ xGameBattleship::
     ldh     a, [hNewKeys]
     jr      .retShootLeft
 .shootRight
+    ASSERT BANK(xActorProjectileRightDefinition) == BANK(@)
     ld      de, xActorProjectileRightDefinition
     call    ActorNew
     ld      hl, wActorCelTable
     add     hl, bc
     ld      [hl], CEL_PROJECTILE_RIGHT
+    
     jr      .retShootRight
 
 xActorBoatLeftDefinition:
-    DB ACTOR_BOAT
+    DB ACTOR_BOAT_LEFT
     DB BOAT_LEFT_X, BOAT_Y
     DB BOAT_SPEED_X, BOAT_SPEED_Y
 xActorBoatRightDefinition:
-    DB ACTOR_BOAT
+    DB ACTOR_BOAT_RIGHT
     DB BOAT_RIGHT_X, BOAT_Y
     DB BOAT_SPEED_X, BOAT_SPEED_Y
 
@@ -256,3 +260,67 @@ xActorProjectileRightDefinition:
     DB ACTOR_PROJECTILE
     DB PROJECTILE_X, PROJECTILE_Y
     DB PROJECTILE_RIGHT_SPEED_X, PROJECTILE_SPEED_Y
+
+SECTION "Battleship Left Boat Actor", ROMX
+
+xActorBoatLeft::
+    ; Kill if shot
+    ldh     a, [hNewKeys]
+    bit     PADB_LEFT, a
+    ret     z
+    
+    ; Manually kill before creating new actors
+    ld      hl, wActorTypeTable
+    add     hl, bc
+    ld      [hl], ACTOR_EMPTY
+    ; Create explosion
+    ASSERT BANK(xActorSmallExplosionLeft1Definition) == BANK(@)
+    ld      de, xActorSmallExplosionLeft1Definition
+    call    ActorNew
+    ASSERT BANK(xActorSmallExplosionLeft2Definition) == BANK(@)
+    ld      de, xActorSmallExplosionLeft2Definition
+    call    ActorNew
+    ; Skip update
+    pop     af
+    jp      ActorsUpdate.next
+
+xActorSmallExplosionLeft1Definition:
+    DB ACTOR_SMALL_EXPLOSION
+    DB EXPLOSION_LEFT_X, EXPLOSION_Y
+    DB 0, 0
+xActorSmallExplosionLeft2Definition:
+    DB ACTOR_SMALL_EXPLOSION
+    DB EXPLOSION_LEFT_X + 8, EXPLOSION_Y + 8
+    DB 0, 0
+
+SECTION "Battleship Right Boat Actor", ROMX
+
+xActorBoatRight::
+    ; Kill if shot
+    ldh     a, [hNewKeys]
+    bit     PADB_A, a
+    ret     z
+    
+    ; Manually kill before creating new actors
+    ld      hl, wActorTypeTable
+    add     hl, bc
+    ld      [hl], ACTOR_EMPTY
+    ; Create explosion
+    ASSERT BANK(xActorSmallExplosionRight1Definition) == BANK(@)
+    ld      de, xActorSmallExplosionRight1Definition
+    call    ActorNew
+    ASSERT BANK(xActorSmallExplosionRight2Definition) == BANK(@)
+    ld      de, xActorSmallExplosionRight2Definition
+    call    ActorNew
+    ; Skip update
+    pop     af
+    jp      ActorsUpdate.next
+
+xActorSmallExplosionRight1Definition:
+    DB ACTOR_SMALL_EXPLOSION
+    DB EXPLOSION_RIGHT_X, EXPLOSION_Y
+    DB 0, 0
+xActorSmallExplosionRight2Definition:
+    DB ACTOR_SMALL_EXPLOSION
+    DB EXPLOSION_RIGHT_X + 8, EXPLOSION_Y + 8
+    DB 0, 0

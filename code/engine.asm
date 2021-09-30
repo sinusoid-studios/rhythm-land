@@ -372,8 +372,10 @@ EngineUpdate::
     add     a, b    ; a * 3 (+Bank)
     add     a, LOW(CueRoutineTable)
     ld      l, a
-    ASSERT HIGH(CueRoutineTable.end - 1) == HIGH(CueRoutineTable)
-    ld      h, HIGH(CueRoutineTable)
+    ASSERT WARN, HIGH(CueRoutineTable.end - 1) != HIGH(CueRoutineTable)
+    adc     a, HIGH(CueRoutineTable)
+    sub     a, l
+    ld      h, a
     
     ; Call the subroutine
     ld      a, [hli]

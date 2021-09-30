@@ -28,7 +28,10 @@ ActorRoutineTable::
     full_pointer Null   ; ACTOR_SHIP
     full_pointer Null   ; ACTOR_SHIP_CANNON
     full_pointer Null   ; ACTOR_PROJECTILE
+    full_pointer xActorBoatLeft ; ACTOR_BOAT_LEFT
+    full_pointer xActorBoatRight    ; ACTOR_BOAT_RIGHT
     full_pointer Null   ; ACTOR_BOAT
+    full_pointer Null   ; ACTOR_SMALL_EXPLOSION
 .end::
 
 SECTION "Actor Animation Table", ROM0
@@ -59,7 +62,9 @@ ActorAnimationTable::
     full_pointer xActorShipAnimation    ; ACTOR_SHIP
     full_pointer xActorShipCannonAnimation  ; ACTOR_SHIP_CANNON
     full_pointer xActorProjectileAnimation  ; ACTOR_PROJECTILE
-    full_pointer xActorBoatAnimation    ; ACTOR_BOAT
+    full_pointer xActorBoatAnimation    ; ACTOR_BOAT_LEFT
+    full_pointer xActorBoatAnimation    ; ACTOR_BOAT_RIGHT
+    full_pointer xActorSmallExplosionAnimation  ; ACTOR_SMALL_EXPLOSION
 .end::
 
 SECTION "Actor Meta-Sprite Table", ROM0
@@ -90,5 +95,7 @@ ActorMetaspriteTable::
     full_pointer xActorShipMetasprites  ; ACTOR_SHIP
     full_pointer xActorShipCannonMetasprites    ; ACTOR_SHIP_CANNON
     full_pointer xActorProjectileMetasprites    ; ACTOR_PROJECTILE
-    full_pointer xActorBoatMetasprites  ; ACTOR_BOAT
+    full_pointer xActorBoatMetasprites  ; ACTOR_BOAT_LEFT
+    full_pointer xActorBoatMetasprites  ; ACTOR_BOAT_RIGHT
+    full_pointer xActorSmallExplosionMetasprites    ; ACTOR_SMALL_EXPLOSION
 .end::
