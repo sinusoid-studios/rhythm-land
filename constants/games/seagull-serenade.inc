@@ -15,6 +15,3 @@ DEF SEAGULL_2_X EQU 95
 DEF SEAGULL_2_Y EQU 61
 DEF SEAGULL_3_X EQU 124
 DEF SEAGULL_3_Y EQU 63
-
-; Number of frames to wait between music end and game end
-DEF SEAGULL_SERENADE_END_DELAY EQU 60

@@ -23,3 +23,6 @@ DEF HIT_PERFECT RB 1
 
 ; Default "no sync data" value is 0, but 0 is useful
 DEF SYNC_NONE EQU -1
+
+; Number of frames to wait between music end and game end
+DEF END_DELAY EQU 60

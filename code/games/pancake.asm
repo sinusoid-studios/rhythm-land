@@ -1,9 +1,15 @@
 INCLUDE "constants/hardware.inc"
 INCLUDE "constants/actors.inc"
 INCLUDE "constants/transition.inc"
+INCLUDE "constants/screens.inc"
+INCLUDE "constants/SoundSystem.inc"
+INCLUDE "constants/engine.inc"
 INCLUDE "constants/games/pancake.inc"
 
 SECTION UNION "Game Variables", HRAM
+
+hEndDelay:
+    DS 1
 
 ; How cooked the last pancake was, for using an appropriate cel after
 ; flipped onto the counter
@@ -56,6 +62,10 @@ xGameSetupPancake::
     ld      a, -1
     ldh     [hCounterCountdown], a
     
+    ; Delay after the music ends
+    ld      a, END_DELAY
+    ldh     [hEndDelay], a
+    
     ; Set up game data
     ld      c, BANK(xHitTablePancake)
     ld      hl, xHitTablePancake
@@ -102,6 +112,19 @@ xGamePancake::
 .noTransition
     call    EngineUpdate
     call    ActorsUpdate
+    
+    ; Check if the game is over
+    ld      a, [wMusicPlayState]
+    ASSERT MUSIC_STATE_STOPPED == 0
+    and     a, a
+    jr      nz, xGamePancake
+    ld      hl, hEndDelay
+    dec     [hl]
+    jr      nz, xGamePancake
+    
+    ; Game is over -> go to the overall rating screen
+    ld      a, SCREEN_RATING
+    call    TransitionStart
     jr      xGamePancake
 
 SECTION "Large Pancake Cue", ROMX

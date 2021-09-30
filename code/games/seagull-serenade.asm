@@ -64,7 +64,7 @@ xGameSetupSeagullSerenade::
     call    ActorNew
     
     ; Delay after the music ends
-    ld      a, SEAGULL_SERENADE_END_DELAY
+    ld      a, END_DELAY
     ldh     [hEndDelay], a
     
     ; Index is incremented before use, so start with -1 for the first
