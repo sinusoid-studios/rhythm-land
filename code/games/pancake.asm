@@ -157,16 +157,20 @@ xActorSmallPancakeDefinition:
 SECTION "Pancake Actor", ROMX
 
 xActorPancake::
+    ; Use D as the flag to allow flipping
+    ASSERT HIGH(MAX_ACTOR_COUNT - 1) == 0
+    ld      d, b    ; b = 0
+    
     ; Check if the pancake is finished falling (landed on the pan)
     ld      hl, wActorYPosTable
     add     hl, bc
     ; Negative -> still above the pan
     bit     7, [hl]
-    jr      nz, .noLand
+    jr      nz, .stillFalling
     ld      a, [hl]
-    ; Add 1 to check for <= instead of <
-    cp      a, PANCAKE_Y + 1
-    jr      c, .noLand
+    cp      a, PANCAKE_Y
+    jr      c, .stillFalling
+    jr      z, .noLand
     
     ; Ensure the position is correct before resetting speed
     ld      [hl], PANCAKE_Y
@@ -175,7 +179,12 @@ xActorPancake::
     add     hl, bc
     ASSERT HIGH(MAX_ACTOR_COUNT - 1) == 0
     ld      [hl], b     ; b = 0
-    
+    jr      .noLand
+
+.stillFalling
+    ; No flipping
+    inc     d
+
 .noLand
     ; Check if the pancake has landed on the counter
     ld      hl, wActorXPosTable
@@ -206,6 +215,12 @@ xActorPancake::
     
 .noLandCounter
     ; If pancake is done staying on the counter, kill it
+    ld      hl, wActorXPosTable
+    add     hl, bc
+    ld      a, [hl]
+    cp      a, PANCAKE_COUNTER_X
+    jr      nz, .notOnCounter
+    
     ld      hl, hCounterCountdown
     ; If countdown is -1, the pancake is not waiting on the counter
     ld      a, [hl]
@@ -214,7 +229,14 @@ xActorPancake::
     dec     [hl]
     jp      z, ActorKill
     
+    ; No flipping
+    ld      d, h
+    
 .notOnCounter
+    ld      a, d
+    and     a, a
+    ret     nz
+    
     ; Check if the pancake is being flipped
     ldh     a, [hNewKeys]
     ASSERT PADB_A == 0
