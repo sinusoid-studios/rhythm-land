@@ -253,6 +253,7 @@ EngineUpdate::
     jr      nc, .gotRatingBad
     
     ; Check for OK
+    ld      a, c    ; Restore on-timeness
     cp      a, HIT_PERFECT_WINDOW / 2
     ; If on-timeness is outside the Perfect window but inside the OK
     ; window, give OK
