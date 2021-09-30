@@ -293,6 +293,9 @@ ActorsUpdate::
     
     ; Point de to next OAM slot
     ldh     a, [hNextOAMSlot]
+    ; If there aren't any free slots, give up
+    cp      a, OAM_COUNT
+    jp      nc, .next
     add     a, a
     add     a, a
     ld      e, a
@@ -349,6 +352,9 @@ ActorsUpdate::
     ; Just took up 1 OAM slot
     ldh     a, [hNextOAMSlot]
     inc     a
+    ; If used up all OAM slots, give up
+    cp      a, OAM_COUNT
+    jr      nc, .metaspriteEnd
     ldh     [hNextOAMSlot], a
     jr      .metaspriteLoop
 
