@@ -2,6 +2,7 @@ INCLUDE "constants/hardware.inc"
 INCLUDE "constants/actors.inc"
 INCLUDE "constants/transition.inc"
 INCLUDE "constants/screens.inc"
+INCLUDE "constants/sfx.inc"
 INCLUDE "constants/SoundSystem.inc"
 INCLUDE "constants/engine.inc"
 INCLUDE "constants/games/pancake.inc"
@@ -231,7 +232,14 @@ xActorPancake::
     add     hl, bc
     ld      [hl], PANCAKE_DONE_X_SPEED
     
+    ld      b, SFX_PANCAKE_FLIP_2
+    ; Carry won't be set
+    DB      $DA     ; jp c, a16 to consume the next 2 bytes
 .stayOnPan
+    ld      b, SFX_PANCAKE_FLIP_1
+    call    SFX_Play
+    ASSERT HIGH(MAX_ACTOR_COUNT) == HIGH(0)
+    ld      b, 0
     ; Decide how cooked the pancake is
     ld      hl, wActorCelTable
     add     hl, bc
