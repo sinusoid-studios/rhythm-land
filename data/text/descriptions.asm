@@ -24,14 +24,14 @@ SECTION "Pancake Game Description", ROMX
 xTextDescPancake:
     DB "Pancake\n"
     DB "\n"
-    DB "unfinished<END>"
+    DB "Flip pancakes when they're just right. Watch out: the small ones cook fast!<END>"
 
 SECTION "Battleship Game Description", ROMX
 
 xTextDescBattleship:
     DB "Battleship\n"
     DB "\n"
-    DB "unfinished<END>"
+    DB "Fire away at incoming enemy speedboats! Don't let them get away!<END>"
 
 SECTION "Seagull Serenade Game Description", ROMX
 
