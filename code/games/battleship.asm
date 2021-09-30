@@ -230,6 +230,9 @@ xGameBattleship::
     ASSERT CEL_BOAT_LEFT == 0
     ; No need to modify cel
     
+    ld      b, SFX_EXPLOSION
+    call    SFX_Play
+    
     ; Restore A with hNewKeys for checking shoot right
     ldh     a, [hNewKeys]
     jr      .retShootLeft
@@ -240,6 +243,9 @@ xGameBattleship::
     ld      hl, wActorCelTable
     add     hl, bc
     ld      [hl], CEL_PROJECTILE_RIGHT
+    
+    ld      b, SFX_EXPLOSION
+    call    SFX_Play
     
     jr      .retShootRight
 
