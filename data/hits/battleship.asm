@@ -74,7 +74,7 @@ xHitTableBattleship::
     ENDR
     
     ; Section C
-    hit 18, PADF_LEFT | PADF_A
+    hit 20, PADF_LEFT | PADF_A
     hit 4, PADF_LEFT | PADF_A
     hit 4, PADF_LEFT
     hit 2, PADF_A
@@ -114,13 +114,6 @@ xHitTableBattleship::
     hit 2, PADF_LEFT
     hit 2, PADF_A
     hit 2, PADF_LEFT
-    hit 2, PADF_A
-    hit 2, PADF_LEFT
-    
-    hit 4, PADF_A
-    hit 2, PADF_LEFT
-    hit 2, PADF_A
-    hit 4, PADF_LEFT
     hit 2, PADF_A
     hit 2, PADF_LEFT
     
