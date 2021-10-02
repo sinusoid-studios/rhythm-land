@@ -39,7 +39,8 @@ from the original to work better with Rhythm Land, and
 configuration specifically for Rhythm Land. [jukebox.asm](/code/jukebox.asm)
 has also been modified to use in the game.
 
-[soundsystem-versionused]: https://github.com/BlitterObjectBob/GBSoundSystem/tree/a8468d766b1f32fa31ab206f291bc71d3c5b133e
+<!-- [soundsystem-versionused]: https://github.com/BlitterObjectBob/GBSoundSystem/tree/a8468d766b1f32fa31ab206f291bc71d3c5b133e -->
+[soundsystem-versionused]: https://github.com/gb-archive/GBSoundSystem/tree/a8468d766b1f32fa31ab206f291bc71d3c5b133e
 
 ### gb-vwf
 Files:
@@ -65,5 +66,6 @@ can be found in [LICENSE.gb-vwf](/LICENSE.gb-vwf).
 [blitterobject]: https://github.com/BlitterObjectBob
 [issotm]: https://eldred.fr
 [gb-tracker]: https://rv6502.ca/wiki/index.php?title=Game_Boy_Tracker
-[soundsystem]: https://github.com/BlitterObjectBob/GBSoundSystem
+<!-- [soundsystem]: https://github.com/BlitterObjectBob/GBSoundSystem -->
+[soundsystem]: https://github.com/gb-archive/GBSoundSystem
 [gb-vwf]: https://github.com/ISSOtm/gb-vwf
