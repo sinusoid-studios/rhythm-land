@@ -28,6 +28,8 @@ Initialize::
     ldh     [rSCX], a
     ldh     [hSCY], a
     ldh     [rSCY], a
+    ; TODO: Use a player-reliant seed
+    ldh     [hRandomNumber], a
     ASSERT TRANSITION_STATE_OFF == 0
     ldh     [hTransitionState], a
     
@@ -132,48 +134,6 @@ Initialize::
     ; accurately
     
 .ignoreBadEmu::
-    ; Verify save data
-    ld      a, CART_SRAM_ENABLE
-    ld      [rRAMG], a
-    
-    ; Calculate the save data check value
-    call    CalcSaveCheck
-    ; Compare it with the saved copy of the check value
-    ld      hl, sCheck
-    ; de = check value
-    ld      a, e
-    cp      a, [hl]
-    jr      nz, .badSave
-    ASSERT HIGH(sCheck.high) == HIGH(sCheck.low)
-    inc     l
-    ld      a, d
-    cp      a, [hl]
-    jr      z, .saveOK
-    
-.badSave
-    ; The save data check value is incorrect -> initialize save data
-    ld      hl, sSaveData
-    ld      c, sSaveDataEnd - sSaveData
-    xor     a, a
-    rst     MemsetSmall
-    ; Update check value
-    call    CalcSaveCheck
-    ld      a, e
-    ld      [sCheck.low], a
-    ld      a, d
-    ld      [sCheck.high], a
-.saveOK
-    ; Seed the random number with the save data check value
-    cpl
-    sub     a, e
-    rla
-    ldh     [hRandomNumber], a
-    
-    ; Finished with SRAM for now
-    ASSERT CART_SRAM_DISABLE == 0
-    xor     a, a
-    ld      [rRAMG], a
-    
     ; Starting with the title screen -> set it up
     ld      a, SCREEN_TITLE
     ldh     [hCurrentScreen], a
