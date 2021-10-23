@@ -79,7 +79,7 @@ xTextPerfectPancake:
 SECTION "Battleship Game Bad Rating Text", ROMX
 
 xTextBadBattleship:
-    feedback "What a waste of amunitions."
+    feedback "What a waste of ammunitions."
     feedback_last "I doubt you could hit the broad side of a barn."
 
 SECTION "Battleship Game OK Rating Text", ROMX
