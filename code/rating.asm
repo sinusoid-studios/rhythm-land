@@ -98,20 +98,20 @@ ScreenSetupRating::
     add     a, [hl]
     
     ld      l, LOW(hHitBadCount)
-    ld      b, a
+    ld      e, a
     ; Bad: Weight -0.5
     ld      a, [hld]
     cpl
     inc     a
-    jr      z, .noCarry
-    add     a, b
-    ; Check for negative underflow
     ld      b, RATING_BAD
+    ; If there are 0 Bads, the carry won't be set
+    jr      z, .noCarry
+    add     a, e    ; Weighted Bads + Total
+    ; Check for negative underflow
     jr      nc, .gotRating
-    jr      .noUnderflow
+    DB      $30     ; jr nc, e8 to consume the next byte
 .noCarry
-    add     a, b
-.noUnderflow
+    add     a, e
     ; Score is negative -> go straight to Bad
     rlca    ; Copy bit 7 (sign) to carry
     jr      c, .gotRating
