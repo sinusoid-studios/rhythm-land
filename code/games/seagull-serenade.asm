@@ -301,8 +301,10 @@ xActorSeagullPlayer::
     add     a, d    ; hit number * 3 + squawk type
     add     a, LOW(xPlayerSquawkNoteTable)
     ld      l, a
-    ASSERT HIGH(xPlayerSquawkNoteTable.end - 1) == HIGH(xPlayerSquawkNoteTable)
-    ld      h, HIGH(xPlayerSquawkNoteTable)
+    ASSERT WARN, HIGH(xPlayerSquawkNoteTable.end - 1) != HIGH(xPlayerSquawkNoteTable)
+    adc     a, HIGH(xPlayerSquawkNoteTable)
+    sub     a, l
+    ld      h, a
     
     ld      b, SFX_SEAGULL_SQUAWK
     ld      e, c    ; e not destroyed by SFX_Play
