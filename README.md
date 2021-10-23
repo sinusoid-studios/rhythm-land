@@ -20,45 +20,14 @@ Run `make` in the root directory of the repository to produce the `bin`
 subdirectory, containing `rhythm-land.gb` along with its map and symbol
 files.
 
-## Attribution
-### SoundSystem
-Files:
-- [code/SoundSystem.asm](/code/SoundSystem.asm)
-- [constants/SoundSystem.def](/constants/SoundSystem.def)
-- [constants/SoundSystem.inc](/constants/SoundSystem.inc)
-- [constants/SoundSystemNotes.inc](/constants/SoundSystemNotes.inc)
-- [code/jukebox.asm](/code/jukebox.asm)
-- [data/jukebox-font.bin](/data/jukebox-font.bin)
-
-The files listed above are originally from Bob Koon's [SoundSystem
-Driver][soundsystem-versionused]. It is licensed under the MIT License, a copy of
-which can be found in [LICENSE.SoundSystem](/LICENSE.SoundSystem). Note,
-however, that [SoundSystem.asm](/code/SoundSystem.asm) has been modified
-from the original to work better with Rhythm Land, and
-[SoundSystem.def](/constants/SoundSystem.def) contains driver
-configuration specifically for Rhythm Land. [jukebox.asm](/code/jukebox.asm)
-has also been modified to use in the game.
-
-<!-- [soundsystem-versionused]: https://github.com/BlitterObjectBob/GBSoundSystem/tree/a8468d766b1f32fa31ab206f291bc71d3c5b133e -->
-[soundsystem-versionused]: https://github.com/gb-archive/GBSoundSystem/tree/a8468d766b1f32fa31ab206f291bc71d3c5b133e
-
-### gb-vwf
-Files:
-- [code/vwf.asm](/code/vwf.asm)
-- [tools/make_font.py](/tools/make_font.py)
-
-The files listed above are from Eldred Habert's [gb-vwf text
-engine][gb-vwf-versionused]. It is licensed under the MIT License, a copy of which
-can be found in [LICENSE.gb-vwf](/LICENSE.gb-vwf).
-
-[gb-vwf-versionused]: https://github.com/ISSOtm/gb-vwf/tree/08c9305b1a2455b30e8441198fa42581f39ea880
-
 ## Credits
 - [martendo][martendo] &mdash; Programming, Music &amp; SFX
 - [eat_butt_loser_butt][eat_butt_loser_butt] &mdash; Art, Design
 - [St&eacute;phane Hockenhull][rv6502] &mdash; [Game Boy Tracker][gb-tracker]
 - [Bob Koon (BlitterObject)][blitterobject] &mdash; [SoundSystem sound driver][soundsystem]
 - [Eldred Habert (ISSOtm)][issotm] &mdash; [gb-vwf text engine][gb-vwf]
+
+See [ATTRIBUTION.md](/ATTRIBUTION.md) for more information.
 
 [martendo]: https://github.com/martendo
 [eat_butt_loser_butt]: https://github.com/Eat-butt-loser-butt

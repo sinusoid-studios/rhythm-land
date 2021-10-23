@@ -352,10 +352,10 @@ ScreenRating::
 
 SECTION "Percentage Calculation", ROM0
 
-; Original code copyright 2018 Damian Yerrick
-; Taken from Libbet and the Magic Floor
-; <https://github.com/pinobatch/libbet>
-; Formatting modified in this file
+; Original code copyright (c) 2018 Damian Yerrick (PinoBatch)
+; Taken from Libbet and the Magic Floor: <https://github.com/pinobatch/libbet>
+; Formatting modified in this file.
+; See ATTRIBUTION.md for more information.
 
 ; Calculates one digit of converting a fraction to a percentage
 ; @param    b   Numerator, less than c

@@ -202,10 +202,10 @@ LCDDrawHex::
 
 SECTION "Multiply u8 by u8", ROM0
 
-; Original code copyright 2017-2018 Antonio Niño Díaz
-; (AntonioND/SkyLyrac)
-; Taken from µCity <https://github.com/AntonioND/ucity>
-; Modified slightly in this file
+; Original code copyright (c) 2017-2018 Antonio Niño Díaz (AntonioND/SkyLyrac)
+; Taken from µCity: <https://github.com/AntonioND/ucity>
+; Formatting modified in this file.
+; See ATTRIBUTION.md for more information.
 
 ; Multiply a by c and store the result in hl
 ; @param    a   Multiplicand (unsigned)
