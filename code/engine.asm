@@ -401,6 +401,8 @@ SetNextHit:
     ; Move to next hit
     ld      hl, hNextHitNumber
     inc     [hl]
+    ldh     a, [hNextHitKeys]
+    ldh     [hLastHitKeys], a
     
     ; Get the current position in the hit table
     ldh     a, [hHitTableBank]
@@ -421,8 +423,6 @@ SetNextHit:
     ld      a, [hli]
     ldh     [hNextHit.high], a
     ; Set hit keys
-    ldh     a, [hNextHitKeys]
-    ldh     [hLastHitKeys], a
     ld      a, [hli]
     ldh     [hNextHitKeys], a
     
