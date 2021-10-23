@@ -88,6 +88,7 @@ EngineInit::
     ldh     [hHitTablePointer.low], a
     ld      a, h
     ldh     [hHitTablePointer.high], a
+    xor     a, a    ; Reset hLastHitKeys
     call    SetNextHit.skip
     
     ; Reset hit rating counts
@@ -372,10 +373,8 @@ EngineUpdate::
     add     a, b    ; a * 3 (+Bank)
     add     a, LOW(CueRoutineTable)
     ld      l, a
-    ASSERT WARN, HIGH(CueRoutineTable.end - 1) != HIGH(CueRoutineTable)
-    adc     a, HIGH(CueRoutineTable)
-    sub     a, l
-    ld      h, a
+    ASSERT HIGH(CueRoutineTable.end - 1) == HIGH(CueRoutineTable)
+    ld      h, HIGH(CueRoutineTable)
     
     ; Call the subroutine
     ld      a, [hli]
@@ -401,8 +400,6 @@ SetNextHit:
     ; Move to next hit
     ld      hl, hNextHitNumber
     inc     [hl]
-    ldh     a, [hNextHitKeys]
-    ldh     [hLastHitKeys], a
     
     ; Get the current position in the hit table
     ldh     a, [hHitTableBank]
@@ -411,7 +408,11 @@ SetNextHit:
     ld      a, [hli]
     ld      h, [hl]
     ld      l, a
+    
+    ldh     a, [hNextHitKeys]
 .skip
+    ldh     [hLastHitKeys], a
+    
     ; Get next hit delay
     ld      a, [hli]
     ASSERT HITS_END == 0
