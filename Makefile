@@ -8,7 +8,7 @@ endif
 
 # Project configuration
 PADVALUE := 0xFF
-VERSION := 0
+VERSION := 1
 MFRCODE := SNSD
 TITLE := RHYTHM LAND
 LICENSEE := HB
