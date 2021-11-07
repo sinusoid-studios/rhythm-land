@@ -153,10 +153,8 @@ TransitionUpdate::
     add     a, b    ; a * 3 (+Bank)
     add     a, LOW(ScreenSetupTable)
     ld      l, a
-    ASSERT WARN, HIGH(ScreenSetupTable.end - 1) != HIGH(ScreenSetupTable)
-    adc     a, HIGH(ScreenSetupTable)
-    sub     a, l
-    ld      h, a
+    ASSERT HIGH(ScreenSetupTable.end - 1) == HIGH(ScreenSetupTable)
+    ld      h, HIGH(ScreenSetupTable)
     
     ld      a, [hli]
     ; Switching the bank to 0 in this case is benign but still triggers

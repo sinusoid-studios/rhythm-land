@@ -1086,6 +1086,15 @@ Music_Play::
 	ld	[hl+],a
 	ld	[hl],a
 
+	IF (SOUNDSYSTEM_ENABLE_VUM)
+	; clear all vu meter values
+	ld	hl,wVUMeter1
+	ld	[hl+],a
+	ld	[hl+],a
+	ld	[hl+],a
+	ld	[hl],a
+	ENDC
+
 	; set command pointer to value of first order
 	ld	h,d
 	ld	l,e
@@ -2693,6 +2702,16 @@ SSFP_MUSIC_CMD_EXTRA_chnl3:
 	ld	a,c
 	and	$FC
 	ldh	[rAUD3LEVEL],a
+
+	IF (SOUNDSYSTEM_ENABLE_VUM)
+	swap	a
+	sla	a
+	and	$0C
+	dec	a
+	xor	$0C
+	ld	[wVUMeter3],a
+	ENDC
+
 	jp	SSFP_MusicUpdate
 
 
