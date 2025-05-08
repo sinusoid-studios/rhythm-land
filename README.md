@@ -22,7 +22,7 @@ files.
 
 ## Credits
 - [martendo][martendo] &mdash; Programming, Music &amp; SFX
-- [eat_butt_loser_butt][eat_butt_loser_butt] &mdash; Art, Design
+- [Adrian-kwok][Adrian-kwok] &mdash; Art, Design
 - [St&eacute;phane Hockenhull][rv6502] &mdash; [Game Boy Tracker][gb-tracker]
 - [Bob Koon (BlitterObject)][blitterobject] &mdash; [SoundSystem sound driver][soundsystem]
 - [Eldred Habert (ISSOtm)][issotm] &mdash; [gb-vwf text engine][gb-vwf]
@@ -30,7 +30,7 @@ files.
 See [ATTRIBUTION.md](/ATTRIBUTION.md) for more information.
 
 [martendo]: https://github.com/martendo
-[eat_butt_loser_butt]: https://github.com/Eat-butt-loser-butt
+[Adrian-kwok]: https://github.com/Adrian-kwok
 [rv6502]: https://rv6502.ca
 [blitterobject]: https://github.com/BlitterObjectBob
 [issotm]: https://eldred.fr
